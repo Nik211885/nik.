@@ -1,0 +1,50 @@
+@if (loadingService.isLoading()) {
+  <div class="overlay" role="status" aria-live="polite" aria-label="Loading">
+    <div class="loader-card">
+
+      <div class="icon-ring">
+        <svg class="process-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle
+            cx="32" cy="32" r="28"
+            stroke="#e0e7ff"
+            stroke-width="4"
+            fill="none"
+          />
+          <circle
+            cx="32" cy="32" r="28"
+            stroke="#4f46e5"
+            stroke-width="4"
+            fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="44 132"
+            class="arc-spin"
+          />
+          <circle cx="32" cy="32" r="12" fill="#eef2ff" class="gear-fill"/>
+          <g class="gear-rotate">
+            <rect x="30" y="8"  width="4" height="8"  rx="2" fill="#4f46e5"/>
+            <rect x="30" y="48" width="4" height="8"  rx="2" fill="#4f46e5"/>
+            <rect x="8"  y="30" width="8" height="4"  rx="2" fill="#4f46e5"/>
+            <rect x="48" y="30" width="8" height="4"  rx="2" fill="#4f46e5"/>
+
+            <rect x="14.1" y="14.1" width="4" height="8" rx="2" fill="#818cf8"
+                  transform="rotate(45 16.1 18.1)"/>
+            <rect x="14.1" y="41.9" width="4" height="8" rx="2" fill="#818cf8"
+                  transform="rotate(-45 16.1 45.9)"/>
+            <rect x="41.9" y="14.1" width="4" height="8" rx="2" fill="#818cf8"
+                  transform="rotate(-45 43.9 18.1)"/>
+            <rect x="41.9" y="41.9" width="4" height="8" rx="2" fill="#818cf8"
+                  transform="rotate(45 43.9 45.9)"/>
+            <circle cx="32" cy="32" r="5" fill="#4f46e5"/>
+            <circle cx="32" cy="32" r="2.5" fill="#eef2ff"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="message">{{ loadingService.message() | language }}</p>
+      <div class="dots">
+        <span></span><span></span><span></span>
+      </div>
+
+    </div>
+  </div>
+}

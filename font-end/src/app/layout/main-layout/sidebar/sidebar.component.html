@@ -1,0 +1,29 @@
+<aside id="colorlib-aside" role="complementary" class="js-fullheight text-center">
+  <h1 id="colorlib-logo"><a href="index.html">Nik<span>.</span></a></h1>
+  <nav id="colorlib-main-menu" role="navigation">
+    <ul>
+      @if(configService.config | async; as config){
+        @for (item of config.sidebarConfigs ?? [] ; track item.id)
+        {
+          <li routerLinkActive="colorlib-active"
+              [routerLinkActiveOptions]="{ exact: true }">
+            <a [routerLink]="item.ref">{{item.name}}</a>
+          </li>
+        }
+      }
+    </ul>
+  </nav>
+
+  <div class="colorlib-footer">
+    <p>
+      © {{yearNow}} Nik App | A personal blog sharing stories, travel, and creativity
+    <ul>
+      @if(configService.config | async; as config){
+        @for(item of config.socialConfigs ?? []; track  item.id)
+        {
+          <li><a [routerLink]="item.ref" [innerHTML]="sanitizeIcon(item.icon)"></a></li>
+        }
+      }
+    </ul>
+  </div>
+</aside>

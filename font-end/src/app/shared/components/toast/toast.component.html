@@ -1,0 +1,31 @@
+<div class="toast-container">
+  @for (toast of toastService.toasts | async; track toast.id) {
+    <div
+      class="toast"
+      [ngClass]="toast.type"
+    >
+      <span class="toast-icon">{{ iconMap[toast.type] }}</span>
+
+      <div class="toast-content">
+        <p class="toast-title">{{ toast.title | language }}</p>
+        @if (toast.message) {
+          <p class="toast-message">{{ toast.message | language }}</p>
+        }
+      </div>
+
+      @if (toast.closeable) {
+        <button
+          class="toast-close"
+          (click)="dismiss(toast.id)"
+        >✕</button>
+      }
+
+      @if (toast.duration > 0) {
+        <div
+          class="toast-progress"
+          [style.animation-duration.ms]="toast.duration"
+        ></div>
+      }
+    </div>
+  }
+</div>
