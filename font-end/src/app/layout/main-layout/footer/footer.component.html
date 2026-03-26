@@ -6,7 +6,7 @@
           <h2 class="ftco-heading-2">{{ApplicationTitle.CATEGORY | language}}</h2>
           <ul class="list-unstyled categories">
             @if(configService.config | async; as config){
-              @for (item of config.categoryCountArchives ?? []; track item.id) {
+              @for (item of config.categoryCountArchives; track item.id) {
                 <li>
                   <a [routerLink]="item.ref">{{item.name}}
                     <span>({{item.count}})</span>
@@ -22,7 +22,7 @@
           <h2 class="ftco-heading-2">{{ApplicationTitle.ARCHIVES | language}}</h2>
           <ul class="list-unstyled categories">
             @if(configService.config | async; as config){
-              @for (item of config.archivesCountAtTime ?? []; track item.time) {
+              @for (item of config.archivesCountAtTime; track item.time) {
                 <li>
                   <a [routerLink]="item.ref">{{item.time}}
                     <span>({{item.count}})</span>

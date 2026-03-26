@@ -21,5 +21,4 @@ export class FooterComponent {
   }
 
   protected readonly ApplicationTitle = ApplicationTitle;
-  protected readonly console = console;
 }

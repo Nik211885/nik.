@@ -3,7 +3,7 @@
   <nav id="colorlib-main-menu" role="navigation">
     <ul>
       @if(configService.config | async; as config){
-        @for (item of config.sidebarConfigs ?? [] ; track item.id)
+        @for (item of config.sidebarConfigs; track item.id)
         {
           <li routerLinkActive="colorlib-active"
               [routerLinkActiveOptions]="{ exact: true }">
@@ -19,7 +19,7 @@
       © {{yearNow}} Nik App | A personal blog sharing stories, travel, and creativity
     <ul>
       @if(configService.config | async; as config){
-        @for(item of config.socialConfigs ?? []; track  item.id)
+        @for(item of config.socialConfigs; track  item.id)
         {
           <li><a [routerLink]="item.ref" [innerHTML]="sanitizeIcon(item.icon)"></a></li>
         }
