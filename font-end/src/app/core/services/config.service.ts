@@ -101,7 +101,66 @@ export class ConfigService {
         <path fill="#0A66C2" d="M20.45 20.45h-3.554v-5.568c0-1.328-.027-3.037-1.851-3.037-1.853 0-2.136 1.445-2.136 2.939v5.666H9.355V9h3.414v1.561h.049c.476-.9 1.637-1.851 3.368-1.851 3.602 0 4.267 2.371 4.267 5.455v6.285zM5.337 7.433a2.063 2.063 0 1 1 0-4.127 2.063 2.063 0 0 1 0 4.127zM6.814 20.45H3.861V9h2.953v11.45z"/>
       </svg>`
         }
-      ]
+      ],
+      archivesCountAtTime: [
+        {
+          time: 'October 2018',
+          count: 6,
+          ref: '/archives-october-2018'
+        },
+        {
+          time: 'September 2018',
+          count: 6,
+          ref: '/archives-september-2018'
+        },
+        {
+          time: 'August 2018',
+          count: 8,
+          ref: '/archives-august-2018'
+        },
+        {
+          time: 'July 2018',
+          count: 2,
+          ref: '/archives-july-2018'
+        },
+        {
+          time: 'June 2018',
+          count: 7,
+          ref: '/archives-june-2018'
+        }
+      ],
+      categoryCountArchives: [
+        {
+          id: '1',
+          name: 'Photography',
+          count: 8,
+          ref: '/archives-photography',
+        },
+        {
+          id: '2',
+          name: 'Fashion',
+          count: 6,
+          ref: '/archives-fashion',
+        },
+        {
+          id: '3',
+          name: 'Technology',
+          count: 3,
+          ref: '/archives-technology',
+        },
+        {
+          id: '4',
+          name: 'Travel',
+          count: 4,
+          ref: '/archives-travel',
+        }
+      ],
+      infoPageConfig: {
+        email: 'ninhlk@nik.com',
+        phone: '+84388080661',
+        id: '1',
+        address: '311-313 Đ. Trường Chinh, Khương Thượng, Phương Liệt, Hà Nội 100000, Việt Nam'
+      }
     } as Config | null)
     return result.pipe(
       tap(res=> this.config$.next(res))
@@ -121,6 +180,9 @@ export class ConfigService {
 export interface Config {
   sidebarConfigs: SidebarConfig[];
   socialConfigs: SocialConfig[];
+  categoryCountArchives: CategoryCountArchives[];
+  archivesCountAtTime: ArchivesCountAtTime[];
+  infoPageConfig: InfoPageConfig;
 }
 
 
@@ -140,4 +202,24 @@ export interface SocialConfig{
   name: string;
   ref: string;
   icon: string;
+}
+
+export interface CategoryCountArchives{
+  id: string;
+  name: string;
+  count: number;
+  ref: string;
+}
+
+export interface ArchivesCountAtTime{
+  time: string;
+  count: number;
+  ref: string;
+}
+
+export interface InfoPageConfig{
+  id: string;
+  phone: string;
+  email: string;
+  address: string;
 }
