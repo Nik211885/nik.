@@ -1,1 +1,13 @@
-<app-post-card></app-post-card>
+<div class="row">
+  <div class="col-md-4">
+    <app-post-card></app-post-card>
+  </div>
+</div>
+
+<app-post-card-compact></app-post-card-compact>
+
+<app-news-letter></app-news-letter>
+
+<app-sidebar-list [title]="ApplicationTitle.CATEGORY"
+                  [statistics]="sidebarStatItemModel"
+></app-sidebar-list>

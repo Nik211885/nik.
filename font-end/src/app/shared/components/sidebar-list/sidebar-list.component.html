@@ -1,0 +1,9 @@
+<div class="sidebar-box ftco-animate">
+  <h3 class="sidebar-heading">{{title | language}}</h3>
+  <ul class="categories">
+    @for (item of statistics; track item.id)
+    {
+      <li><a [routerLink]="item.slug"> {{item.name}}<span>({{item.count}})</span></a></li>
+    }
+  </ul>
+</div>

@@ -1,29 +1,36 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 /**
- * API helper for language endpoints
+ * Language API endpoints
  */
 const ApiLanguage = {
+
   /**
-   * Generate API endpoint for fetching language data
+   * Get language dictionary by language code
    *
-   * @param lang - Language code
-   * @returns API URL string
+   * @param lang - Language code (e.g., 'en', 'vi')
    */
   GET_LANGUAGE: (lang: string) => `languages?lang=${lang}`
 };
 
-
 /**
  * LanguageService
  *
- * This service is responsible for:
- * - Managing the current application language
- * - Loading language resources from API
- * - Providing translation values for UI
- * - Persisting selected language in localStorage
+ * Responsible for managing application internationalization (i18n).
+ *
+ * Features:
+ * - Persist selected language in localStorage
+ * - Load translation dictionary from backend
+ * - Provide reactive language stream
+ * - Provide translation utility method
+ * - Support reactive API calls based on language changes
+ *
+ * Usage:
+ * - Initialize in AppComponent
+ * - Use `translate()` in pipes/components
+ * - Use `withLanguage()` for reactive API calls
  */
 @Injectable({
   providedIn: 'root',
@@ -31,101 +38,160 @@ const ApiLanguage = {
 export class LanguageService {
 
   /**
-   * Key used to store language in localStorage
+   * LocalStorage key for persisting language
    */
-  private readonly APP_LANGUAGE = "app_language";
+  private readonly STORAGE_KEY = 'app_language';
 
   /**
-   * Current active language (default: 'en')
+   * Default fallback language
    */
-  private CURRENT_LANGUAGE = "en";
+  private readonly DEFAULT_LANG = 'en';
 
   /**
-   * Holds the current language dictionary (key-value pairs)
+   * Current language value (sync access)
    */
-  private languageSubject = new BehaviorSubject<Record<string, string>>({});
+  private currentLang = this.DEFAULT_LANG;
 
   /**
-   * Observable stream for components to subscribe and react to language changes
+   * Reactive stream for current language
    */
-  lang$ = this.languageSubject.asObservable();
+  private currentLanguageSubject = new BehaviorSubject<string>(this.DEFAULT_LANG);
+
+  /**
+   * Public observable for language changes
+   */
+  currentLanguage$ = this.currentLanguageSubject.asObservable();
+
+  /**
+   * Translation dictionary store
+   */
+  private dictionarySubject = new BehaviorSubject<Record<string, string>>({});
+
+  /**
+   * Public observable for dictionary updates
+   */
+  lang$ = this.dictionarySubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Initialize language settings
-   * - Load language from localStorage if exists
-   * - Otherwise, use default language and store it
-   * - Fetch language data from API
+   * Initialize language system
    *
-   * @returns Observable containing language key-value pairs
+   * Flow:
+   * 1. Read saved language from localStorage
+   * 2. Fallback to default language if not found
+   * 3. Emit current language
+   * 4. Load translation dictionary from API
+   *
+   * @returns Observable of translation dictionary
    */
   init(): Observable<Record<string, string>> {
-    const savedLanguage = localStorage.getItem(this.APP_LANGUAGE);
 
-    if (savedLanguage) {
-      this.CURRENT_LANGUAGE = savedLanguage;
-    } else {
-      localStorage.setItem(this.APP_LANGUAGE, this.CURRENT_LANGUAGE);
-    }
+    const savedLang =
+      localStorage.getItem(this.STORAGE_KEY) ?? this.DEFAULT_LANG;
 
-    return this.loadLanguages();
-  }
+    this.currentLang = savedLang;
+    this.currentLanguageSubject.next(savedLang);
 
-  /**
-   * Fetch language data from API based on current language
-   * and update the internal BehaviorSubject
-   *
-   * @private
-   * @returns Observable containing language dictionary
-   */
-  private loadLanguages(): Observable<Record<string, string>> {
-    return this.http
-      .get<Record<string, string>>(ApiLanguage.GET_LANGUAGE(this.CURRENT_LANGUAGE))
-      .pipe(
-        tap(res => this.languageSubject.next(res))
-      );
+    return this.loadLanguage();
   }
 
   /**
    * Change application language
-   * - Avoids reloading if the selected language is already active
-   * - Updates localStorage
-   * - Fetches new language data
    *
-   * @param lang - Language code (e.g., 'en', 'vi')
-   * @returns Observable of updated language dictionary
+   * Behavior:
+   * - Skip if language is unchanged
+   * - Update localStorage
+   * - Emit new language
+   * - Reload translation dictionary
+   *
+   * @param lang - New language code
+   * @returns Observable of updated dictionary
    */
-  changeLanguage(lang: string) {
+  changeLanguage(lang: string): Observable<Record<string, string>> {
 
-    if (lang === this.CURRENT_LANGUAGE) {
-      return this.languageSubject.asObservable();
+    if (lang === this.currentLang) {
+      return this.lang$;
     }
 
-    this.CURRENT_LANGUAGE = lang;
-    localStorage.setItem(this.APP_LANGUAGE, lang);
+    this.currentLang = lang;
 
-    return this.loadLanguages();
+    /**
+     * Persist selected language
+     */
+    localStorage.setItem(this.STORAGE_KEY, lang);
+
+    /**
+     * Notify subscribers (triggers reactive flows)
+     */
+    this.currentLanguageSubject.next(lang);
+
+    return this.loadLanguage();
   }
 
   /**
-   * Get current active language
+   * Wrap API calls to automatically react to language changes
+   *
+   * Behavior:
+   * - Re-executes API call when language changes
+   * - Cancels previous request using switchMap
+   *
+   * Use case:
+   * - Fetch localized data from backend
+   *
+   * @template T
+   * @param factory - Function returning API observable based on language
+   * @returns Observable<T>
+   *
+   * @example
+   * this.languageService.withLanguage(lang =>
+   *   this.http.get(`/products?lang=${lang}`)
+   * )
+   */
+  withLanguage<T>(factory: (lang: string) => Observable<T>): Observable<T> {
+
+    return this.currentLanguage$.pipe(
+      switchMap(lang => factory(lang))
+    );
+  }
+
+  /**
+   * Get current language synchronously
    *
    * @returns Current language code
    */
   getCurrentLanguage(): string {
-    return this.CURRENT_LANGUAGE;
+    return this.currentLang;
   }
 
   /**
-   * Translate a given key using current language dictionary
-   * - Returns the key itself if translation is missing
+   * Translate a key using current dictionary
    *
-   * @param code - Translation key
-   * @returns Translated string or fallback key
+   * Behavior:
+   * - Returns translated value if exists
+   * - Falls back to key if not found
+   *
+   * @param key - Translation key
+   * @returns Translated string
    */
-  translate(code: string): string {
-    const langs = this.languageSubject.getValue();
-    return langs[code] ?? code;
+  translate(key: string): string {
+    return this.dictionarySubject.getValue()[key] ?? key;
+  }
+
+  /**
+   * Load translation dictionary from backend
+   *
+   * @private
+   * @returns Observable of dictionary
+   */
+  private loadLanguage(): Observable<Record<string, string>> {
+
+    return this.http
+      .get<Record<string, string>>(
+        ApiLanguage.GET_LANGUAGE(this.currentLang)
+      )
+      .pipe(
+        tap(data => this.dictionarySubject.next(data))
+      );
   }
 }

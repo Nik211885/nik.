@@ -157,8 +157,9 @@ export class ConfigService {
       ],
       infoPageConfig: {
         email: 'ninhlk@nik.com',
-        phone: '+84388080661',
+        phone: '+84 388 080 661',
         id: '1',
+        website: 'https://nik.com',
         address: '311-313 Đ. Trường Chinh, Khương Thượng, Phương Liệt, Hà Nội 100000, Việt Nam'
       }
     } as Config | null)
@@ -222,4 +223,5 @@ export interface InfoPageConfig{
   phone: string;
   email: string;
   address: string;
+  website: string;
 }

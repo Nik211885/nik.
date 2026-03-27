@@ -1,1 +1,11 @@
-<p>post-card-compact.component works!</p>
+<div class="block-21 mb-4 d-flex">
+  <a class="blog-img mr-4" [style.background-image]="'url('+post.image +')'"></a>
+  <div class="text">
+    <h3 class="heading"><a [routerLink]="post.slug">{{post.title}}l</a></h3>
+    <div class="meta">
+      <div><span class="icon-calendar"></span> {{(post.updatedAt ?? post.createdAt) | appDate}}</div>
+      <div><a [routerLink]="post.writer.slug"><span class="icon-person"></span> {{post.writer.name}}</a></div>
+      <div><span class="icon-chat"></span> {{post.comment}}</div>
+    </div>
+  </div>
+</div>

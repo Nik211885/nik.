@@ -1,1 +1,48 @@
-<p>contact.component works!</p>
+<div class="container">
+  <div class="row d-flex mb-5 contact-info">
+    @if(configService.config | async; as config){
+      <div class="col-md-12 mb-4">
+        <h2 class="h4 font-weight-bold">{{ApplicationTitle.CONTACT_INFORMATION | language}}</h2>
+      </div>
+      <div class="w-100"></div>
+      <div class="col-md-3">
+        <p><span>{{ ApplicationTitle.ADDRESS | language }}: </span>{{config.infoPageConfig.address}}</p>
+      </div>
+      <div class="col-md-3">
+        <p><span>{{ApplicationTitle.PHONE | language}}: </span> <a href="tel:{{config.infoPageConfig.phone}}">{{config.infoPageConfig.phone}}</a></p>
+      </div>
+      <div class="col-md-3">
+        <p><span>{{ApplicationTitle.EMAIL | language}}: </span> <a href="mailto:{{config.infoPageConfig.email}}">{{config.infoPageConfig.email}}</a></p>
+      </div>
+      <div class="col-md-3">
+        <p><span>{{ApplicationTitle.WEBSITE | language}}: </span> <a [href]="config.infoPageConfig.website" target="_blank">{{config.infoPageConfig.website}}</a></p>
+      </div>
+    }
+  </div>
+  <div class="row block-9">
+    <div class="col-md-6 order-md-last pr-md-5">
+      <form action="#">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="{{ApplicationTitle.YOUR_NAME | language}}">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="{{ApplicationTitle.YOUR_EMAIL | language}}">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="{{ApplicationTitle.SUBSCRIBE | language}}">
+        </div>
+        <div class="form-group">
+          <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="{{ApplicationTitle.MESSAGE | language}}"></textarea>
+        </div>
+        <div class="form-group">
+          <input type="submit" value="{{ApplicationTitle.SEND_MESSAGE | language}}" class="btn btn-primary py-3 px-5">
+        </div>
+      </form>
+
+    </div>
+
+    <div class="col-md-6">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>

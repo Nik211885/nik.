@@ -1,7 +1,10 @@
-import {AfterViewInit, Component} from '@angular/core';
-import {ToastComponent} from './shared/components/toast/toast.component';
-import {LoadingComponent} from './shared/components/loadding/loading.component';
-import {MainLayoutComponent} from './layout/main-layout/main-layout.component';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { ToastComponent } from './shared/components/toast/toast.component';
+import { LoadingComponent } from './shared/components/loadding/loading.component';
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -12,51 +15,59 @@ import 'aos/dist/aos.css';
   styleUrl: './app.css',
   standalone: true
 })
-export class App implements AfterViewInit {
+export class App implements AfterViewInit, OnDestroy {
   private resizeHandler!: () => void;
-  private scrollHandler!: () => void;
+  private scrollHandlers: Array<() => void> = [];
   private clickHandler!: (e: MouseEvent) => void;
   private carouselTimer: any;
-  private mutationObserver!: MutationObserver;
-  private fallbackTimer: any;
+  private routerSub!: Subscription;
   private called = false;
+
+  constructor(private router: Router) {}
 
   ngAfterViewInit(): void {
     AOS.init({ duration: 800, easing: 'ease-in-out' });
-
-    const run = () => {
-      if (this.called) return;
-      this.called = true;
-      this.mutationObserver?.disconnect();
-
-      this.initLoader();
-      this.initFullHeight();
-      this.initParallax();
-      this.initBurgerMenu();
-      this.initMobileMenuOutsideClick();
-      this.initCarousel();
-      this.initScrollAnimate();
-      this.initLightbox();
-    };
-
-    this.mutationObserver = new MutationObserver(() => {
-      const ready =
-        document.querySelector('.home-slider') ||
-        document.querySelectorAll('.ftco-animate').length > 0;
-      if (ready) run();
+    this.runInit();
+    this.routerSub = this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.cleanup();
+      this.called = false;
+      setTimeout(() => this.runInit(), 150);
     });
-
-    this.mutationObserver.observe(document.body, { childList: true, subtree: true });
-    this.fallbackTimer = setTimeout(run, 2000);
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandler);
-    window.removeEventListener('scroll', this.scrollHandler);
-    document.removeEventListener('click', this.clickHandler as EventListener);
-    this.mutationObserver?.disconnect();
+    this.routerSub?.unsubscribe();
+    this.cleanup();
+  }
+
+  private cleanup(): void {
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+    if (this.clickHandler) {
+      document.removeEventListener('click', this.clickHandler as EventListener);
+    }
+    this.scrollHandlers.forEach(h => window.removeEventListener('scroll', h));
+    this.scrollHandlers = [];
     clearInterval(this.carouselTimer);
-    clearTimeout(this.fallbackTimer);
+  }
+
+  private runInit(): void {
+    if (this.called) return;
+    this.called = true;
+
+    this.initLoader();
+    this.initFullHeight();
+    this.initParallax();
+    this.initBurgerMenu();
+    this.initMobileMenuOutsideClick();
+    this.initCarousel();
+    this.initScrollAnimate();
+    this.initLightbox();
+
+    AOS.refresh();
   }
 
   private initLoader(): void {
@@ -67,12 +78,14 @@ export class App implements AfterViewInit {
   }
 
   private initFullHeight(): void {
-    this.resizeHandler = () => {
+    const setHeight = () => {
       document.querySelectorAll<HTMLElement>('.js-fullheight').forEach(el => {
         el.style.height = window.innerHeight + 'px';
       });
     };
-    this.resizeHandler();
+
+    this.resizeHandler = setHeight;
+    setHeight();
     window.addEventListener('resize', this.resizeHandler);
   }
 
@@ -83,48 +96,60 @@ export class App implements AfterViewInit {
     const applyParallax = () => {
       const scrollY = window.scrollY || window.pageYOffset;
       els.forEach(el => {
-        const ratio = parseFloat(el.getAttribute('data-stellar-background-ratio') || '0.5') || 0.5;
+        const ratio =
+          parseFloat(el.getAttribute('data-stellar-background-ratio') || '0.5') || 0.5;
         el.style.backgroundPosition = `center ${scrollY * ratio}px`;
       });
     };
 
     applyParallax();
     window.addEventListener('scroll', applyParallax, { passive: true });
+    this.scrollHandlers.push(applyParallax);
   }
 
   private initScrollAnimate(): void {
     const elements = document.querySelectorAll<HTMLElement>('.ftco-animate');
     if (!elements.length) return;
 
-    const observer = new IntersectionObserver(entries => {
-      let delay = 0;
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.classList.contains('ftco-animated')) {
-          const el = entry.target as HTMLElement;
-          el.classList.add('item-animate');
-          setTimeout(() => {
-            const effect = el.dataset['animateEffect'];
-            const cls =
-              effect === 'fadeIn'      ? 'fadeIn'      :
-                effect === 'fadeInLeft'  ? 'fadeInLeft'  :
-                  effect === 'fadeInRight' ? 'fadeInRight' : 'fadeInUp';
-            el.classList.add(cls, 'ftco-animated');
-            el.classList.remove('item-animate');
-          }, delay);
-          delay += 50;
-        }
-      });
-    }, { threshold: 0.05 });
+    const observer = new IntersectionObserver(
+      entries => {
+        let delay = 0;
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !entry.target.classList.contains('ftco-animated')) {
+            const el = entry.target as HTMLElement;
+            el.classList.add('item-animate');
+            setTimeout(() => {
+              const effect = el.dataset['animateEffect'];
+              const cls =
+                effect === 'fadeIn'
+                  ? 'fadeIn'
+                  : effect === 'fadeInLeft'
+                    ? 'fadeInLeft'
+                    : effect === 'fadeInRight'
+                      ? 'fadeInRight'
+                      : 'fadeInUp';
+              el.classList.add(cls, 'ftco-animated');
+              el.classList.remove('item-animate');
+            }, delay);
+            delay += 50;
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
 
     elements.forEach(el => observer.observe(el));
   }
 
   private initBurgerMenu(): void {
     document.querySelectorAll<HTMLElement>('.js-colorlib-nav-toggle').forEach(btn => {
-      btn.addEventListener('click', e => {
+      const fresh = btn.cloneNode(true) as HTMLElement;
+      btn.replaceWith(fresh);
+
+      fresh.addEventListener('click', e => {
         e.preventDefault();
         const isOpen = document.body.classList.contains('offcanvas');
-        btn.classList.toggle('active', !isOpen);
+        fresh.classList.toggle('active', !isOpen);
         document.body.classList.toggle('offcanvas', !isOpen);
       });
     });
@@ -133,48 +158,54 @@ export class App implements AfterViewInit {
   private initMobileMenuOutsideClick(): void {
     const closeMenu = () => {
       document.body.classList.remove('offcanvas');
-      document.querySelectorAll('.js-colorlib-nav-toggle').forEach(btn => {
-        btn.classList.remove('active');
-      });
+      document.querySelectorAll('.js-colorlib-nav-toggle').forEach(btn =>
+        btn.classList.remove('active')
+      );
     };
 
     this.clickHandler = (e: MouseEvent) => {
-      const aside   = document.getElementById('colorlib-aside');
+      const aside = document.getElementById('colorlib-aside');
       const toggles = document.querySelectorAll('.js-colorlib-nav-toggle');
-      const inside  =
+      const inside =
         (aside && (aside === e.target || aside.contains(e.target as Node))) ||
-        Array.from(toggles).some(btn => btn === e.target || btn.contains(e.target as Node));
+        Array.from(toggles).some(
+          btn => btn === e.target || btn.contains(e.target as Node)
+        );
       if (!inside && document.body.classList.contains('offcanvas')) closeMenu();
     };
 
-    this.scrollHandler = () => {
+    const scrollClose = () => {
       if (document.body.classList.contains('offcanvas')) closeMenu();
     };
 
     document.addEventListener('click', this.clickHandler as EventListener);
-    window.addEventListener('scroll', this.scrollHandler, { passive: true });
+    window.addEventListener('scroll', scrollClose, { passive: true });
+    this.scrollHandlers.push(scrollClose);
   }
 
   private initCarousel(): void {
     const slider = document.querySelector<HTMLElement>('.home-slider');
     if (!slider) return;
 
-    const slides  = Array.from(slider.children) as HTMLElement[];
-    const total   = slides.length;
-    let   current = 0;
+    const slides = Array.from(slider.children) as HTMLElement[];
+    const total = slides.length;
+    if (!total) return;
+
+    let current = 0;
 
     slides.forEach(s => {
-      s.style.cssText = 'position:absolute;inset:0;opacity:0;transition:opacity 0.8s ease';
+      s.style.cssText =
+        'position:absolute;inset:0;opacity:0;transition:opacity 0.8s ease';
     });
     slider.style.position = 'relative';
     slider.style.overflow = 'hidden';
 
     const goTo = (index: number) => {
-      slides[current].style.opacity   = '0';
-      slides[current].style.position  = 'absolute';
+      slides[current].style.opacity = '0';
+      slides[current].style.position = 'absolute';
       current = (index + total) % total;
-      slides[current].style.opacity   = '1';
-      slides[current].style.position  = 'relative';
+      slides[current].style.opacity = '1';
+      slides[current].style.position = 'relative';
     };
 
     goTo(0);
@@ -182,14 +213,19 @@ export class App implements AfterViewInit {
   }
 
   private initLightbox(): void {
-    const imageLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.image-popup'));
+    const imageLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('.image-popup')
+    );
 
     if (imageLinks.length) {
-      const overlay  = document.createElement('div');
-      const img      = document.createElement('img');
+      document.getElementById('__ftco-img-overlay')?.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = '__ftco-img-overlay';
+      const img = document.createElement('img');
       const btnClose = document.createElement('button');
-      const btnPrev  = document.createElement('button');
-      const btnNext  = document.createElement('button');
+      const btnPrev = document.createElement('button');
+      const btnNext = document.createElement('button');
 
       overlay.style.cssText =
         'display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);' +
@@ -215,7 +251,10 @@ export class App implements AfterViewInit {
 
       const openAt = (index: number) => {
         currentIndex = (index + imageLinks.length) % imageLinks.length;
-        img.src = imageLinks[currentIndex].href || imageLinks[currentIndex].dataset['src'] || '';
+        img.src =
+          imageLinks[currentIndex].href ||
+          imageLinks[currentIndex].dataset['src'] ||
+          '';
         overlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
       };
@@ -226,32 +265,49 @@ export class App implements AfterViewInit {
       };
 
       imageLinks.forEach((link, i) => {
-        link.addEventListener('click', e => { e.preventDefault(); openAt(i); });
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          openAt(i);
+        });
       });
       btnClose.addEventListener('click', closeOverlay);
-      btnPrev.addEventListener('click',  e => { e.stopPropagation(); openAt(currentIndex - 1); });
-      btnNext.addEventListener('click',  e => { e.stopPropagation(); openAt(currentIndex + 1); });
-      overlay.addEventListener('click',  e => { if (e.target === overlay) closeOverlay(); });
+      btnPrev.addEventListener('click', e => {
+        e.stopPropagation();
+        openAt(currentIndex - 1);
+      });
+      btnNext.addEventListener('click', e => {
+        e.stopPropagation();
+        openAt(currentIndex + 1);
+      });
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeOverlay();
+      });
       document.addEventListener('keydown', e => {
         if (overlay.style.display !== 'flex') return;
-        if (e.key === 'Escape')     closeOverlay();
-        if (e.key === 'ArrowLeft')  openAt(currentIndex - 1);
+        if (e.key === 'Escape') closeOverlay();
+        if (e.key === 'ArrowLeft') openAt(currentIndex - 1);
         if (e.key === 'ArrowRight') openAt(currentIndex + 1);
       });
     }
 
-    const iframeLinks = document.querySelectorAll<HTMLAnchorElement>('.popup-youtube, .popup-vimeo, .popup-gmaps');
+    const iframeLinks = document.querySelectorAll<HTMLAnchorElement>(
+      '.popup-youtube, .popup-vimeo, .popup-gmaps'
+    );
     if (!iframeLinks.length) return;
 
+    document.getElementById('__ftco-iframe-overlay')?.remove();
+
     const iframeOverlay = document.createElement('div');
-    const iframeWrap    = document.createElement('div');
-    const iframe        = document.createElement('iframe');
-    const iframeClose   = document.createElement('button');
+    iframeOverlay.id = '__ftco-iframe-overlay';
+    const iframeWrap = document.createElement('div');
+    const iframe = document.createElement('iframe');
+    const iframeClose = document.createElement('button');
 
     iframeOverlay.style.cssText =
       'display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);' +
       'z-index:9999;align-items:center;justify-content:center';
-    iframeWrap.style.cssText = 'position:relative;width:90vw;max-width:900px;aspect-ratio:16/9';
+    iframeWrap.style.cssText =
+      'position:relative;width:90vw;max-width:900px;aspect-ratio:16/9';
     iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:4px';
     iframe.setAttribute('allowfullscreen', '');
     iframeClose.textContent = '×';
@@ -272,14 +328,19 @@ export class App implements AfterViewInit {
     iframeLinks.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
-        if (window.innerWidth < 700) { window.open(link.href, '_blank'); return; }
+        if (window.innerWidth < 700) {
+          window.open(link.href, '_blank');
+          return;
+        }
         iframe.src = link.href;
         iframeOverlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
       });
     });
     iframeClose.addEventListener('click', closeIframe);
-    iframeOverlay.addEventListener('click', e => { if (e.target === iframeOverlay) closeIframe(); });
+    iframeOverlay.addEventListener('click', e => {
+      if (e.target === iframeOverlay) closeIframe();
+    });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && iframeOverlay.style.display === 'flex') closeIframe();
     });

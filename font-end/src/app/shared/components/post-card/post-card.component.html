@@ -1,27 +1,27 @@
-<div class="col-md-4">
+<div>
   <div class="blog-entry ftco-animate">
-    <a href="#" class="img img-2" style="background-image: url(https://smartcom.vn/blog/wp-content/uploads/2024/03/2_1.jpg);"></a>
+    <a [routerLink]="post.slug" class="img img-2" [style.background-image]="'url('+post.image +')'"></a>
     <div class="text text-2 pt-2 mt-3">
-      <span class="category mb-3 d-block"><a href="#">Technology</a></span>
-      <h3 class="mb-4"><a href="#">The Newest Technology On This Year 2019</a></h3>
-      <p class="mb-4">Even the all-powerful Pointing has no control about the blind texts it is an almost</p>
+      <span class="category mb-3 d-block"><a [routerLink]="post.category.slug">{{post.category.name}}</a></span>
+      <h3 class="mb-4 line-clamp-2"><a [routerLink]="post.slug">{{post.title}}</a></h3>
+      <p class="mb-4 line-clamp-2">{{post.description}}</p>
       <div class="author mb-4 d-flex align-items-center">
-        <a href="#" class="img" style="background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtJnACR9i1iQyY4t4E4f0-bfAUw994dvubfw&s);"></a>
+        <a [routerLink]="post.writer.slug" class="img" [style.background-image]="'url('+post.writer.avatar+')'"></a>
         <div class="ml-3 info">
-          <span>Written by</span>
-          <h3><a href="#">Dave Lewis</a>, <span>Nov. 28, 2018</span></h3>
+          <span>{{ApplicationTitle.WRITE_BY | language}}</span>
+          <h3><a [routerLink]="post.writer.slug">{{post.writer.name}}</a>, <span>{{(post.updatedAt ?? post.createdAt) | appDate}}</span></h3>
         </div>
       </div>
       <div class="meta-wrap align-items-center">
         <div class="half order-md-last">
           <p class="meta">
-            <span><i class="icon-heart"></i>3</span>
-            <span><i class="icon-eye"></i>100</span>
-            <span><i class="icon-comment"></i>5</span>
+            <span><i class="icon-heart"></i>{{post.heart}}</span>
+            <span><i class="icon-eye"></i>{{post.see}}</span>
+            <span><i class="icon-comment"></i>{{post.comment}}</span>
           </p>
         </div>
         <div class="half">
-          <p><a href="#" class="btn py-2">Continue Reading <span class="ion-ios-arrow-forward"></span></a></p>
+          <p><a href="#" class="btn py-2">{{ApplicationTitle.CONTINUE_READING | language}} <span class="ion-ios-arrow-forward"></span></a></p>
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {LanguageService} from './core/services/language.service';
 import {AuthService} from './core/auth/auth.service';
 import {authInterceptor} from './core/interceptors/auth.interceptor';
 import {ConfigService} from './core/services/config.service';
+import {acceptLanguageInterceptor} from './core/interceptors/accept-language.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, acceptLanguageInterceptor])
       ),
     provideAppInitializer(()=> inject(ConfigService).readConfig()),
     // provideAppInitializer(() =>inject(LanguageService).init()),
