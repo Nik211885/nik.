@@ -156,6 +156,9 @@ export class ConfigService {
         }
       ],
       infoPageConfig: {
+        avatar: 'https://res.cloudinary.com/worldpackers/image/upload/c_limit,f_auto,q_auto,w_1140/nmfu9poa8vyz3ylmcxax',
+        bio: 'I am A Blogger Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.',
+        name: 'Ninh. Le Khac',
         email: 'ninhlk@nik.com',
         phone: '+84 388 080 661',
         id: '1',
@@ -224,4 +227,7 @@ export interface InfoPageConfig{
   email: string;
   address: string;
   website: string;
+  avatar: string;
+  name: string;
+  bio: string;
 }

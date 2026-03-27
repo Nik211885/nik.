@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {Component, OnInit, inject, AfterViewInit} from '@angular/core';
 import { ConfigService } from '../../core/services/config.service';
 import { ApplicationTitle } from '../../app.message';
 import { LanguagePipe } from '../../shared/pipes/language.pipe';

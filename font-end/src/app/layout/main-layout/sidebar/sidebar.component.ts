@@ -23,5 +23,10 @@ export class SidebarComponent {
   sanitizeIcon(svg: string) : SafeHtml{
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
-
+  onNavClick(): void {
+    document.body.classList.remove('offcanvas');
+    document.querySelectorAll('.js-colorlib-nav-toggle').forEach(btn =>
+      btn.classList.remove('active')
+    );
+  }
 }

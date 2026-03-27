@@ -5,6 +5,11 @@ import {NewsLetterComponent} from '../../shared/components/news-letter/news-lett
 import {SidebarStatItemModel} from '../../shared/components/sidebar-list/sidebar-stat-item.model';
 import {SidebarListComponent} from '../../shared/components/sidebar-list/sidebar-list.component';
 import {ApplicationTitle} from '../../app.message';
+import {PaginationComponent} from '../../shared/components/pagination/pagination.component';
+import {ConfigService} from '../../core/services/config.service';
+import {AsyncPipe} from '@angular/common';
+import {LanguagePipe} from '../../shared/pipes/language.pipe';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +17,11 @@ import {ApplicationTitle} from '../../app.message';
     PostCardComponent,
     PostCardCompactComponent,
     NewsLetterComponent,
-    SidebarListComponent
+    SidebarListComponent,
+    PaginationComponent,
+    AsyncPipe,
+    LanguagePipe,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -38,5 +47,7 @@ export class HomeComponent {
       slug: 'technology',
     }
   ]
+  constructor(protected readonly configService: ConfigService) {
+  }
   protected readonly ApplicationTitle = ApplicationTitle;
 }

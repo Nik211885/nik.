@@ -25,4 +25,8 @@ export enum ApplicationTitle{
   SUBJECT = "subject",
   MESSAGE = "message",
   SEND_MESSAGE = "send-message",
+  HELLO_I_AM = "hello-i-am",
+  MORE_ABOUT_ME = "more-about-me",
+  ARTICLES = "articles",
+  ARTICLE_DESCRIPTION = "articles-description",
 }
