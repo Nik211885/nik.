@@ -7,7 +7,7 @@
         {
           <li routerLinkActive="colorlib-active"
               [routerLinkActiveOptions]="{ exact: true }">
-            <a [routerLink]="item.ref">{{item.name}}</a>
+            <a [routerLink]="item.ref" (click)="onNavClick()">{{item.name}}</a>
           </li>
         }
       }
