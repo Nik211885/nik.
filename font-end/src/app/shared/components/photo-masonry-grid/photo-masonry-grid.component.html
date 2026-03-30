@@ -1,0 +1,7 @@
+<a [routerLink]="photo.ref" class="photography-entry img d-flex justify-content-center align-items-center" [style.background-image]="'url(' + photo.image + ')'">
+  <div class="overlay"></div>
+  <div class="text text-center">
+    <h3>{{photo.name}}</h3>
+    <span>{{photo.count}} {{ApplicationTitle.PHOTO | language}}</span>
+  </div>
+</a>

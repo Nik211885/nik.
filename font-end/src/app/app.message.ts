@@ -33,4 +33,5 @@ export enum ApplicationTitle{
   POPULAR_ARTICLES = "popular-articles",
   TAG_CLOUD = "tag-cloud",
   OUR_STORY = "our-story",
+  PHOTO = "photo",
 }

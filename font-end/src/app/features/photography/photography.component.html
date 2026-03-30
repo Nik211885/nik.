@@ -1,1 +1,11 @@
-<app-post-card></app-post-card>
+<section class="ftco-section-2">
+  <div class="photograhy">
+    <div class="row no-gutters">
+      @for (photo of photoLocationMasonryGrid; track photo.id) {
+        <div class="col-md-3">
+          <app-photo-masonry-grid [photo]="photo"></app-photo-masonry-grid>
+        </div>
+      }
+    </div>
+  </div>
+</section>
