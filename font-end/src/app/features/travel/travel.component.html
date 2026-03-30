@@ -1,1 +1,46 @@
-<p>travel.component works!</p>
+<app-hero-carousel></app-hero-carousel>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="col-md-12">
+          @for (i of [1,2,3,4,5]; track i) {
+            <app-post-card></app-post-card>
+          }
+        </div>
+        <app-pagination></app-pagination>
+      </div>
+      <div class="col-lg-4 sidebar ftco-animate">
+        <div class="sidebar-box">
+          <app-search-input [searchDescription]="ApplicationTitle.DESCRIPTION_SEARCH_BOX"></app-search-input>
+        </div>
+        <app-sidebar-list [title]="ApplicationTitle.CATEGORY"[statistics]="statisticsCategories"
+        ></app-sidebar-list>
+        <div class="sidebar-box ftco-animate">
+          <h3 class="sidebar-heading">{{ApplicationTitle.POPULAR_ARTICLES | language}}</h3>
+          @for (i of [1,2,3]; track i) {
+            <app-post-card-compact></app-post-card-compact>
+          }
+        </div>
+        <div class="sidebar-box ftco-animate">
+          <h3 class="sidebar-heading">{{ApplicationTitle.TAG_CLOUD | language}}</h3>
+          <ul class="tagcloud">
+            @for (tag of listTagCloud; track tag.id) {
+              <app-tag-cloud [tagCloud]="tag"></app-tag-cloud>
+            }
+          </ul>
+        </div>
+        <app-news-letter></app-news-letter>
+        <app-sidebar-list [title]="ApplicationTitle.ARCHIVES"[statistics]="statisticsArchives"
+        ></app-sidebar-list>
+        <div class="sidebar-box ftco-animate">
+          <h3 class="sidebar-heading">{{ApplicationTitle.OUR_STORY | language}}</h3>
+          @if(configService.config | async; as config){
+            <p>{{config.infoPageConfig.introduction}}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

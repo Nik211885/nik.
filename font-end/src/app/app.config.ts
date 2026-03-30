@@ -3,7 +3,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {provideRouter, withInMemoryScrolling} from '@angular/router';
 
 import { routes } from './app.routes';
 import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
@@ -16,7 +16,11 @@ import {acceptLanguageInterceptor} from './core/interceptors/accept-language.int
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    provideRouter(routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'disabled'
+      })
+    ),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor, acceptLanguageInterceptor])

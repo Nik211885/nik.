@@ -162,6 +162,8 @@ export class ConfigService {
         email: 'ninhlk@nik.com',
         phone: '+84 388 080 661',
         id: '1',
+        introduction: `Explore stories about fashion, travel, and lifestyle.
+                        We share inspiration, trends, and experiences to make everyday life more exciting.`,
         website: 'https://nik.com',
         address: '311-313 Đ. Trường Chinh, Khương Thượng, Phương Liệt, Hà Nội 100000, Việt Nam'
       }
@@ -230,4 +232,5 @@ export interface InfoPageConfig{
   avatar: string;
   name: string;
   bio: string;
+  introduction: string;
 }

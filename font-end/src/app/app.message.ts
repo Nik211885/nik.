@@ -29,4 +29,8 @@ export enum ApplicationTitle{
   MORE_ABOUT_ME = "more-about-me",
   ARTICLES = "articles",
   ARTICLE_DESCRIPTION = "articles-description",
+  DESCRIPTION_SEARCH_BOX = "description-search-box",
+  POPULAR_ARTICLES = "popular-articles",
+  TAG_CLOUD = "tag-cloud",
+  OUR_STORY = "our-story",
 }

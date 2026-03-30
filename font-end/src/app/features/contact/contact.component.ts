@@ -3,11 +3,10 @@ import { ConfigService } from '../../core/services/config.service';
 import { ApplicationTitle } from '../../app.message';
 import { LanguagePipe } from '../../shared/pipes/language.pipe';
 import { AsyncPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-contact',
-  imports: [LanguagePipe, AsyncPipe, RouterLink],
+  imports: [LanguagePipe, AsyncPipe],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })

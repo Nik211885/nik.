@@ -1,0 +1,17 @@
+<div class="hero-wrap js-fullheight" style="background-image: url(/assets/images/bg1.png);" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="js-fullheight d-flex justify-content-center align-items-center">
+    @if(configService.config  | async; as config)
+    {
+      <div class="col-md-8 text text-center">
+        <div class="img mb-4" [style.background-image]="'url('+config.infoPageConfig.avatar+')'"></div>
+        <div class="desc">
+          <h2 class="subheading">{{ApplicationTitle.HELLO_I_AM | language}}</h2>
+          <h1 class="mb-4">{{config.infoPageConfig.name}}</h1>
+          <p class="mb-4">{{config.infoPageConfig.bio}}</p>
+          <p><a routerLink="about" class="btn-custom">{{ApplicationTitle.MORE_ABOUT_ME | language}} <span class="ion-ios-arrow-forward"></span></a></p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

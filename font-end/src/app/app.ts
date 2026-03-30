@@ -15,15 +15,20 @@ import 'aos/dist/aos.css';
   styleUrl: './app.css',
   standalone: true
 })
-export class App implements AfterViewInit, OnDestroy {
+class App implements AfterViewInit, OnDestroy {
   private resizeHandler!: () => void;
   private scrollHandlers: Array<() => void> = [];
   private clickHandler!: (e: MouseEvent) => void;
-  private carouselTimer: any;
   private routerSub!: Subscription;
   private called = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+  }
 
   ngAfterViewInit(): void {
     AOS.init({ duration: 800, easing: 'ease-in-out' });
@@ -51,7 +56,6 @@ export class App implements AfterViewInit, OnDestroy {
     }
     this.scrollHandlers.forEach(h => window.removeEventListener('scroll', h));
     this.scrollHandlers = [];
-    clearInterval(this.carouselTimer);
   }
 
   private runInit(): void {
@@ -63,7 +67,6 @@ export class App implements AfterViewInit, OnDestroy {
     this.initParallax();
     this.initBurgerMenu();
     this.initMobileMenuOutsideClick();
-    this.initCarousel();
     this.initScrollAnimate();
     this.initLightbox();
 
@@ -183,34 +186,6 @@ export class App implements AfterViewInit, OnDestroy {
     this.scrollHandlers.push(scrollClose);
   }
 
-  private initCarousel(): void {
-    const slider = document.querySelector<HTMLElement>('.home-slider');
-    if (!slider) return;
-
-    const slides = Array.from(slider.children) as HTMLElement[];
-    const total = slides.length;
-    if (!total) return;
-
-    let current = 0;
-
-    slides.forEach(s => {
-      s.style.cssText =
-        'position:absolute;inset:0;opacity:0;transition:opacity 0.8s ease';
-    });
-    slider.style.position = 'relative';
-    slider.style.overflow = 'hidden';
-
-    const goTo = (index: number) => {
-      slides[current].style.opacity = '0';
-      slides[current].style.position = 'absolute';
-      current = (index + total) % total;
-      slides[current].style.opacity = '1';
-      slides[current].style.position = 'relative';
-    };
-
-    goTo(0);
-    this.carouselTimer = setInterval(() => goTo(current + 1), 5000);
-  }
 
   private initLightbox(): void {
     const imageLinks = Array.from(
@@ -346,3 +321,5 @@ export class App implements AfterViewInit, OnDestroy {
     });
   }
 }
+
+export default App
