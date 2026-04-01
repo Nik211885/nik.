@@ -6,6 +6,7 @@ export interface PostModel{
   slug: string;
   image: string;
   title: string;
+  content: string;
   description: string;
   createdAt: Date;
   updatedAt?: Date;

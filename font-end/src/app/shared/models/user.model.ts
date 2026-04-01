@@ -3,4 +3,5 @@ export interface UserModel {
   slug: string;
   name: string;
   avatar: string;
+  bio: string;
 }

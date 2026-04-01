@@ -1,0 +1,33 @@
+<div>
+  <div class="sidebar-box">
+    <app-search-input [searchDescription]="ApplicationTitle.DESCRIPTION_SEARCH_BOX"></app-search-input>
+  </div>
+  <app-sidebar-list [title]="ApplicationTitle.CATEGORY"
+                    [statistics]="statisticsCategories"
+  ></app-sidebar-list>
+  <div class="sidebar-box ftco-animate">
+    <h3 class="sidebar-heading">{{ApplicationTitle.POPULAR_ARTICLES | language}}</h3>
+    @for (i of [1,2,3,4]; track i) {
+      <app-post-card-compact></app-post-card-compact>
+    }
+  </div>
+  <div class="sidebar-box ftco-animate">
+    <h3 class="sidebar-heading">{{ApplicationTitle.TAG_CLOUD | language}}</h3>
+    <ul class="tagcloud">
+      @for (i of [1,2,3,4]; track i) {
+        <app-tag-cloud></app-tag-cloud>
+      }
+    </ul>
+  </div>
+  <app-news-letter [title]="ApplicationTitle.NEWS_LETTER_TITLE"
+  ></app-news-letter>
+  <app-sidebar-list [title]="ApplicationTitle.ARCHIVES"
+                    [statistics]="statisticsArchives"
+  ></app-sidebar-list>
+  <div class="sidebar-box ftco-animate">
+    <h3 class="sidebar-heading">{{ApplicationTitle.OUR_STORY | language}}</h3>
+    @if(configService.config | async; as config){
+      <p>{{config.infoPageConfig.introduction}}</p>
+    }
+  </div>
+</div>

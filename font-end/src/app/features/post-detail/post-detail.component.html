@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 ftco-animate">
+      <h2 class="mb-3 font-weight-bold">{{postModel.title}}</h2>
+      <div [innerHTML]="postModel.content"></div>
+      <div class="tag-widget post-tag-container mb-5 mt-5">
+        <div class="tagcloud">
+          @for (i of [1,2,3,4,5]; track i) {
+            <app-tag-cloud></app-tag-cloud>
+          }
+        </div>
+      </div>
+      <div class="about-author d-flex p-4 bg-light">
+        <div class="bio mr-5">
+          <img [src]="postModel.writer.avatar"  alt="{{postModel.writer.name}}" class="img-fluid mb-4">
+        </div>
+        <div class="desc">
+          <h3>{{postModel.writer.name}}</h3>
+          <p>{{postModel.writer.bio}}</p>
+        </div>
+      </div>
+    </div>
+    <div  class="col-lg-4 sidebar ftco-animate">
+      <app-plant-banner></app-plant-banner>
+    </div>
+  </div>
+</div>

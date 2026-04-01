@@ -26,6 +26,7 @@ export class PostCardComponent implements OnInit {
         see: 100,
         comment: 5,
         heart: 3,
+        content: "",
         slug: 'one',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -35,7 +36,8 @@ export class PostCardComponent implements OnInit {
           id: '3',
           slug: 'dave-lewis',
           avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtJnACR9i1iQyY4t4E4f0-bfAUw994dvubfw&s',
-          name: 'Dave Lewis'
+          name: 'Dave Lewis',
+          bio: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!'
         },
         category:{
           id: '4',

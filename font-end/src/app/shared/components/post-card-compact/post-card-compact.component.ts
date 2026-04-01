@@ -21,6 +21,7 @@ export class PostCardCompactComponent  implements OnInit {
       image: 'https://smartcom.vn/blog/wp-content/uploads/2024/03/2_1.jpg',
       see: 100,
       comment: 5,
+      content: '',
       heart: 3,
       slug: 'one',
       createdAt: new Date(),
@@ -29,6 +30,7 @@ export class PostCardCompactComponent  implements OnInit {
       description: 'Even the all-powerful Pointing has no control about the blind texts it is an almost Even the all-powerful Pointing has no control about the blind texts it is an almost',
       writer: {
         id: '3',
+        bio: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!',
         slug: 'dave-lewis',
         avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtJnACR9i1iQyY4t4E4f0-bfAUw994dvubfw&s',
         name: 'Dave Lewis'

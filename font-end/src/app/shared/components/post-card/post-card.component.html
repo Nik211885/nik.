@@ -21,7 +21,7 @@
           </p>
         </div>
         <div class="half">
-          <p><a href="#" class="btn py-2">{{ApplicationTitle.CONTINUE_READING | language}} <span class="ion-ios-arrow-forward"></span></a></p>
+          <p><a [routerLink]="['/post', post.slug]" class="btn py-2">{{ApplicationTitle.CONTINUE_READING | language}} <span class="ion-ios-arrow-forward"></span></a></p>
         </div>
       </div>
     </div>

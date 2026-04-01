@@ -5,6 +5,7 @@ import {TravelComponent} from './features/travel/travel.component';
 import {FashionComponent} from './features/fashion/fashion.component';
 import {AboutComponent} from './features/about/about.component';
 import {ContactComponent} from './features/contact/contact.component';
+import {PostDetailComponent} from './features/post-detail/post-detail.component';
 
 export const routes: Routes = [
   {
@@ -34,5 +35,9 @@ export const routes: Routes = [
   {
     path: 'contact',
     component: ContactComponent,
+  },
+  {
+    path: 'post/:slug',
+    component: PostDetailComponent,
   }
 ];
