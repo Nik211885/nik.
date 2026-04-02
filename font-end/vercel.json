@@ -1,0 +1,6 @@
+{
+  "outputDirectory": "dist/font-end/browser",  // ← phải khớp outputPath
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
