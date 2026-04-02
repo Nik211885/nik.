@@ -2,6 +2,7 @@ import {SidebarStatItemModel} from './shared/components/sidebar-list/sidebar-sta
 import {TagCloudModel} from './shared/components/tag-cloud/tag-cloud.model';
 import {PhotoMasonryGridModel} from './shared/components/photo-masonry-grid/photo-masonry-grid.model';
 import {PostModel} from './shared/models/post.model';
+import {PostCommentModel} from './shared/models/post-comment.model';
 
 export const statisticsCategories: SidebarStatItemModel[] = [
   {
@@ -213,3 +214,208 @@ export const postModel: PostModel = {
     slug: 'technology',
   }
 }
+
+export const postComment: PostCommentModel[] = [
+  {
+    id: "1",
+    writer: {
+      id: "u1",
+      slug: "john-doe",
+      name: "John Doe",
+      avatar: "https://i.pravatar.cc/150?img=1",
+      bio: "Frontend Developer",
+    },
+    createdDate: new Date("2018-10-03T14:21:00"),
+    content:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?",
+    commentChild: [
+      {
+        id: "1-1",
+        writer: {
+          id: "u2",
+          slug: "jane-smith",
+          name: "Jane Smith",
+          avatar: "https://i.pravatar.cc/150?img=5",
+          bio: "UX Designer",
+        },
+        createdDate: new Date("2018-10-03T14:45:00"),
+        content:
+          "Totally agree with you! Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem eum officia fugiat.",
+        commentChild: [],
+      },
+      {
+        id: "1-2",
+        writer: {
+          id: "u3",
+          slug: "michael-brown",
+          name: "Michael Brown",
+          avatar: "https://i.pravatar.cc/150?img=12",
+          bio: "Backend Engineer",
+        },
+        createdDate: new Date("2018-10-03T15:10:00"),
+        content:
+          "Great point! Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.",
+        commentChild: [],
+      },
+    ],
+  },
+  {
+    id: "2",
+    writer: {
+      id: "u2",
+      slug: "jane-smith",
+      name: "Jane Smith",
+      avatar: "https://i.pravatar.cc/150?img=5",
+      bio: "UX Designer",
+    },
+    createdDate: new Date("2018-10-03T15:45:00"),
+    content:
+      "Sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    commentChild: [
+      {
+        id: "2-1",
+        writer: {
+          id: "u5",
+          slug: "david-lee",
+          name: "David Lee",
+          avatar: "https://i.pravatar.cc/150?img=33",
+          bio: "DevOps Engineer",
+        },
+        createdDate: new Date("2018-10-03T16:00:00"),
+        content:
+          "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia magni dolores.",
+        commentChild: [],
+      },
+    ],
+  },
+  {
+    id: "3",
+    writer: {
+      id: "u3",
+      slug: "michael-brown",
+      name: "Michael Brown",
+      avatar: "https://i.pravatar.cc/150?img=12",
+      bio: "Backend Engineer",
+    },
+    createdDate: new Date("2018-10-04T09:10:00"),
+    content:
+      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    commentChild: [],
+  },
+  {
+    id: "4",
+    writer: {
+      id: "u4",
+      slug: "emily-nguyen",
+      name: "Emily Nguyen",
+      avatar: "https://i.pravatar.cc/150?img=20",
+      bio: "Product Manager",
+    },
+    createdDate: new Date("2018-10-04T11:30:00"),
+    content:
+      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis.",
+    commentChild: [
+      {
+        id: "4-1",
+        writer: {
+          id: "u6",
+          slug: "sarah-wilson",
+          name: "Sarah Wilson",
+          avatar: "https://i.pravatar.cc/150?img=47",
+          bio: "Full Stack Developer",
+        },
+        createdDate: new Date("2018-10-04T12:00:00"),
+        content:
+          "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.",
+        commentChild: [
+          {
+            id: "4-1-1",
+            writer: {
+              id: "u6",
+              slug: "sarah-wilson",
+              name: "Sarah Wilson",
+              avatar: "https://i.pravatar.cc/150?img=47",
+              bio: "Full Stack Developer",
+            },
+            createdDate: new Date("2018-10-04T12:00:00"),
+            content:
+              "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.",
+            commentChild: []
+          }
+        ],
+      },
+      {
+        id: "4-2",
+        writer: {
+          id: "u1",
+          slug: "john-doe",
+          name: "John Doe",
+          avatar: "https://i.pravatar.cc/150?img=1",
+          bio: "Frontend Developer",
+        },
+        createdDate: new Date("2018-10-04T12:30:00"),
+        content:
+          "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque.",
+        commentChild: [
+          {
+            id: "4-2-1",
+            writer: {
+              id: "u4",
+              slug: "emily-nguyen",
+              name: "Emily Nguyen",
+              avatar: "https://i.pravatar.cc/150?img=20",
+              bio: "Product Manager",
+            },
+            createdDate: new Date("2018-10-04T13:00:00"),
+            content:
+              "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.",
+            commentChild: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "5",
+    writer: {
+      id: "u5",
+      slug: "david-lee",
+      name: "David Lee",
+      avatar: "https://i.pravatar.cc/150?img=33",
+      bio: "DevOps Engineer",
+    },
+    createdDate: new Date("2018-10-05T08:05:00"),
+    content:
+      "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+    commentChild: [],
+  },
+  {
+    id: "6",
+    writer: {
+      id: "u6",
+      slug: "sarah-wilson",
+      name: "Sarah Wilson",
+      avatar: "https://i.pravatar.cc/150?img=47",
+      bio: "Full Stack Developer",
+    },
+    createdDate: new Date("2018-10-05T13:55:00"),
+    content:
+      "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.",
+    commentChild: [
+      {
+        id: "6-1",
+        writer: {
+          id: "u3",
+          slug: "michael-brown",
+          name: "Michael Brown",
+          avatar: "https://i.pravatar.cc/150?img=12",
+          bio: "Backend Engineer",
+        },
+        createdDate: new Date("2018-10-05T14:20:00"),
+        content:
+          "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates.",
+        commentChild: [],
+      },
+    ],
+  },
+];

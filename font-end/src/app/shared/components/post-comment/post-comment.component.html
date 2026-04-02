@@ -1,1 +1,17 @@
-<p>post-comment.component works!</p>
+<div class="vcard bio">
+  <img [src]="comment.writer.avatar" [alt]="comment.writer.name">
+</div>
+<div class="comment-body">
+  <h3>{{ comment.writer.name }}</h3>
+  <div class="meta">{{ comment.createdDate | appDate: 'detail'}}</div>
+  <p>{{ comment.content }}</p>
+  <p><a href="#" class="reply">{{ ApplicationTitle.REPLY | language }}</a></p>
+</div>
+
+@if (comment.commentChild && comment.commentChild.length > 0) {
+  <ul class="children">
+    @for (child of comment.commentChild; track child.id) {
+      <li app-post-comment [comment]="child"></li>
+    }
+  </ul>
+}

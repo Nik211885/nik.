@@ -34,4 +34,8 @@ export enum ApplicationTitle{
   TAG_CLOUD = "tag-cloud",
   OUR_STORY = "our-story",
   PHOTO = "photo",
+  COMMENT = "comment",
+  REPLY = "reply",
+  LEAVE_COMMENT = "leave-a-comment",
+  POST_COMMENT = "post-comment",
 }

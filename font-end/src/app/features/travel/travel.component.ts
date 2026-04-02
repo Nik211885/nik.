@@ -20,13 +20,6 @@ import {PlantBannerComponent} from '../../shared/components/plant-banner/plant-b
     HeroCarouselComponent,
     PostCardComponent,
     PaginationComponent,
-    SearchInputComponent,
-    SidebarListComponent,
-    LanguagePipe,
-    PostCardCompactComponent,
-    TagCloudComponent,
-    AsyncPipe,
-    NewsLetterComponent,
     PlantBannerComponent
   ],
   templateUrl: './travel.component.html',
