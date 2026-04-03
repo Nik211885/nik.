@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nik",
+  "compatibility_date": "2026-04-02",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "dist/font-end/browser/browser"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
