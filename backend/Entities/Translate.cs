@@ -2,6 +2,7 @@
 
 public class Translate
 {
+    public string Id { get; set; }
     public string CodeId { get; set; }
     public string LanguageId { get; set; }
     public string Value { get; set; }
