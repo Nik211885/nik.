@@ -1,4 +1,5 @@
 ﻿using backend.Services;
+using backend.ViewModels.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -14,5 +15,16 @@ public class LanguageController : ControllerBase
     {
         _logger = logger;
         _languageServices = languageServices;
+    }
+
+    [HttpGet("")]
+    public async Task<ActionResult<TranslateLanguageResponse>> GetTranslateLanguage([FromQuery] string lang)
+    {
+        TranslateLanguageResponse? response = await _languageServices.GetTranslates(lang);
+        if (response is null)
+        {
+            return NotFound();
+        }
+        return Ok(response);
     }
 }
