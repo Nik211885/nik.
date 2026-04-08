@@ -1,4 +1,4 @@
-﻿namespace backend.ViewModels.Responses;
+﻿namespace backend.ViewModels.Languages.Responses;
 
 public class TranslateLanguageResponse
 {
