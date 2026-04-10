@@ -21,7 +21,7 @@ public class LanguageController : ControllerBase
     [HttpGet("")]
     public async Task<ActionResult<TranslateLanguageResponse>> GetTranslateLanguage([FromQuery] string lang)
     {
-        TranslateLanguageResponse? response = await _languageServices.GetTranslates(lang);
+        TranslateLanguageResponse? response = await _languageServices.GetTranslatesAsync(lang);
         if (response is null)
         {
             return NotFound();
@@ -76,5 +76,19 @@ public class LanguageController : ControllerBase
     {
         var result = await _languageServices.GetListLanguageAsync();
         return Ok(result);
+    }
+
+    [HttpGet("code-languages")]
+    public async Task<ActionResult<IReadOnlyCollection<CodeLanguageResponse>>> GetCodeLanguages()
+    {
+        var result = await _languageServices.GetCodeLanguagesAsync();
+        return Ok(result); 
+    }
+
+    [HttpPost("defined-code")]
+    public async Task<IActionResult> DefinedCodeLanguage([FromBody] TranslateCodeLanguageRequest request)
+    {
+        await _languageServices.DefinedCodeLanguageAsync(request);
+        return Ok();
     }
 }
