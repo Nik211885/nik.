@@ -6,6 +6,7 @@ public static class AddServicesDefaultExtensions
     {
         public IServiceCollection AddServicesDefault()
         {
+            services.AddScoped<SysConfigServices>();
             services.AddScoped<LanguageServices>();
             return services;
         }

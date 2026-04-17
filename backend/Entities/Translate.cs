@@ -1,8 +1,7 @@
 ﻿namespace backend.Entities;
 
-public class Translate
+public class Translate : BaseEntity
 {
-    public string Id { get; set; }
     public string CodeId { get; set; }
     public string LanguageId { get; set; }
     public string Value { get; set; }

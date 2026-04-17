@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CodeLanguage> CodeLanguages { get; set; }
     public DbSet<Language> Languages { get; set; }
     public DbSet<Translate> Translates { get; set; }
+    public DbSet<SysConfig> SysConfigs { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
