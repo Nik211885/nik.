@@ -10,6 +10,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddServicesDefault();
+
 builder.Services.AddDbContext<ApplicationDbContext>(sp =>
 {
     sp.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));

@@ -1,11 +1,12 @@
 ﻿using backend.Data;
 using backend.Entities;
 using backend.Exceptions;
+using backend.Services;
 using backend.ViewModels.Languages.Requests;
 using backend.ViewModels.Languages.Responses;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Services;
+namespace backend.Services.Internals;
 
 public class LanguageServices
 {
@@ -21,7 +22,7 @@ public class LanguageServices
     public async Task<TranslateLanguageResponse?> GetTranslatesAsync(string lang)
     {
         Language? language = await _dbContext.Languages
-            .Where(x => x.Code == lang.ToLower()).AsNoTracking().FirstOrDefaultAsync();
+            .Where(x => x.Code == lang.ToLowerInvariant()).AsNoTracking().FirstOrDefaultAsync();
         if (language is null)
         {
             return null;
@@ -42,7 +43,7 @@ public class LanguageServices
     {
         var normalizedCodes = codes
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(x => x.Trim().ToLower())
+            .Select(x => x.Trim().ToLowerInvariant())
             .Distinct()
             .ToList();
 
@@ -72,6 +73,7 @@ public class LanguageServices
     public async Task UpdateCodeLanguageAsync(UpdateCodeLanguage request)
     {
         // find by id
+        request.Code = request.Code.ToLowerInvariant();
         var codeLanguage = await _dbContext.CodeLanguages.Where(x=>x.Id == request.Id).FirstOrDefaultAsync();
         if (codeLanguage is null)
         {
@@ -79,14 +81,14 @@ public class LanguageServices
         }
         // find code language has exit in database
         var codeLanguageExits =
-            await _dbContext.CodeLanguages.Where(x => x.Code.ToLower() == request.Code)
+            await _dbContext.CodeLanguages.Where(x => x.Code == request.Code)
                 .AsNoTracking().FirstOrDefaultAsync();
         if (codeLanguageExits is not null && codeLanguageExits.Id != codeLanguage.Id)
         {
             throw new BadRequestException(ApplicationMessage.ExitsCode);
         }
 
-        codeLanguage.Code = request.Code.ToLower();
+        codeLanguage.Code = request.Code;
         _dbContext.CodeLanguages.Update(codeLanguage);
         await _dbContext.SaveChangesAsync();
     }
@@ -109,32 +111,34 @@ public class LanguageServices
 
     public async Task CreateLanguageAsync(LanguageRequest request)
     {
+        request.Code = request.Code.ToLowerInvariant();
         var languageExitCode = await _dbContext.Languages
-            .Where(x => x.Code == request.Code.ToLower()).AsNoTracking().FirstOrDefaultAsync();
+            .Where(x => x.Code == request.Code).AsNoTracking().FirstOrDefaultAsync();
         if (languageExitCode is not null)
         {
             throw new BadRequestException(ApplicationMessage.ExitsCode);
         }
 
-        _dbContext.Languages.Add(new Language { Code = request.Code.ToLower(), Name = request.Name });
+        _dbContext.Languages.Add(new Language { Code = request.Code, Name = request.Name });
         await _dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateLanguageAsync(string id, LanguageRequest request)
     {
+        request.Code = request.Code.ToLowerInvariant();
         var languageUpdate = await _dbContext.Languages.Where(x => x.Id == id).FirstOrDefaultAsync();
         if (languageUpdate is null)
         {
             throw new NotFoundException();
         }
         var languageExitCode = await _dbContext.Languages
-            .Where(x => x.Code == request.Code.ToLower()).AsNoTracking().FirstOrDefaultAsync();
+            .Where(x => x.Code == request.Code).AsNoTracking().FirstOrDefaultAsync();
         if (languageExitCode is not null && languageExitCode.Id != languageUpdate.Id)
         {
             throw new BadRequestException(ApplicationMessage.ExitsCode);
         }
 
-        languageUpdate.Code = request.Code.ToLower();
+        languageUpdate.Code = request.Code;
         languageUpdate.Name = request.Name;
         _dbContext.Languages.Update(languageUpdate);
         await _dbContext.SaveChangesAsync();
@@ -161,7 +165,8 @@ public class LanguageServices
 
     public async Task DefinedCodeLanguageAsync(TranslateCodeLanguageRequest request)
     {
-        var codeLanguage = await _dbContext.CodeLanguages.Where(x=>x.Code == request.CodeDefined.ToLower())
+        request.CodeDefined = request.CodeDefined.ToLowerInvariant();
+        var codeLanguage = await _dbContext.CodeLanguages.Where(x=>x.Code == request.CodeDefined)
             .AsNoTracking().FirstOrDefaultAsync();
         if (codeLanguage is null)
         {
@@ -169,16 +174,16 @@ public class LanguageServices
         }
 
         var translateGroupByCode = request.Translates
-            .DistinctBy(x => x.Language.ToLower()).ToList();
+            .DistinctBy(x => x.Language).ToList();
         
         var languages = await _dbContext.Languages
-            .Where(x=>translateGroupByCode.Select(y=>y.Language.ToLower()).Contains(x.Code))
+            .Where(x=>translateGroupByCode.Select(y=>y.Language).Contains(x.Code))
             .AsNoTracking()
             .ToListAsync();
 
         var translateInstances = new List<Translate>();
         await _dbContext.Translates.Where(x => x.CodeId == codeLanguage.Id)
-            .Where(x => translateGroupByCode.Select(y => y.Language.ToLower()).Contains(x.LanguageId))
+            .Where(x => translateGroupByCode.Select(y => y.Language).Contains(x.LanguageId))
             .ExecuteDeleteAsync();
         foreach (var lang in languages)
         {

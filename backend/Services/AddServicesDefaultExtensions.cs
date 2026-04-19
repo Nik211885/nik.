@@ -1,4 +1,7 @@
-﻿namespace backend.Services;
+﻿using backend.Services.Extends;
+using backend.Services.Internals;
+
+namespace backend.Services;
 
 public static class AddServicesDefaultExtensions
 {
@@ -6,8 +9,8 @@ public static class AddServicesDefaultExtensions
     {
         public IServiceCollection AddServicesDefault()
         {
-            services.AddScoped<SysConfigServices>();
-            services.AddScoped<LanguageServices>();
+            services.AddExtendServices();
+            services.AddServicesInternal();
             return services;
         }
     }

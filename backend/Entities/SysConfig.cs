@@ -5,5 +5,6 @@ namespace backend.Entities;
 public class SysConfig : BaseEntity
 {
     public string Key { get; set; }
-    public Dictionary<string, JsonElement> Value { get; set; }
+    public JsonDocument Value { get; set; }
+    public T? GetValue<T>() => Value.Deserialize<T>();
 }
