@@ -1,4 +1,4 @@
-using backend.Data;
+﻿using backend.Data;
 using backend.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache(); 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddServicesDefault();
 

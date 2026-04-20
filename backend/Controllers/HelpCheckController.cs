@@ -21,7 +21,7 @@ public class HelpCheckController : ControllerBase
         try
         {
             await _dbContext.Database.OpenConnectionAsync();
-            return Ok("I'm fine");
+            return Ok("Postgres fine");
         }
         catch (Exception e)
         {

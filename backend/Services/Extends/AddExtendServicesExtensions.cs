@@ -5,6 +5,7 @@ public static class AddExtendServicesExtensions
     {
         public IServiceCollection AddExtendServices()
         {
+            services.AddSingleton<CachingServices>();
             return services;
         }
     }
