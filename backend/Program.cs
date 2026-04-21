@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMemoryCache(); 
+builder.Services.AddMemoryCache();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddServicesDefault();
 

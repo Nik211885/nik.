@@ -1,5 +1,9 @@
-﻿using backend.Services.Internals;
+﻿using backend.Pipes.Filter;
+using backend.Services.Internals;
+using backend.ViewModels.Tag.Requests;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace backend.Controllers;
 
@@ -14,5 +18,19 @@ public class TagController : ControllerBase
     {
         _logger = logger;
         _tagServices = tagServices;
+    }
+    [HttpPost("create")]
+    [ValidationFilter(typeof(CreateTagRequest))]
+    public async Task<ActionResult> CreateTag([FromBody] CreateTagRequest request)
+    {
+        var result = await _tagServices.CreateTagAsync(request);
+        return Ok(result);
+    }
+    [HttpPut("update")]
+    [ValidationFilter(typeof(UpdateTagRequest))]
+    public async Task<ActionResult> UpdateTag([FromBody] UpdateTagRequest request)
+    {
+        var result = await _tagServices.UpdateTagAsync(request);
+        return Ok(result);
     }
 }
