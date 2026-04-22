@@ -33,4 +33,36 @@ public class TagController : ControllerBase
         var result = await _tagServices.UpdateTagAsync(request);
         return Ok(result);
     }
+    [HttpDelete("delete")]
+    public async Task<ActionResult> DeleteAsync([AsParameters] List<string> ids)
+    {
+        await _tagServices.DeleteTagAsync(ids);
+        return NoContent();
+    }
+    [HttpGet("")]
+    public async Task<ActionResult> GetTag()
+    {
+        var result = await _tagServices.GetTagAsync();
+        return Ok(result);
+    }
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetTagById(string id)
+    { 
+        var result = await _tagServices.GetTagByIdAsync(id);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+    [HttpGet("slug/{slug}")]
+    public async Task<ActionResult> GetTagBySlug(string slug)
+    {
+        var result = await _tagServices.GetTagBySlugAsync(slug);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 }

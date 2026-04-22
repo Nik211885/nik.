@@ -4,7 +4,6 @@ using backend.Extensions;
 using backend.ViewModels.Tag.Requests;
 using backend.ViewModels.Tag.Responses;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace backend.Services.Internals;
 
@@ -49,5 +48,30 @@ public class TagServices
         _dbContext.Update(tagByUpdate);
         await _dbContext.SaveChangesAsync();
         return tagByUpdate.ToTagResponse();
+    }
+    public async Task DeleteTagAsync(List<string> ids)
+    {
+        _ = await _dbContext.Tags.Where(x => ids.Contains(x.Id))
+            .ExecuteDeleteAsync();
+    }
+    public async Task<IReadOnlyCollection<TagResponse>> GetTagAsync()
+    {
+        var tags = await _dbContext.Tags.Select(x => x.ToTagResponse())
+            .ToListAsync();
+        return tags;
+    }
+    public async Task<TagResponse?> GetTagByIdAsync(string id)
+    {
+        var tag = await _dbContext.Tags.Where(x => x.Id == id)
+            .Select(x => x.ToTagResponse())
+            .FirstOrDefaultAsync();
+        return tag;  
+    }
+    public async Task<TagResponse?> GetTagBySlugAsync(string slug)
+    {
+        var tag = await _dbContext.Tags.Where(x => x.Slug == slug)
+            .Select(x => x.ToTagResponse())
+            .FirstOrDefaultAsync();
+        return tag;
     }
 }
