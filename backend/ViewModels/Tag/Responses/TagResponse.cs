@@ -20,19 +20,9 @@ public static class TagExtensions
     {
         public IQueryable<TagResponse> ToTagResponse()
         {
-            return tag.Select(x => new TagResponse
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Title = x.Title,
-                Description = x.Description,
-                Image = x.Image,
-                Slug = x.Slug,
-                CountRef = x.CountRef,
-                CreatedDate = x.CreatedDate,
-                UpdatedDate = x.UpdatedDate
-            });
+            return tag.Select(t => t.ToTagResponse());
         }
+        
     }
     extension(backend.Entities.Tag tag)
     {

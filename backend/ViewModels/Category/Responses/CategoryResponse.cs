@@ -18,17 +18,7 @@ public static class CategoryResponseExtension
     {
         public IQueryable<CategoryResponse> ToCategoryResponse()
         {
-            return query.Select(x => new CategoryResponse
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Title = x.Title,
-                Slug = x.Slug,
-                Image = x.Image,
-                CreatedDate = x.CreatedDate,
-                UpdatedDate = x.UpdatedDate,
-                CountRef = x.CountRef
-            });
+            return query.Select(x => x.ToCategoryResponse());
         }
     }
     extension(backend.Entities.Category entity)
