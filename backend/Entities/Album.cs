@@ -13,7 +13,7 @@ public class Album : BaseEntity
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset UpdatedDate{ get; set; }
     public int OrderIndex { get; set; }
-    public string AlbumId { get; set; }
+    public string? AlbumId { get; set; }
     public Album ParentAlbum { get; set; }
     public ICollection<Album> ChildrenAlbum { get; set; }
 }
