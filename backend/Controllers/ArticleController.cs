@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+/// <summary>Endpoints for article CRUD, slug-based lookup, and paginated listing with filters.</summary>
 [ApiController]
 [Route("api/articles")]
 public class ArticleController : ControllerBase
@@ -12,12 +13,14 @@ public class ArticleController : ControllerBase
     private readonly ILogger<ArticleController> _logger;
     private readonly ArticleServices _articleServices;
 
+    /// <summary>Initialises the controller with required dependencies.</summary>
     public ArticleController(ILogger<ArticleController> logger, ArticleServices articleServices)
     {
         _logger = logger;
         _articleServices = articleServices;
     }
 
+    /// <summary>Creates a new article for the authenticated user.</summary>
     [HttpPost("create")]
     [ValidationFilter(typeof(CreateArticleRequest))]
     public async Task<ActionResult> CreateArticle([FromBody] CreateArticleRequest request)
@@ -26,6 +29,7 @@ public class ArticleController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Updates an existing article and synchronises its tag/category associations.</summary>
     [HttpPut("update")]
     [ValidationFilter(typeof(UpdateArticleRequest))]
     public async Task<ActionResult> UpdateArticle([FromBody] UpdateArticleRequest request)
@@ -34,6 +38,7 @@ public class ArticleController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Deletes one or more articles by ID.</summary>
     [HttpDelete("delete")]
     public async Task<ActionResult> DeleteArticle([AsParameters] List<string> ids)
     {
@@ -41,6 +46,7 @@ public class ArticleController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Returns a single article by ID, or 404 if not found.</summary>
     [HttpGet("{id}")]
     public async Task<ActionResult> GetById(string id)
     {
@@ -50,6 +56,7 @@ public class ArticleController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns a single article by slug and increments its view count, or 404 if not found.</summary>
     [HttpGet("slug/{slug}")]
     public async Task<ActionResult> GetBySlug(string slug)
     {
@@ -59,6 +66,7 @@ public class ArticleController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns a paginated list of articles, optionally filtered by category slug, tag slug, or keyword.</summary>
     [HttpGet("")]
     public async Task<ActionResult> GetPagination([AsParameters] GetArticlesPaginationRequest request)
     {

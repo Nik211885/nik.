@@ -1,20 +1,28 @@
-﻿using backend.Data;
+using backend.Data;
 using backend.ViewModels.Comment.Requests;
 using backend.ViewModels.Comment.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Internals;
 
+/// <summary>Provides business operations for article comments.</summary>
 public class CommentServices
 {
     private readonly ILogger<CommentServices> _logger;
     private readonly ApplicationDbContext _context;
 
+    /// <summary>Initialises the service with required dependencies.</summary>
     public CommentServices(ILogger<CommentServices> logger, ApplicationDbContext context)
     {
         _logger = logger;
         _context = context;
     }
+
+    /// <summary>
+    /// Creates and persists a new comment.
+    /// </summary>
+    /// <param name="model">Comment creation payload.</param>
+    /// <returns>The created comment response.</returns>
     public async Task<CommentResponse> CreateCommentAsync(CreateCommentRequest model)
     {
         var comment = model.ToComment();
@@ -22,6 +30,9 @@ public class CommentServices
         await _context.SaveChangesAsync();
         return comment.ToCommentResponse();
     }
+
+    /// <summary>Deletes one or more comments by ID.</summary>
+    /// <param name="ids">IDs of comments to delete.</param>
     public async Task DeleteCommentAsync(List<string> ids)
     {
         await _context.Comments.Where(c => ids.Contains(c.Id.ToString())).ExecuteDeleteAsync();

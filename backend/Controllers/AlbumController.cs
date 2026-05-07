@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+/// <summary>Endpoints for album management and hierarchical tree operations.</summary>
 [ApiController]
 [Route("api/albums")]
 public class AlbumController : ControllerBase
@@ -12,12 +13,14 @@ public class AlbumController : ControllerBase
     private readonly ILogger<AlbumController> _logger;
     private readonly AlbumServices _albumServices;
 
+    /// <summary>Initialises the controller with required dependencies.</summary>
     public AlbumController(ILogger<AlbumController> logger, AlbumServices albumServices)
     {
         _logger = logger;
         _albumServices = albumServices;
     }
 
+    /// <summary>Creates a new album.</summary>
     [HttpPost("create")]
     [ValidationFilter(typeof(CreateAlbumRequest))]
     public async Task<ActionResult> CreateAlbum([FromBody] CreateAlbumRequest request)
@@ -26,6 +29,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Updates an existing album.</summary>
     [HttpPut("update")]
     [ValidationFilter(typeof(UpdateAlbumRequest))]
     public async Task<ActionResult> UpdateAlbum([FromBody] UpdateAlbumRequest request)
@@ -34,6 +38,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Deletes one or more albums by ID.</summary>
     [HttpDelete("delete")]
     public async Task<ActionResult> DeleteAlbum([AsParameters] List<string> ids)
     {
@@ -41,6 +46,7 @@ public class AlbumController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Adds files to an album, skipping duplicates.</summary>
     [HttpPost("files/add")]
     [ValidationFilter(typeof(AddFilesToAlbumRequest))]
     public async Task<ActionResult> AddFiles([FromBody] AddFilesToAlbumRequest request)
@@ -49,6 +55,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Removes files from an album.</summary>
     [HttpDelete("files/remove")]
     [ValidationFilter(typeof(RemoveFilesFromAlbumRequest))]
     public async Task<ActionResult> RemoveFiles([FromBody] RemoveFilesFromAlbumRequest request)
@@ -57,6 +64,7 @@ public class AlbumController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Returns all files belonging to the specified album.</summary>
     [HttpGet("{albumId}/files")]
     public async Task<ActionResult> GetFiles(string albumId)
     {
@@ -64,6 +72,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns a single album by ID. Pass <c>tree=true</c> to include the child hierarchy.</summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id, [FromQuery] bool tree = false)
     {
@@ -71,6 +80,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns a single album by slug. Pass <c>tree=true</c> to include the child hierarchy.</summary>
     [HttpGet("slug/{slug}")]
     public async Task<IActionResult> GetBySlug(string slug, [FromQuery] bool tree = false)
     {
@@ -78,6 +88,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns all root-level albums. Pass <c>tree=true</c> to include descendants.</summary>
     [HttpGet("parents")]
     public async Task<IActionResult> GetParent([FromQuery] bool tree = false)
     {
@@ -85,6 +96,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns direct children of the specified parent album. Pass <c>tree=true</c> to include descendants.</summary>
     [HttpGet("childrens/{parentId}")]
     public async Task<IActionResult> GetChildren(string parentId, [FromQuery] bool tree = false)
     {
@@ -92,6 +104,7 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns the full album hierarchy with all descendants nested.</summary>
     [HttpGet("tree")]
     public async Task<IActionResult> GetTree()
     {

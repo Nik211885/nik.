@@ -1,4 +1,4 @@
-﻿using backend.Data;
+using backend.Data;
 using backend.Entities;
 using backend.Exceptions;
 using backend.Services;
@@ -8,17 +8,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Internals;
 
+/// <summary>
+/// Provides operations for managing i18n languages, translation code keys,
+/// and per-language translation values.
+/// </summary>
 public class LanguageServices
 {
     private readonly ILogger<LanguageServices> _logger;
     private readonly ApplicationDbContext _dbContext;
 
+    /// <summary>Initialises the service with required dependencies.</summary>
     public LanguageServices(ILogger<LanguageServices> logger, ApplicationDbContext dbContext)
     {
         _logger = logger;
         _dbContext = dbContext;
     }
 
+    /// <summary>
+    /// Returns all translations for the specified language code, or <see langword="null"/>
+    /// when the language is not registered.
+    /// </summary>
+    /// <param name="lang">BCP-47 language code (e.g. <c>vi</c>, <c>en</c>).</param>
     public async Task<TranslateLanguageResponse?> GetTranslatesAsync(string lang)
     {
         Language? language = await _dbContext.Languages
@@ -39,6 +49,11 @@ public class LanguageServices
         return response;
     }
 
+    /// <summary>
+    /// Registers new translation code keys. Already-existing codes are silently skipped.
+    /// Codes are normalised to lowercase and deduplicated before insert.
+    /// </summary>
+    /// <param name="codes">List of raw code strings to register.</param>
     public async Task CreateCodeLanguageAsync(List<string> codes)
     {
         var normalizedCodes = codes
@@ -66,17 +81,21 @@ public class LanguageServices
                 })
             );
 
-            await _dbContext.SaveChangesAsync(); 
+            await _dbContext.SaveChangesAsync();
         }
     }
 
+    /// <summary>
+    /// Updates an existing translation code key. The new code must be unique.
+    /// </summary>
+    /// <param name="request">Update payload containing the entry ID and new code value.</param>
+    /// <exception cref="NotFoundException">Thrown when the code language ID does not exist.</exception>
+    /// <exception cref="BadRequestException">Thrown when the new code is already used by another entry.</exception>
     public async Task UpdateCodeLanguageAsync(UpdateCodeLanguage request)
     {
-        // find by id
         request.Code = request.Code.ToLowerInvariant();
-        var codeLanguage = await _dbContext.CodeLanguages.Where(x => x.Id == request.Id).FirstOrDefaultAsync() 
+        var codeLanguage = await _dbContext.CodeLanguages.Where(x => x.Id == request.Id).FirstOrDefaultAsync()
         ?? throw new NotFoundException();
-        // find code language has exit in database
         var codeLanguageExits =
             await _dbContext.CodeLanguages.Where(x => x.Code == request.Code)
                 .AsNoTracking().FirstOrDefaultAsync();
@@ -90,6 +109,8 @@ public class LanguageServices
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <summary>Deletes one or more translation code keys by ID.</summary>
+    /// <param name="ids">IDs of code language entries to delete.</param>
     public async Task DeleteCodeLanguageAsync(List<string> ids)
     {
         _ = await _dbContext.CodeLanguages
@@ -97,6 +118,7 @@ public class LanguageServices
             .ExecuteDeleteAsync();
     }
 
+    /// <summary>Returns all registered translation code keys.</summary>
     public async Task<IReadOnlyCollection<CodeLanguageResponse>> GetCodeLanguagesAsync()
     {
         var result = await _dbContext.CodeLanguages
@@ -106,6 +128,11 @@ public class LanguageServices
         return result;
     }
 
+    /// <summary>
+    /// Registers a new language. The code is normalised to lowercase and must be unique.
+    /// </summary>
+    /// <param name="request">Language creation payload.</param>
+    /// <exception cref="BadRequestException">Thrown when the code already exists.</exception>
     public async Task CreateLanguageAsync(LanguageRequest request)
     {
         request.Code = request.Code.ToLowerInvariant();
@@ -120,10 +147,17 @@ public class LanguageServices
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Updates an existing language's code and name. The new code must be unique.
+    /// </summary>
+    /// <param name="id">ID of the language to update.</param>
+    /// <param name="request">New code and name.</param>
+    /// <exception cref="NotFoundException">Thrown when the language ID does not exist.</exception>
+    /// <exception cref="BadRequestException">Thrown when the new code is already used by another language.</exception>
     public async Task UpdateLanguageAsync(string id, LanguageRequest request)
     {
         request.Code = request.Code.ToLowerInvariant();
-        var languageUpdate = await _dbContext.Languages.Where(x => x.Id == id).FirstOrDefaultAsync() 
+        var languageUpdate = await _dbContext.Languages.Where(x => x.Id == id).FirstOrDefaultAsync()
         ?? throw new NotFoundException();
         var languageExitCode = await _dbContext.Languages
             .Where(x => x.Code == request.Code).AsNoTracking().FirstOrDefaultAsync();
@@ -138,6 +172,8 @@ public class LanguageServices
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <summary>Deletes a language by ID.</summary>
+    /// <param name="id">ID of the language to delete.</param>
     public async Task DeleteLanguageAsync(string id)
     {
         _ = await _dbContext.Languages
@@ -145,9 +181,10 @@ public class LanguageServices
             .ExecuteDeleteAsync();
     }
 
+    /// <summary>Returns all registered languages.</summary>
     public async Task<IReadOnlyCollection<LanguageResponse>> GetListLanguageAsync()
     {
-        var result =await _dbContext.Languages
+        var result = await _dbContext.Languages
             .Select(x=>new LanguageResponse()
             {
                 Id = x.Id,
@@ -157,6 +194,12 @@ public class LanguageServices
         return result;
     }
 
+    /// <summary>
+    /// Upserts translation values for a given code key across multiple languages.
+    /// Existing translations for the same code-language pairs are replaced.
+    /// </summary>
+    /// <param name="request">Code key and per-language value list.</param>
+    /// <exception cref="NotFoundException">Thrown when the code key does not exist.</exception>
     public async Task DefinedCodeLanguageAsync(TranslateCodeLanguageRequest request)
     {
         request.CodeDefined = request.CodeDefined.ToLowerInvariant();

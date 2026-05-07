@@ -339,6 +339,41 @@ foreach (var root in roots)
     PopulateChildren(root, lookup);  // recursive DFS
 ```
 
+## XML Documentation Comments
+
+Every public type and member **must** have a `///` XML doc comment written in English.
+Use the following tags consistently:
+
+| Tag | When to use |
+|---|---|
+| `<summary>` | Required on every class, method, property, and field |
+| `<param name="...">` | Required for every method parameter |
+| `<returns>` | Required when the return type is not `void` / `Task` |
+| `<exception cref="...">` | Required for every typed exception the method can throw |
+| `<inheritdoc/>` | Use on overrides and validator constructors instead of duplicating the summary |
+| `<see langword="..."/>` | Use for `null`, `true`, `false` in prose (e.g. `<see langword="null"/>`) |
+| `<see cref="..."/>` | Use to cross-reference another type or member |
+| `<c>...</c>` | Use for inline code fragments in prose |
+
+**Style rules:**
+- Write one-sentence summaries — no multi-sentence paragraph docstrings.
+- Do not repeat the method name; describe intent or contract instead.
+- Summaries on classes describe the service or DTO responsibility at a high level.
+- Summaries on constructors use `Initialises the service/controller with required dependencies.`
+- Never add comments that merely restate the type name (e.g. `/// <summary>The Id.</summary>` on property `Id` is acceptable only when there is no better description; prefer something meaningful).
+
+**Example:**
+
+```csharp
+/// <summary>
+/// Creates a new album. The name is normalised to lowercase and must be unique.
+/// </summary>
+/// <param name="request">Album creation payload.</param>
+/// <returns>The created album response.</returns>
+/// <exception cref="BadRequestException">Thrown when an album with the same name already exists.</exception>
+public async Task<AlbumResponse> CreateAlbumAsync(CreateAlbumRequest request) { ... }
+```
+
 ## Adding a New Feature — Checklist
 
 1. Add entity class in `Entities/` extending `BaseEntity`

@@ -9,12 +9,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Internals;
 
+/// <summary>
+/// Provides all business operations for articles, including CRUD, tag/category synchronisation,
+/// pagination with filtering, and view-count tracking.
+/// </summary>
 public class ArticleServices
 {
     private readonly ILogger<ArticleServices> _logger;
     private readonly ApplicationDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContext;
 
+    /// <summary>
+    /// Initialises the service with required dependencies.
+    /// </summary>
     public ArticleServices(
         ILogger<ArticleServices> logger,
         ApplicationDbContext dbContext,
@@ -25,6 +32,12 @@ public class ArticleServices
         _httpContext = httpContext;
     }
 
+    /// <summary>
+    /// Creates a new article and associates it with the given tags and categories.
+    /// Increments <c>CountRef</c> for each tag and category.
+    /// </summary>
+    /// <param name="request">Article creation payload including content, tags, and categories.</param>
+    /// <returns>The created article with full relationship data.</returns>
     public async Task<ArticleResponse> CreateArticleAsync(CreateArticleRequest request)
     {
         var article = request.ToArticle();
@@ -63,6 +76,13 @@ public class ArticleServices
             ?? throw new NotFoundException();
     }
 
+    /// <summary>
+    /// Updates an existing article's content and synchronises its tag/category associations.
+    /// Regenerates the slug if the title changes.
+    /// </summary>
+    /// <param name="request">Update payload. <c>TagIds</c> and <c>CategoryIds</c> are full replacement lists.</param>
+    /// <returns>The updated article with full relationship data.</returns>
+    /// <exception cref="NotFoundException">Thrown when the article ID does not exist.</exception>
     public async Task<ArticleResponse> UpdateArticleAsync(UpdateArticleRequest request)
     {
         var article = await _dbContext.Articles
@@ -87,6 +107,11 @@ public class ArticleServices
             ?? throw new NotFoundException();
     }
 
+    /// <summary>
+    /// Deletes one or more articles by ID and decrements <c>CountRef</c>
+    /// for all their former tags and categories.
+    /// </summary>
+    /// <param name="ids">IDs of articles to delete.</param>
     public async Task DeleteArticleAsync(List<string> ids)
     {
         var tagIds = await _dbContext.ArticleTags
@@ -108,6 +133,11 @@ public class ArticleServices
         await DecrementCountRefAsync(tagIds, categoryIds);
     }
 
+    /// <summary>
+    /// Returns a single article by its ID, or <see langword="null"/> if not found.
+    /// Does not increment the view count.
+    /// </summary>
+    /// <param name="id">Article ID.</param>
     public async Task<ArticleResponse?> GetArticleByIdAsync(string id)
     {
         return await ArticleQuery()
@@ -115,6 +145,11 @@ public class ArticleServices
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
+    /// <summary>
+    /// Returns a single article by its URL slug and increments <see cref="Entities.Article.CountSee"/>
+    /// by one. Returns <see langword="null"/> when the slug does not match any article.
+    /// </summary>
+    /// <param name="slug">URL-friendly slug of the article.</param>
     public async Task<ArticleResponse?> GetArticleBySlugAsync(string slug)
     {
         var result = await ArticleQuery()
@@ -131,6 +166,12 @@ public class ArticleServices
         return result;
     }
 
+    /// <summary>
+    /// Returns a paginated list of articles, optionally filtered by category slug,
+    /// tag slug, or a keyword search on title and description.
+    /// Results are ordered by <c>CreatedDate</c> descending (newest first).
+    /// </summary>
+    /// <param name="request">Pagination and filter parameters.</param>
     public async Task<PaginationItem<ArticleResponse>> GetPaginationArticleAsync(
         GetArticlesPaginationRequest request)
     {
@@ -163,11 +204,18 @@ public class ArticleServices
             .PaginationItemAsync(request);
     }
 
+    // ── Private helpers ───────────────────────────────────────────────────
+
+    /// <summary>Returns the base article projection query used by all read methods.</summary>
     private IQueryable<ArticleResponse> ArticleQuery()
     {
         return _dbContext.Articles.ToArticleResponses();
     }
 
+    /// <summary>
+    /// Diffs the current tag associations of an article against a new target list and
+    /// applies the minimum set of inserts/deletes. Updates <c>Tag.CountRef</c> accordingly.
+    /// </summary>
     private async Task SyncTagsAsync(string articleId, List<string> newTagIds)
     {
         var currentTagIds = await _dbContext.ArticleTags
@@ -204,6 +252,10 @@ public class ArticleServices
         }
     }
 
+    /// <summary>
+    /// Diffs the current category associations of an article against a new target list and
+    /// applies the minimum set of inserts/deletes. Updates <c>Category.CountRef</c> accordingly.
+    /// </summary>
     private async Task SyncCategoriesAsync(string articleId, List<string> newCategoryIds)
     {
         var currentCategoryIds = await _dbContext.ArticleCategories
@@ -240,6 +292,7 @@ public class ArticleServices
         }
     }
 
+    /// <summary>Increments <c>CountRef</c> on all given tags and categories by 1.</summary>
     private async Task IncrementCountRefAsync(List<string> tagIds, List<string> categoryIds)
     {
         if (tagIds.Count > 0)
@@ -257,6 +310,10 @@ public class ArticleServices
         }
     }
 
+    /// <summary>
+    /// Decrements <c>CountRef</c> on all given tags and categories by 1.
+    /// Clamps to zero to prevent negative values.
+    /// </summary>
     private async Task DecrementCountRefAsync(List<string> tagIds, List<string> categoryIds)
     {
         if (tagIds.Count > 0)

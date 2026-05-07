@@ -1,8 +1,11 @@
-﻿namespace backend.Services.Internals;
+namespace backend.Services.Internals;
+
+/// <summary>DI registration for all internal business-logic services.</summary>
 public static class AddServicesInternalExtensions
 {
     extension(IServiceCollection services)
     {
+        /// <summary>Registers every internal service as scoped.</summary>
         public IServiceCollection AddServicesInternal()
         {
             services.AddScoped<AlbumServices>();

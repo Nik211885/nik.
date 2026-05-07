@@ -1,16 +1,27 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace backend.ViewModels.Category.Requests;
+
+/// <summary>Payload for creating a new category.</summary>
 public class CreateCategoryRequest
 {
+    /// <summary>Unique category name (normalised to lowercase before save).</summary>
     public string Name { get; set; }
+
+    /// <summary>Short description of the category.</summary>
     public string Description { get; set; }
+
+    /// <summary>Human-readable display title.</summary>
     public string Title { get; set; }
+
+    /// <summary>URL of the representative category image.</summary>
     public string Image { get; set; }
 }
 
+/// <summary>FluentValidation rules for <see cref="CreateCategoryRequest"/>.</summary>
 public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
 {
+    /// <inheritdoc/>
     public CreateCategoryRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty().WithMessage(ApplicationMessage.NameIsRequired);
@@ -20,10 +31,12 @@ public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRe
     }
 }
 
+/// <summary>Mapping extensions for <see cref="CreateCategoryRequest"/>.</summary>
 public static class CreateCategoryRequestExtension
 {
     extension(CreateCategoryRequest request)
     {
+        /// <summary>Maps the request to a new <see cref="backend.Entities.Category"/> entity.</summary>
         public backend.Entities.Category ToCategoryEntity()
         {
             return new backend.Entities.Category

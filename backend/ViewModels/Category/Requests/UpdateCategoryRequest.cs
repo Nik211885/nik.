@@ -1,22 +1,36 @@
-﻿using backend.Entities;
+using backend.Entities;
 using FluentValidation;
 
 namespace backend.ViewModels.Category.Requests;
+
+/// <summary>Payload for updating an existing category.</summary>
 public class UpdateCategoryRequest
 {
+    /// <summary>ID of the category to update.</summary>
     public string Id { get; set; }
+
+    /// <summary>New name (normalised to lowercase before save).</summary>
     public string Name { get; set; }
+
+    /// <summary>Updated short description.</summary>
     public string Description { get; set; }
+
+    /// <summary>Updated display title.</summary>
     public string Title { get; set; }
+
+    /// <summary>Updated representative image URL.</summary>
     public string Image { get; set; }
 }
 
-
-
+/// <summary>Mapping extensions for <see cref="UpdateCategoryRequest"/>.</summary>
 public static class UpdateCategoryRequestExtension
 {
     extension(UpdateCategoryRequest request)
     {
+        /// <summary>
+        /// Applies the request fields to an existing <see cref="backend.Entities.Category"/> entity in-place
+        /// and returns it.
+        /// </summary>
         public backend.Entities.Category ToCategoryEntity(backend.Entities.Category category)
         {
             category.Name = request.Name;
@@ -30,9 +44,10 @@ public static class UpdateCategoryRequestExtension
     }
 }
 
-
+/// <summary>FluentValidation rules for <see cref="UpdateCategoryRequest"/>.</summary>
 public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
 {
+    /// <inheritdoc/>
     public UpdateCategoryRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty().WithMessage(ApplicationMessage.NameIsRequired);
