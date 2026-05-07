@@ -186,6 +186,17 @@ public class AlbumController : ControllerBase
 - All action methods are `async Task<ActionResult>` or `async Task<IActionResult>`
 - Inject `ILogger<T>` as first constructor parameter always
 
+### Parameter Binding Rules
+
+| Scenario | Attribute | Example |
+|---|---|---|
+| POST / PUT body | `[FromBody]` | `[FromBody] CreateAlbumRequest request` |
+| GET / DELETE — primitive | `[FromQuery]` | `[FromQuery] bool tree = false` |
+| GET / DELETE — object or collection | `[AsParameters]` | `[AsParameters] PaginationRequest request` |
+| Path segment | _(none needed)_ | `string id` in route `{id}` |
+
+**Do not use `[FromQuery]` on complex objects** — `[AsParameters]` is the correct binding for objects and collections in GET/DELETE. `[FromQuery]` only applies to individual primitive values.
+
 ## Service Pattern
 
 ```csharp

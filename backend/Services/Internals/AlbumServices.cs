@@ -1,4 +1,5 @@
-﻿using backend.Data;
+using backend.Data;
+using backend.Entities;
 using backend.Exceptions;
 using backend.Extensions;
 using backend.ViewModels.Albums.Requests;
@@ -17,6 +18,7 @@ public class AlbumServices
         _logger = logger;
         _dbContext = dbContext;
     }
+
     public async Task<AlbumResponse> CreateAlbumAsync(CreateAlbumRequest request)
     {
         request.Name = request.Name.ToLowerInvariant();
@@ -25,7 +27,7 @@ public class AlbumServices
             .FirstOrDefaultAsync(a => a.Name == request.Name);
 
         if (existingAlbum is not null)
-            throw new BadRequestException();
+            throw new BadRequestException(ApplicationMessage.ExitsCode);
 
         var album = request.ToAlbum();
         album.Slug = request.Name.ToSlug();
@@ -37,6 +39,105 @@ public class AlbumServices
         await _dbContext.SaveChangesAsync();
 
         return album.ToAlbumResponse();
+    }
+
+    public async Task<AlbumResponse> UpdateAlbumAsync(UpdateAlbumRequest request)
+    {
+        request.Name = request.Name.ToLowerInvariant();
+
+        var duplicateName = await _dbContext.Albums
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Name == request.Name);
+
+        if (duplicateName is not null && duplicateName.Id != request.Id)
+            throw new BadRequestException(ApplicationMessage.ExitsCode);
+
+        var album = await _dbContext.Albums
+            .FirstOrDefaultAsync(a => a.Id == request.Id)
+            ?? throw new NotFoundException();
+
+        if (album.Name != request.Name)
+            album.Slug = request.Name.ToSlug();
+
+        request.ApplyTo(album);
+        album.UpdatedDate = DateTimeOffset.UtcNow;
+
+        _dbContext.Update(album);
+        await _dbContext.SaveChangesAsync();
+
+        return album.ToAlbumResponse();
+    }
+
+    public async Task DeleteAlbumAsync(List<string> ids)
+    {
+        await _dbContext.Albums
+            .Where(a => ids.Contains(a.Id))
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task<IReadOnlyCollection<AlbumFileResponse>> AddFilesToAlbumAsync(AddFilesToAlbumRequest request)
+    {
+        var album = await _dbContext.Albums
+            .FirstOrDefaultAsync(a => a.Id == request.AlbumId)
+            ?? throw new NotFoundException();
+
+        var existingFileIds = await _dbContext.AlbumFiles
+            .AsNoTracking()
+            .Where(af => af.AlbumId == request.AlbumId)
+            .Select(af => af.FileId)
+            .ToListAsync();
+
+        var newFileIds = request.FileIds
+            .Except(existingFileIds)
+            .ToList();
+
+        if (newFileIds.Count == 0)
+            return [];
+
+        var albumFiles = newFileIds.Select(fileId => new AlbumFile
+        {
+            AlbumId = request.AlbumId,
+            FileId = fileId
+        }).ToList();
+
+        _dbContext.AlbumFiles.AddRange(albumFiles);
+
+        album.CountImageRef = await _dbContext.AlbumFiles
+            .CountAsync(af => af.AlbumId == request.AlbumId) + newFileIds.Count;
+
+        await _dbContext.SaveChangesAsync();
+
+        return await _dbContext.AlbumFiles
+            .AsNoTracking()
+            .Where(af => af.AlbumId == request.AlbumId && newFileIds.Contains(af.FileId))
+            .ToAlbumFileResponses()
+            .ToListAsync();
+    }
+
+    public async Task RemoveFilesFromAlbumAsync(RemoveFilesFromAlbumRequest request)
+    {
+        var album = await _dbContext.Albums
+            .FirstOrDefaultAsync(a => a.Id == request.AlbumId)
+            ?? throw new NotFoundException();
+
+        var deleted = await _dbContext.AlbumFiles
+            .Where(af => af.AlbumId == request.AlbumId && request.FileIds.Contains(af.FileId))
+            .ExecuteDeleteAsync();
+
+        album.CountImageRef = Math.Max(0, album.CountImageRef - deleted);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyCollection<AlbumFileResponse>> GetAlbumFilesAsync(string albumId)
+    {
+        if (!await _dbContext.Albums.AsNoTracking().AnyAsync(a => a.Id == albumId))
+            throw new NotFoundException();
+
+        return await _dbContext.AlbumFiles
+            .AsNoTracking()
+            .Where(af => af.AlbumId == albumId)
+            .ToAlbumFileResponses()
+            .ToListAsync();
     }
 
     public async Task<AlbumResponse?> GetAlbumByIdAsync(string id, bool tree = false)
@@ -54,6 +155,7 @@ public class AlbumServices
 
         return album;
     }
+
     public async Task<AlbumResponse?> GetAlbumBySlugAsync(string slug, bool tree = false)
     {
         var album = await _dbContext.Albums
@@ -69,6 +171,7 @@ public class AlbumServices
 
         return album;
     }
+
     public async Task<IReadOnlyCollection<AlbumResponse>> GetAlbumParentAsync(bool tree = false)
     {
         if (!tree)
@@ -79,6 +182,7 @@ public class AlbumServices
                 .AsNoTracking()
                 .ToListAsync();
         }
+
         var lookup = await BuildLookupAsync();
         var parents = lookup[null].ToList();
 
