@@ -13,9 +13,9 @@ public class ReactionServices
 {
     private readonly ILogger<ReactionServices> _logger;
     private readonly ApplicationDbContext _context;
-    private readonly HttpContext _httpContext;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public ReactionServices(ILogger<ReactionServices> logger, ApplicationDbContext context, HttpContext httpContext)
+    public ReactionServices(ILogger<ReactionServices> logger, ApplicationDbContext context, IHttpContextAccessor httpContext)
     {
         _logger = logger;
         _context = context;
@@ -25,7 +25,7 @@ public class ReactionServices
     {
         var article = await _context.Reactions.FirstOrDefaultAsync(x => x.ArticleId == model.ArticleId)
             ?? throw new NotFoundException();
-        var userId = _httpContext.GetUserId();
+        var userId = _httpContext.HttpContext!.GetUserId();
 
         var reactionTypeExits = await _context.Reactions
             .AsNoTracking().AnyAsync(x=>x.ArticleId == model.ArticleId && x.CreatedByUserId == userId && x.ReactionType == model.ReactionType);
@@ -36,18 +36,18 @@ public class ReactionServices
 
         var reaction = model.ToReactionEntity();
         reaction.CreatedDate = DateTimeOffset.UtcNow;
-        reaction.CreatedByUserId = userId;
+        reaction.CreatedByUserId = _httpContext.HttpContext!.GetUserId();
         _context.Reactions.Add(reaction);
         await _context.SaveChangesAsync();
     }
     public async Task DeleteReactionForArticleSpecificTypeAsync(string articleId, ReactionType reactionType)
     {
-        _ = await _context.Reactions.Where(x=>x.ArticleId == articleId && x.CreatedByUserId == _httpContext.GetUserId() && x.ReactionType == reactionType)
+        _ = await _context.Reactions.Where(x=>x.ArticleId == articleId && x.CreatedByUserId == _httpContext.HttpContext!.GetUserId() && x.ReactionType == reactionType)
             .ExecuteDeleteAsync();
     }
     public async Task<PaginationItem<ReactionResponse>> GetPaginationReactionItemAsync(PaginationRequest model)
     {
-        var response = await _context.Reactions.Where(x=>x.CreatedByUserId == _httpContext.GetUserId())
+        var response = await _context.Reactions.Where(x=>x.CreatedByUserId == _httpContext.HttpContext!.GetUserId())
             .OrderByDescending(x=>x.CreatedDate)
             .ToReactionResponses()
             .PaginationItemAsync(model);

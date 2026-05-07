@@ -52,7 +52,7 @@ public class AlbumController : ControllerBase
     [HttpGet("tree")]
     public async Task<IActionResult> GetTree()
     {
-        var result = _albumServices.BuildAlbumTreeAsync();
+        var result = await _albumServices.BuildAlbumTreeAsync();
         return Ok(result);
     }
 }
