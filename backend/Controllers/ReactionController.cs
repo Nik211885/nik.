@@ -39,7 +39,7 @@ public class ReactionController : ControllerBase
 
     /// <summary>Returns a paginated list of reactions left by the authenticated user.</summary>
     [HttpGet("pagination")]
-    public async Task<IActionResult> GetPaginationReactionItem([AsParameters] PaginationRequest model)
+    public async Task<IActionResult> GetPaginationReactionItem([FromQuery] PaginationRequest model)
     {
         var response = await _reactionServices.GetPaginationReactionItemAsync(model);
         return Ok(response);

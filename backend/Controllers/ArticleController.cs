@@ -68,7 +68,7 @@ public class ArticleController : ControllerBase
 
     /// <summary>Returns a paginated list of articles, optionally filtered by category slug, tag slug, or keyword.</summary>
     [HttpGet("")]
-    public async Task<ActionResult> GetPagination([AsParameters] GetArticlesPaginationRequest request)
+    public async Task<ActionResult> GetPagination([FromQuery] GetArticlesPaginationRequest request)
     {
         var result = await _articleServices.GetPaginationArticleAsync(request);
         return Ok(result);

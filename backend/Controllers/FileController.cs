@@ -59,7 +59,7 @@ public class FileController : ControllerBase
 
     /// <summary>Returns a paginated list of all files ordered by ID descending.</summary>
     [HttpGet("")]
-    public async Task<ActionResult> GetPagination([AsParameters] PaginationRequest request)
+    public async Task<ActionResult> GetPagination([FromQuery] PaginationRequest request)
     {
         var result = await _fileServices.GetPaginationFileAsync(request);
         return Ok(result);

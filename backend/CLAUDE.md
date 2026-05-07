@@ -191,11 +191,14 @@ public class AlbumController : ControllerBase
 | Scenario | Attribute | Example |
 |---|---|---|
 | POST / PUT body | `[FromBody]` | `[FromBody] CreateAlbumRequest request` |
-| GET / DELETE — primitive | `[FromQuery]` | `[FromQuery] bool tree = false` |
-| GET / DELETE — object or collection | `[AsParameters]` | `[AsParameters] PaginationRequest request` |
+| GET — primitive | `[FromQuery]` | `[FromQuery] bool tree = false` |
+| GET — object (DTO with multiple query params) | `[FromQuery]` | `[FromQuery] PaginationRequest request` |
+| DELETE — collection of IDs | `[AsParameters]` | `[AsParameters] List<string> ids` |
 | Path segment | _(none needed)_ | `string id` in route `{id}` |
 
-**Do not use `[FromQuery]` on complex objects** — `[AsParameters]` is the correct binding for objects and collections in GET/DELETE. `[FromQuery]` only applies to individual primitive values.
+**Rule:** `[FromQuery]` is used for both primitives and objects on `[HttpGet]` endpoints.
+`[AsParameters]` is only used for `[HttpDelete]` when binding a flat collection of IDs from the query string.
+Do **not** mix `[AsParameters]` with `[HttpGet]`.
 
 ## Service Pattern
 
