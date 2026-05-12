@@ -42,8 +42,9 @@ public class SysConfigServices
     /// Creates a new configuration entry. The key is normalised to lowercase and must be unique.
     /// </summary>
     /// <param name="request">Configuration payload.</param>
+    /// <returns>The created <see cref="ConfigResponse"/>.</returns>
     /// <exception cref="BadRequestException">Thrown when the key already exists.</exception>
-    public async Task CreateConfigAsync(CreateConfigRequest request)
+    public async Task<ConfigResponse> CreateConfigAsync(CreateConfigRequest request)
     {
         request.Key = request.Key.ToLowerInvariant();
         var configExitsKey = await _dbContext.SysConfigs
@@ -53,26 +54,25 @@ public class SysConfigServices
             throw new BadRequestException(ApplicationMessage.ExitsCode);
         }
 
-        _dbContext.SysConfigs.Add(new SysConfig() { Key = request.Key, Value = request.Value });
+        var entity = new SysConfig() { Key = request.Key, Value = request.Value };
+        _dbContext.SysConfigs.Add(entity);
         await _dbContext.SaveChangesAsync();
+
+        return new ConfigResponse { Id = entity.Id, Key = entity.Key, Value = entity.Value };
     }
 
     /// <summary>
-    /// Updates the key and value of a specific configuration entry.
-    /// The new key must not be used by a different entry.
+    /// Updates an existing configuration entry. The new key must not be used by a different entry.
     /// </summary>
-    /// <param name="id">ID of the entry to update.</param>
-    /// <param name="request">New key and value.</param>
+    /// <param name="request">Update payload containing the entry ID, new key and new value.</param>
+    /// <returns>The updated <see cref="ConfigResponse"/>.</returns>
     /// <exception cref="NotFoundException">Thrown when the entry ID does not exist.</exception>
     /// <exception cref="BadRequestException">Thrown when the new key is already used by another entry.</exception>
-    public async Task UpdateConfigSpecificByIdAsync(string id, CreateConfigRequest request)
+    public async Task<ConfigResponse> UpdateConfigAsync(UpdateConfigRequest request)
     {
         request.Key = request.Key.ToLowerInvariant();
-        var configById = await _dbContext.SysConfigs.Where(x => x.Id == id).FirstOrDefaultAsync();
-        if (configById is null)
-        {
-            throw new NotFoundException(ApplicationMessage.NotFound);
-        }
+        var configById = await _dbContext.SysConfigs.Where(x => x.Id == request.Id).FirstOrDefaultAsync()
+            ?? throw new NotFoundException(ApplicationMessage.NotFound);
 
         var configKeyExits = await _dbContext.SysConfigs
             .Where(x => x.Key == request.Key).AsNoTracking().FirstOrDefaultAsync();
@@ -86,6 +86,22 @@ public class SysConfigServices
 
         _dbContext.SysConfigs.Update(configById);
         await _dbContext.SaveChangesAsync();
+
+        return new ConfigResponse { Id = configById.Id, Key = configById.Key, Value = configById.Value };
+    }
+
+    /// <summary>
+    /// Updates the key and value of a specific configuration entry.
+    /// The new key must not be used by a different entry.
+    /// </summary>
+    /// <param name="id">ID of the entry to update.</param>
+    /// <param name="request">New key and value.</param>
+    /// <exception cref="NotFoundException">Thrown when the entry ID does not exist.</exception>
+    /// <exception cref="BadRequestException">Thrown when the new key is already used by another entry.</exception>
+    public async Task UpdateConfigSpecificByIdAsync(string id, CreateConfigRequest request)
+    {
+        var updateRequest = new UpdateConfigRequest { Id = id, Key = request.Key, Value = request.Value };
+        await UpdateConfigAsync(updateRequest);
     }
 
     /// <summary>Returns a single configuration entry by ID, or <see langword="null"/> if not found.</summary>

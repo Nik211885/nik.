@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, of, tap, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 /**
@@ -12,7 +12,7 @@ const ApiLanguage = {
    *
    * @param lang - Language code (e.g., 'en', 'vi')
    */
-  GET_LANGUAGE: (lang: string) => `languages?lang=${lang}`
+  GET_LANGUAGE: (lang: string) => `api/languages/dictionary?lang=${lang}`
 };
 
 /**
@@ -191,7 +191,8 @@ export class LanguageService {
         ApiLanguage.GET_LANGUAGE(this.currentLang)
       )
       .pipe(
-        tap(data => this.dictionarySubject.next(data))
+        tap(data => this.dictionarySubject.next(data)),
+        catchError(() => of({}))
       );
   }
 }

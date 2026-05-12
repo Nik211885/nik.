@@ -2,15 +2,16 @@ import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { LoadingComponent } from './shared/components/loadding/loading.component';
-import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+
 @Component({
   selector: 'app-root',
-  imports: [ToastComponent, LoadingComponent, MainLayoutComponent],
+  imports: [RouterOutlet, ToastComponent, LoadingComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
   standalone: true

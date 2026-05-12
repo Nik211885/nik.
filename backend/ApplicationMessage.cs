@@ -34,4 +34,22 @@ public static class ApplicationMessage
 
     /// <summary>Key for invalid <see cref="Entities.ReactionType"/> enum value failures.</summary>
     public static readonly string ReactionTypeIsInvalid = "validation.reaction_type_is_invalid";
+
+    /// <summary>Key for "UserName is required" validation failures.</summary>
+    public static readonly string UserNameIsRequired = "validation.username_is_required";
+
+    /// <summary>Key for "Email is required" validation failures.</summary>
+    public static readonly string EmailIsRequired = "validation.email_is_required";
+
+    /// <summary>Key for "Password is required" validation failures.</summary>
+    public static readonly string PasswordIsRequired = "validation.password_is_required";
+
+    /// <summary>Key for "Password does not match" validation failures.</summary>
+    public static readonly string PasswordNotMatch = "validation.password_not_match";
+
+    /// <summary>Key returned when email/username or password is incorrect.</summary>
+    public static readonly string InvalidCredentials = "exception.invalid_credentials";
+
+    /// <summary>Key returned when a refresh token is invalid or expired.</summary>
+    public static readonly string InvalidToken = "exception.invalid_token";
 }

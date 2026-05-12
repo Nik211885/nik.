@@ -1,0 +1,21 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div><h4 class="fw-bold mb-1">Bình luận</h4><p class="text-muted mb-0 small">Tìm và xóa bình luận theo bài viết</p></div>
+</div>
+
+<div class="admin-card mb-3">
+  <div class="d-flex gap-2">
+    <input class="form-control" [(ngModel)]="articleId" placeholder="Nhập ID bài viết..." style="max-width:340px">
+    <button class="btn btn-dark" (click)="search()" [disabled]="!articleId.trim() || loading">
+      <i class="bi bi-search me-1"></i>Tìm kiếm
+    </button>
+  </div>
+</div>
+
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    [showActions]="true" (deleteClick)="openDelete($event)">
+  </app-admin-table>
+</div>
+
+<app-admin-confirm-modal [show]="showConfirm" [itemName]="(selected?.text ?? '') | slice:0:40"
+  (confirmed)="delete()" (cancelled)="showConfirm=false"></app-admin-confirm-modal>

@@ -31,4 +31,10 @@ public class User : BaseEntity
     /// Generated via <see cref="Extensions.StringExtensions.ToSlug"/>.
     /// </summary>
     public string Slug { get; set; }
+
+    /// <summary>Opaque refresh token stored server-side for token rotation validation.</summary>
+    public string? RefreshToken { get; set; }
+
+    /// <summary>UTC expiry of <see cref="RefreshToken"/>. <see langword="null"/> when logged out.</summary>
+    public DateTimeOffset? RefreshTokenExpiresAt { get; set; }
 }

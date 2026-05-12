@@ -1,0 +1,81 @@
+<div class="cu-root">
+
+  @if (value && !uploading) {
+  <div class="cu-preview">
+    <img [src]="value" alt="preview" class="cu-preview-img" onerror="this.style.display='none'">
+    <div class="cu-preview-info">
+      <p class="cu-preview-url small text-muted text-truncate mb-2">{{ value }}</p>
+      <div class="d-flex gap-2">
+        <button type="button" class="cu-btn cu-btn--change" (click)="openPicker()">
+          <i class="bi bi-arrow-repeat me-1"></i>{{ AdminMessage.UPLOAD_CHANGE | language }}
+        </button>
+        <button type="button" class="cu-btn cu-btn--remove" (click)="clear()">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  @if (!value && !uploading) {
+  <div class="cu-zone"
+       [class.cu-zone--drag]="isDragging"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)"
+       (click)="openPicker()">
+    <i class="bi bi-cloud-arrow-up-fill cu-zone-icon"></i>
+    <p class="cu-zone-title">{{ AdminMessage.UPLOAD_DRAG_TITLE | language }}</p>
+    <p class="cu-zone-sub" [innerHTML]="AdminMessage.UPLOAD_DRAG_SUB | language"></p>
+    <p class="cu-zone-hint">{{ AdminMessage.UPLOAD_DRAG_HINT | language }}</p>
+  </div>
+  }
+
+  @if (uploading) {
+  <div class="cu-uploading">
+    <i class="bi bi-cloud-upload cu-uploading-icon"></i>
+    <div class="cu-uploading-body">
+      <p class="cu-uploading-label">{{ AdminMessage.UPLOAD_UPLOADING | language }} {{ progress }}%</p>
+      <div class="progress cu-progress">
+        <div class="progress-bar bg-dark progress-bar-striped progress-bar-animated"
+             role="progressbar"
+             [style.width]="progress + '%'"></div>
+      </div>
+    </div>
+  </div>
+  }
+
+  @if (error) {
+  <div class="cu-error">
+    <i class="bi bi-exclamation-triangle-fill me-2 flex-shrink-0"></i>
+    <span class="flex-grow-1">{{ error | language }}</span>
+    <button type="button" class="cu-error-close" (click)="error = ''">×</button>
+  </div>
+  }
+
+  @if (!uploading && showManualInput && !value) {
+  <div class="cu-manual">
+    @if (!showUrlInput) {
+    <button type="button" class="cu-manual-toggle" (click)="showUrlInput = true">
+      <i class="bi bi-link-45deg me-1"></i>{{ AdminMessage.UPLOAD_MANUAL_URL | language }}
+    </button>
+    }
+    @if (showUrlInput) {
+    <div class="cu-manual-input">
+      <input class="form-control form-control-sm" [(ngModel)]="manualUrl"
+             placeholder="https://res.cloudinary.com/..."
+             (keyup.enter)="applyManualUrl()">
+      <button type="button" class="btn btn-sm btn-outline-dark" (click)="applyManualUrl()">OK</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary"
+              (click)="showUrlInput = false; manualUrl = ''">{{ AdminMessage.CANCEL | language }}</button>
+    </div>
+    }
+  </div>
+  }
+
+</div>
+
+<input #fileInput type="file"
+       accept="image/jpeg,image/png,image/webp,video/mp4"
+       hidden
+       (change)="onFileSelect($event)">

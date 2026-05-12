@@ -1,0 +1,107 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.ARTICLES_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ page.totalItems }} {{ AdminMessage.ARTICLES_PAGE_TITLE | language }}</p>
+  </div>
+  <button class="btn btn-dark" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.ARTICLES_CREATE_BTN | language }}
+  </button>
+</div>
+
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="page.data" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)">
+  </app-admin-table>
+
+  @if (page.pageCount > 1) {
+  <div class="pagination-bar">
+    <button class="btn btn-outline-secondary btn-sm" (click)="goToPage(page.pageNumber - 1)" [disabled]="page.pageNumber <= 1">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="small text-muted">{{ page.pageNumber }} / {{ page.pageCount }}</span>
+    <button class="btn btn-outline-secondary btn-sm" (click)="goToPage(page.pageNumber + 1)" [disabled]="page.pageNumber >= page.pageCount">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal admin-modal-lg" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.ARTICLES_MODAL_EDIT : AdminMessage.ARTICLES_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_TITLE | language }} <span class="text-danger">*</span></label>
+          <input class="form-control" [(ngModel)]="form.title" name="title" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_DESC | language }} <span class="text-danger">*</span></label>
+          <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" required></textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_CONTENT | language }} <span class="text-danger">*</span></label>
+          <quill-editor
+            [(ngModel)]="form.content"
+            name="content"
+            [modules]="editorModules"
+            [styles]="{'min-height': '280px'}"
+            class="w-100">
+          </quill-editor>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_COVER | language }} <span class="text-danger">*</span></label>
+          <app-cloudinary-upload [(value)]="form.image" [showManualInput]="true"></app-cloudinary-upload>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_CATEGORIES | language }}</label>
+          <div class="border rounded p-2" style="max-height:120px;overflow-y:auto">
+            @for (c of categories; track c.id) {
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                [id]="'cat-'+c.id"
+                [checked]="form.categoryIds.includes(c.id)"
+                (change)="toggleCategory(c.id)">
+              <label class="form-check-label small" [for]="'cat-'+c.id">{{ c.name }}</label>
+            </div>
+            }
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ AdminMessage.ARTICLES_FORM_TAGS | language }}</label>
+          <div class="border rounded p-2" style="max-height:120px;overflow-y:auto">
+            @for (t of tags; track t.id) {
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                [id]="'tag-'+t.id"
+                [checked]="form.tagIds.includes(t.id)"
+                (change)="toggleTag(t.id)">
+              <label class="form-check-label small" [for]="'tag-'+t.id">{{ t.name }}</label>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.ARTICLES_SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal
+  [show]="showConfirm" [itemName]="selected?.title ?? ''"
+  (confirmed)="delete()" (cancelled)="showConfirm=false">
+</app-admin-confirm-modal>

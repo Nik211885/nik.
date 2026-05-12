@@ -1,0 +1,12 @@
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-content {
+  margin-left: 240px;
+  flex: 1;
+  background: #f4f6fb;
+  min-height: 100vh;
+  padding: 2rem;
+}

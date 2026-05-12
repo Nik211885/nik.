@@ -272,6 +272,17 @@ public class AlbumServices
     }
 
     /// <summary>
+    /// Returns all albums as a flat list, ordered by creation date descending.
+    /// </summary>
+    public async Task<IReadOnlyCollection<AlbumResponse>> GetAllAsync()
+    {
+        return await _dbContext.Albums
+            .OrderByDescending(a => a.CreatedDate)
+            .ToAlbumResponses()
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     /// Returns the full album hierarchy as a list of root albums with all descendants nested.
     /// </summary>
     public async Task<IReadOnlyCollection<AlbumResponse>> BuildAlbumTreeAsync()

@@ -18,6 +18,19 @@ public class CommentServices
         _context = context;
     }
 
+    /// <summary>Returns all comments for the specified article, ordered by creation date.</summary>
+    /// <param name="articleId">ID of the article whose comments to retrieve.</param>
+    /// <returns>A list of <see cref="CommentResponse"/> objects.</returns>
+    public async Task<List<CommentResponse>> GetByArticleAsync(string articleId)
+    {
+        return await _context.Comments
+            .Where(c => c.ArticleId == articleId)
+            .OrderBy(c => c.CreatedDate)
+            .AsNoTracking()
+            .Select(c => c.ToCommentResponse())
+            .ToListAsync();
+    }
+
     /// <summary>
     /// Creates and persists a new comment.
     /// </summary>

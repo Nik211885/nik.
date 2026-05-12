@@ -1,0 +1,88 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.TRANSLATIONS_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.TRANSLATIONS_SUBTITLE | language }}</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-dark btn-sm" (click)="openKeyModal()"><i class="bi bi-key me-1"></i>{{ AdminMessage.TRANSLATIONS_ADD_KEY_BTN | language }}</button>
+    <button class="btn btn-dark" (click)="openCreate()"><i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.TRANSLATIONS_CREATE_BTN | language }}</button>
+  </div>
+</div>
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)"></app-admin-table>
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.TRANSLATIONS_MODAL_EDIT : AdminMessage.TRANSLATIONS_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()">
+      @if (!isEditing) {
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_KEY | language }} <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="form.codeId" name="codeId" required>
+          <option value="">{{ AdminMessage.TRANSLATIONS_FORM_CHOOSE_KEY | language }}</option>
+          @for (k of codeKeys; track k.id) {
+          <option [value]="k.id">{{ k.code }}</option>
+          }
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_LANGUAGE | language }} <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="form.languageId" name="languageId" required>
+          <option value="">{{ AdminMessage.TRANSLATIONS_FORM_CHOOSE_LANG | language }}</option>
+          @for (l of languages; track l.id) {
+          <option [value]="l.id">{{ l.code }} — {{ l.name }}</option>
+          }
+        </select>
+      </div>
+      }
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.TRANSLATIONS_FORM_VALUE | language }} <span class="text-danger">*</span></label>
+        <textarea class="form-control" [(ngModel)]="form.value" name="value" rows="3" required></textarea>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+@if (showKeyModal) {
+<div class="admin-overlay" (click)="showKeyModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()" style="width:400px">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ AdminMessage.TRANSLATIONS_MODAL_KEY_TITLE | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showKeyModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <form (ngSubmit)="saveKey()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_KEY | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="keyForm.code" name="code" required placeholder="exception.not_found">
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showKeyModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ AdminMessage.TRANSLATIONS_SAVE_KEY | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal [show]="showConfirm" [itemName]="(selected?.code ?? '') + ' / ' + (selected?.language ?? '')"
+  (confirmed)="delete()" (cancelled)="showConfirm=false"></app-admin-confirm-modal>

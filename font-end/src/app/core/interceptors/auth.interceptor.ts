@@ -9,6 +9,7 @@ import {
   Observable,
   catchError,
   filter,
+  skip,
   switchMap,
   take,
   throwError,
@@ -121,6 +122,7 @@ function handle401(
          * If refresh fails → logout user
          */
         if (!token) {
+          refreshTokenSubject$.next(null); // unblock queued requests
           authService.logout().subscribe();
           return throwError(() => new Error('Session expired'));
         }
@@ -133,6 +135,7 @@ function handle401(
       }),
       catchError((err) => {
         isRefreshing = false;
+        refreshTokenSubject$.next(null); // unblock any queued requests so they fail fast
         authService.logout().subscribe();
         return throwError(() => err);
       })
@@ -140,23 +143,17 @@ function handle401(
   }
 
   /**
-   * If refresh is already in progress → wait for new token
+   * If refresh is already in progress → wait for new token.
+   * Using skip(1) + take(1) so we wait past the initial null and
+   * get the next emission (either a valid token or the failure null).
    */
   return refreshTokenSubject$.pipe(
-    /**
-     * Wait until token is available
-     */
-    filter((token) => token !== null),
-
-    /**
-     * Take the first emitted token
-     */
+    skip(1),
     take(1),
-
-    /**
-     * Retry original request with new token
-     */
-    switchMap(() => next(attachBearerToken(request, authService)))
+    switchMap((token) => {
+      if (!token) return throwError(() => new Error('Session expired'));
+      return next(attachBearerToken(request, authService));
+    })
   );
 }
 

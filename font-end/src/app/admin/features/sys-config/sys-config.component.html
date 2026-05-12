@@ -1,0 +1,47 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.SYSCONFIG_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.SYSCONFIG_SUBTITLE | language }}</p>
+  </div>
+  <button class="btn btn-dark" (click)="openCreate()"><i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_CREATE_BTN | language }}</button>
+</div>
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)"></app-admin-table>
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.SYSCONFIG_MODAL_EDIT : AdminMessage.SYSCONFIG_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_KEY | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="form.key" name="key" required placeholder="site_title, logo_url...">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_FORM_VALUE_LABEL | language }} <span class="text-danger">*</span></label>
+        <textarea class="form-control" [(ngModel)]="form.value" name="value" rows="4" required
+          style="font-family:monospace;font-size:.85rem"></textarea>
+        <small class="text-muted">{{ AdminMessage.SYSCONFIG_FORM_HINT | language }}</small>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal [show]="showConfirm" [itemName]="selected?.key ?? ''"
+  (confirmed)="delete()" (cancelled)="showConfirm=false"></app-admin-confirm-modal>

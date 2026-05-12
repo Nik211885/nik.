@@ -5,6 +5,9 @@ namespace backend.ViewModels.Comment.Responses;
 /// <summary>Comment response returned after creation and in listing endpoints.</summary>
 public class CommentResponse
 {
+    /// <summary>Comment ID.</summary>
+    public string Id { get; set; }
+
     /// <summary>ID of the article the comment belongs to.</summary>
     public string ArticleId { get; set; }
 
@@ -31,6 +34,7 @@ public static class CommentResponseExtensions
         {
             return new CommentResponse
             {
+                Id = comment.Id,
                 ArticleId = comment.ArticleId,
                 AuthorId = comment.AuthorId,
                 CreatedDate = comment.CreatedDate,

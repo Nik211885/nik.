@@ -1,0 +1,133 @@
+@if (isDroppingPage) {
+<div class="page-drop-overlay">
+  <div class="page-drop-inner">
+    <i class="bi bi-cloud-arrow-up-fill"></i>
+    <p>{{ AdminMessage.FILES_DROP_HINT | language }}</p>
+  </div>
+</div>
+}
+
+@if (batchItems.length) {
+<div class="batch-tray">
+  <div class="batch-header">
+    <span class="small fw-semibold">{{ AdminMessage.FILES_BATCH_UPLOADING | language }} ({{ batchItems.length }})</span>
+  </div>
+  @for (item of batchItems; track $index) {
+  <div class="batch-item">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="batch-name text-truncate small">{{ item.name }}</span>
+      @if (item.done) {<span class="text-success small"><i class="bi bi-check-circle-fill"></i></span>}
+      @if (item.error) {<span class="text-danger small"><i class="bi bi-x-circle-fill"></i></span>}
+    </div>
+    @if (!item.done && !item.error) {
+    <div class="progress" style="height:4px">
+      <div class="progress-bar bg-dark" [style.width]="item.progress + '%'"></div>
+    </div>
+    }
+    @if (item.error) {<small class="text-danger">{{ item.error | language }}</small>}
+  </div>
+  }
+</div>
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.FILES_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ page.totalItems }} {{ AdminMessage.FILES_PAGE_TITLE | language }}</p>
+  </div>
+  <button class="btn btn-dark" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.FILES_CREATE_BTN | language }}
+  </button>
+</div>
+
+<div class="admin-card">
+  @if (loading) {
+  <div class="text-center py-5 text-muted">
+    <span class="spinner-border spinner-border-sm me-2"></span>{{ AdminMessage.LOADING | language }}
+  </div>
+  }
+
+  @if (!loading && page.data.length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-images fs-1 d-block mb-2 opacity-25"></i>
+    {{ AdminMessage.FILES_EMPTY | language }}
+  </div>
+  }
+
+  @if (!loading && page.data.length > 0) {
+  <div class="file-grid">
+    @for (item of page.data; track item.id) {
+    <div class="file-card">
+      <div class="file-thumb-wrap">
+        <img [src]="item.url" [alt]="item.title || item.name" class="file-thumb"
+             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23e9ecef\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' fill=\'%23adb5bd\' font-size=\'10\'%3ENo img%3C/text%3E%3C/svg%3E'">
+        <div class="file-actions">
+          <button class="file-action-btn" (click)="copyUrl(item.url)"><i class="bi bi-clipboard"></i></button>
+          <button class="file-action-btn" (click)="openEdit(item)"><i class="bi bi-pencil"></i></button>
+          <button class="file-action-btn file-action-btn--danger" (click)="openDelete(item)"><i class="bi bi-trash3"></i></button>
+        </div>
+      </div>
+      <div class="file-meta">
+        <p class="file-name" title="{{ item.name }}">{{ item.name }}</p>
+        @if (item.title) {<p class="file-title text-muted">{{ item.title }}</p>}
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  @if (page.pageCount > 1) {
+  <div class="pagination-bar">
+    <button class="btn btn-outline-secondary btn-sm" (click)="goToPage(page.pageNumber-1)" [disabled]="page.pageNumber<=1">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="small text-muted">{{ page.pageNumber }} / {{ page.pageCount }}</span>
+    <button class="btn btn-outline-secondary btn-sm" (click)="goToPage(page.pageNumber+1)" [disabled]="page.pageNumber>=page.pageCount">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.FILES_MODAL_EDIT : AdminMessage.FILES_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.FILES_FORM_MEDIA | language }} <span class="text-danger">*</span></label>
+        <app-cloudinary-upload [(value)]="form.url" [showManualInput]="true"></app-cloudinary-upload>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_NAME | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="form.name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_TITLE | language }}</label>
+        <input class="form-control" [(ngModel)]="form.title" name="title">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_DESCRIPTION | language }}</label>
+        <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2"></textarea>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal [show]="showConfirm" [itemName]="selected?.name ?? ''"
+  (confirmed)="delete()" (cancelled)="showConfirm=false">
+</app-admin-confirm-modal>

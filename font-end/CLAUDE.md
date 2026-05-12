@@ -41,6 +41,72 @@ font-end/src/app/
 | Observables         | `$` suffix            | `currentLanguage$`, `lang$`        |
 | BehaviorSubjects    | `Subject` suffix      | `dictionarySubject`                |
 
+## Template Control Flow
+
+Always use Angular 17+ built-in control flow. **Never** use structural directives `*ngIf`, `*ngFor`, `*ngSwitch`.
+
+```html
+<!-- ✅ correct -->
+@if (show) {
+<div>...</div>
+}
+
+@if (show) {
+<div>...</div>
+} @else {
+<div>...</div>
+}
+
+@for (item of items; track item.id) {
+<div>{{ item.name }}</div>
+}
+
+@switch (status) {
+  @case ('active') { <span>Active</span> }
+  @default { <span>Inactive</span> }
+}
+
+<!-- ❌ forbidden -->
+<div *ngIf="show">...</div>
+<div *ngFor="let item of items">...</div>
+<div [ngSwitch]="status">...</div>
+```
+
+`@for` requires a `track` expression — use a unique field (`track item.id`) or `track $index` when no id exists.
+
+With `@if`/`@for`, `CommonModule` is not needed for control flow, but keep it if the template uses pipes it provides (`AsyncPipe`, `DatePipe`, etc.).
+
+## i18n — Static Text via `app.message.ts`
+
+All user-facing strings (page titles, labels, button text, descriptions) **must** use translation keys, never hardcoded text.
+
+**Step 1** — declare the key in `app.message.ts`:
+
+```typescript
+export enum ApplicationTitle {
+  LOGIN_TITLE = 'login.title',
+  LOGIN_SUBMIT = 'login.submit',
+}
+```
+
+**Step 2** — use `LanguagePipe` in the template:
+
+```html
+<h4>{{ 'login.title' | language }}</h4>
+<!-- or with enum -->
+<button>{{ ApplicationTitle.LOGIN_SUBMIT | language }}</button>
+```
+
+**Step 3** — add the key and its translated value to the backend translation table via the admin `/translations` page (one row per language).
+
+**Step 4** — for TypeScript code, use `LanguageService.translate(key)`:
+
+```typescript
+this.langSvc.translate(ApplicationTitle.LOGIN_TITLE)
+```
+
+> Admin panel UI also uses `AdminMessage` enum keys + `LanguagePipe`. Add keys to `app.message.ts` under the `AdminMessage` enum and register translations in the `/admin/translations` page.
+
 ## Component Pattern
 
 All components are **standalone**:

@@ -1,0 +1,68 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.ALBUMS_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.ALBUMS_SUBTITLE | language }}</p>
+  </div>
+  <button class="btn btn-dark" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.ALBUMS_CREATE_BTN | language }}
+  </button>
+</div>
+
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)">
+  </app-admin-table>
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.ALBUMS_MODAL_EDIT : AdminMessage.ALBUMS_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()" #f="ngForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_NAME | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="form.name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_TITLE | language }}</label>
+        <input class="form-control" [(ngModel)]="form.title" name="title">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_DESCRIPTION | language }}</label>
+        <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.ALBUMS_FORM_PARENT | language }}</label>
+        <select class="form-select" [(ngModel)]="form.albumId" name="albumId">
+          <option value="">{{ AdminMessage.ALBUMS_FORM_NO_PARENT | language }}</option>
+          @for (a of items; track a.id) {
+          <option [value]="a.id">{{ a.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_ORDER | language }}</label>
+        <input type="number" class="form-control" [(ngModel)]="form.orderIndex" name="orderIndex" min="0">
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal
+  [show]="showConfirm" [itemName]="selected?.name ?? ''"
+  (confirmed)="delete()" (cancelled)="showConfirm=false">
+</app-admin-confirm-modal>

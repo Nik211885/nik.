@@ -1,0 +1,39 @@
+<div class="page-header mb-4">
+  <h3 class="fw-bold mb-1">{{ AdminMessage.DASHBOARD_TITLE | language }}</h3>
+  <p class="text-muted mb-0">{{ AdminMessage.DASHBOARD_SUBTITLE | language }}</p>
+</div>
+
+@if (!loading) {
+<div class="row g-3">
+  @for (s of stats; track s.label) {
+  <div class="col-md-4 col-sm-6">
+    <a [routerLink]="s.route" class="stat-card text-decoration-none">
+      <div class="stat-icon" [style.background]="s.color">
+        <i class="bi {{ s.icon }}"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ s.value }}</div>
+        <div class="stat-label">{{ s.label | language }}</div>
+      </div>
+    </a>
+  </div>
+  }
+</div>
+}
+
+@if (loading) {
+<div class="text-center py-5">
+  <div class="spinner-border text-primary"></div>
+</div>
+}
+
+<div class="mt-4 p-4 bg-white rounded-3 border">
+  <h5 class="fw-semibold mb-3">{{ AdminMessage.DASHBOARD_QUICK | language }}</h5>
+  <div class="d-flex flex-wrap gap-2">
+    <a routerLink="/admin/articles"   class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_ARTICLE | language }}</a>
+    <a routerLink="/admin/albums"     class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_ALBUM | language }}</a>
+    <a routerLink="/admin/categories" class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_CATEGORY | language }}</a>
+    <a routerLink="/admin/tags"       class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_TAG | language }}</a>
+    <a routerLink="/admin/sys-config" class="btn btn-outline-secondary btn-sm"><i class="bi bi-gear me-1"></i>{{ AdminMessage.DASHBOARD_SETTINGS | language }}</a>
+  </div>
+</div>

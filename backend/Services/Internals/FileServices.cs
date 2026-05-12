@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Exceptions;
 using backend.ViewModels;
+using backend.Extensions;
 using backend.ViewModels.Files.Requests;
 using backend.ViewModels.Files.Responses;
 using Microsoft.EntityFrameworkCore;

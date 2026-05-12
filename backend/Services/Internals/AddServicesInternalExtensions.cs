@@ -8,6 +8,7 @@ public static class AddServicesInternalExtensions
         /// <summary>Registers every internal service as scoped.</summary>
         public IServiceCollection AddServicesInternal()
         {
+            services.AddScoped<AuthServices>();
             services.AddScoped<AlbumServices>();
             services.AddScoped<ArticleServices>();
             services.AddScoped<CategoryServices>();

@@ -31,8 +31,9 @@ public class LanguageServices
     /// <param name="lang">BCP-47 language code (e.g. <c>vi</c>, <c>en</c>).</param>
     public async Task<TranslateLanguageResponse?> GetTranslatesAsync(string lang)
     {
+        var langLower = lang.ToLowerInvariant();
         Language? language = await _dbContext.Languages
-            .Where(x => x.Code.Equals(lang, StringComparison.InvariantCultureIgnoreCase)).AsNoTracking().FirstOrDefaultAsync();
+            .Where(x => x.Code == langLower).AsNoTracking().FirstOrDefaultAsync();
         if (language is null)
         {
             return null;
@@ -233,5 +234,160 @@ public class LanguageServices
         }
         _dbContext.Translates.AddRange(translateInstances);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // ─── Admin CRUD for Languages ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Creates a new language and returns it. The code is normalised to lowercase and must be unique.
+    /// </summary>
+    /// <param name="request">Language creation payload.</param>
+    /// <returns>The created <see cref="LanguageResponse"/>.</returns>
+    /// <exception cref="BadRequestException">Thrown when the code already exists.</exception>
+    public async Task<LanguageResponse> CreateLanguageAdminAsync(LanguageRequest request)
+    {
+        request.Code = request.Code.ToLowerInvariant();
+        var exists = await _dbContext.Languages.AnyAsync(x => x.Code == request.Code);
+        if (exists)
+        {
+            throw new BadRequestException(ApplicationMessage.ExitsCode);
+        }
+
+        var entity = new Language { Code = request.Code, Name = request.Name };
+        _dbContext.Languages.Add(entity);
+        await _dbContext.SaveChangesAsync();
+
+        return new LanguageResponse { Id = entity.Id, Code = entity.Code, Name = entity.Name };
+    }
+
+    /// <summary>
+    /// Updates an existing language's code and name. The new code must be unique.
+    /// </summary>
+    /// <param name="request">Update payload with ID, new code and new name.</param>
+    /// <returns>The updated <see cref="LanguageResponse"/>.</returns>
+    /// <exception cref="NotFoundException">Thrown when the language ID does not exist.</exception>
+    /// <exception cref="BadRequestException">Thrown when the new code is already used by another language.</exception>
+    public async Task<LanguageResponse> UpdateLanguageAdminAsync(UpdateLanguageAdminRequest request)
+    {
+        request.Code = request.Code.ToLowerInvariant();
+        var language = await _dbContext.Languages.FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new NotFoundException();
+
+        var codeConflict = await _dbContext.Languages
+            .Where(x => x.Code == request.Code)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (codeConflict is not null && codeConflict.Id != language.Id)
+        {
+            throw new BadRequestException(ApplicationMessage.ExitsCode);
+        }
+
+        language.Code = request.Code;
+        language.Name = request.Name;
+        _dbContext.Languages.Update(language);
+        await _dbContext.SaveChangesAsync();
+
+        return new LanguageResponse { Id = language.Id, Code = language.Code, Name = language.Name };
+    }
+
+    /// <summary>Deletes one or more languages by ID.</summary>
+    /// <param name="ids">IDs of languages to delete.</param>
+    public async Task DeleteLanguagesAsync(List<string> ids)
+    {
+        await _dbContext.Languages.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
+    }
+
+    // ─── Admin CRUD for Code Keys ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Creates a single translation code key. The code is normalised to lowercase and must be unique.
+    /// </summary>
+    /// <param name="code">Raw code string to register.</param>
+    /// <returns>The created <see cref="CodeLanguageResponse"/>.</returns>
+    /// <exception cref="BadRequestException">Thrown when the code already exists.</exception>
+    public async Task<CodeLanguageResponse> CreateSingleCodeKeyAsync(string code)
+    {
+        var normalized = code.Trim().ToLowerInvariant();
+        var exists = await _dbContext.CodeLanguages.AnyAsync(x => x.Code == normalized);
+        if (exists)
+        {
+            throw new BadRequestException(ApplicationMessage.ExitsCode);
+        }
+
+        var entity = new CodeLanguage { Code = normalized };
+        _dbContext.CodeLanguages.Add(entity);
+        await _dbContext.SaveChangesAsync();
+
+        return new CodeLanguageResponse { Id = entity.Id, Code = entity.Code };
+    }
+
+    // ─── Admin CRUD for Translates ────────────────────────────────────────────
+
+    /// <summary>Returns all translation entries as a flat list.</summary>
+    /// <returns>A list of <see cref="TranslateItemResponse"/> objects.</returns>
+    public async Task<List<TranslateItemResponse>> GetAllTranslatesAsync()
+    {
+        return await _dbContext.Translates
+            .AsNoTracking()
+            .Select(t => new TranslateItemResponse
+            {
+                Id = t.Id,
+                CodeId = t.CodeId,
+                LanguageId = t.LanguageId,
+                Value = t.Value
+            })
+            .ToListAsync();
+    }
+
+    /// <summary>Creates a single translation entry.</summary>
+    /// <param name="request">Translation creation payload.</param>
+    /// <returns>The created <see cref="TranslateItemResponse"/>.</returns>
+    public async Task<TranslateItemResponse> CreateTranslateAsync(CreateTranslateAdminRequest request)
+    {
+        var entity = new Translate
+        {
+            CodeId = request.CodeId,
+            LanguageId = request.LanguageId,
+            Value = request.Value
+        };
+        _dbContext.Translates.Add(entity);
+        await _dbContext.SaveChangesAsync();
+
+        return new TranslateItemResponse
+        {
+            Id = entity.Id,
+            CodeId = entity.CodeId,
+            LanguageId = entity.LanguageId,
+            Value = entity.Value
+        };
+    }
+
+    /// <summary>Updates the value of an existing translation entry.</summary>
+    /// <param name="request">Update payload with entry ID and new value.</param>
+    /// <returns>The updated <see cref="TranslateItemResponse"/>.</returns>
+    /// <exception cref="NotFoundException">Thrown when the entry ID does not exist.</exception>
+    public async Task<TranslateItemResponse> UpdateTranslateAsync(UpdateTranslateAdminRequest request)
+    {
+        var entity = await _dbContext.Translates.FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new NotFoundException();
+
+        entity.Value = request.Value;
+        _dbContext.Translates.Update(entity);
+        await _dbContext.SaveChangesAsync();
+
+        return new TranslateItemResponse
+        {
+            Id = entity.Id,
+            CodeId = entity.CodeId,
+            LanguageId = entity.LanguageId,
+            Value = entity.Value
+        };
+    }
+
+    /// <summary>Deletes one or more translation entries by ID.</summary>
+    /// <param name="ids">IDs of translation entries to delete.</param>
+    public async Task DeleteTranslatesAsync(List<string> ids)
+    {
+        await _dbContext.Translates.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
     }
 }

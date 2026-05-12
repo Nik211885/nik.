@@ -88,6 +88,14 @@ public class AlbumController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns all albums as a flat list.</summary>
+    [HttpGet("")]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _albumServices.GetAllAsync();
+        return Ok(result);
+    }
+
     /// <summary>Returns all root-level albums. Pass <c>tree=true</c> to include descendants.</summary>
     [HttpGet("parents")]
     public async Task<IActionResult> GetParent([FromQuery] bool tree = false)

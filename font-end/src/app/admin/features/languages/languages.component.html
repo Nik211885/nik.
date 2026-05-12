@@ -1,0 +1,45 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.LANGUAGES_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.LANGUAGES_SUBTITLE | language }}</p>
+  </div>
+  <button class="btn btn-dark" (click)="openCreate()"><i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.LANGUAGES_CREATE_BTN | language }}</button>
+</div>
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)"></app-admin-table>
+</div>
+
+@if (showModal) {
+<div class="admin-overlay" (click)="showModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()" style="width:400px">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.LANGUAGES_MODAL_EDIT : AdminMessage.LANGUAGES_MODAL_CREATE) | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    @if (error) {
+    <div class="alert alert-danger small">{{ error | language }}</div>
+    }
+    <form (ngSubmit)="save()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LANGUAGES_FORM_CODE | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="form.code" name="code" required placeholder="vi, en, fr...">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_NAME | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="form.name" name="name" required placeholder="Tiếng Việt, English...">
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
+          @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<app-admin-confirm-modal [show]="showConfirm" [itemName]="selected?.name ?? ''"
+  (confirmed)="delete()" (cancelled)="showConfirm=false"></app-admin-confirm-modal>

@@ -1,12 +1,12 @@
-using backend.Services;
 using backend.Services.Internals;
 using backend.ViewModels.Configs.Requests;
+using backend.ViewModels.Configs.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 /// <summary>Endpoints for system configuration key-value management.</summary>
-[Route("api/config")]
+[Route("api/sys-configs")]
 [ApiController]
 public class SysConfigController : ControllerBase
 {
@@ -22,26 +22,26 @@ public class SysConfigController : ControllerBase
 
     /// <summary>Returns all configuration entries.</summary>
     [HttpGet("")]
-    public async Task<ActionResult> GetConfig()
+    public async Task<ActionResult<IReadOnlyCollection<ConfigResponse>>> GetConfig()
     {
         var response = await _configServices.GetConfigsAsync();
         return Ok(response);
     }
 
-    /// <summary>Creates a new configuration entry.</summary>
+    /// <summary>Creates a new configuration entry and returns it.</summary>
     [HttpPost("create")]
-    public async Task<IActionResult> CreateConfig([FromBody] CreateConfigRequest request)
+    public async Task<ActionResult<ConfigResponse>> CreateConfig([FromBody] CreateConfigRequest request)
     {
-        await _configServices.CreateConfigAsync(request);
-        return NoContent();
+        var result = await _configServices.CreateConfigAsync(request);
+        return Ok(result);
     }
 
-    /// <summary>Updates the key and value of a specific configuration entry.</summary>
+    /// <summary>Updates an existing configuration entry and returns the updated record.</summary>
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateConfig([FromQuery] string id, [FromBody] CreateConfigRequest request)
+    public async Task<ActionResult<ConfigResponse>> UpdateConfig([FromBody] UpdateConfigRequest request)
     {
-        await _configServices.UpdateConfigSpecificByIdAsync(id, request);
-        return NoContent();
+        var result = await _configServices.UpdateConfigAsync(request);
+        return Ok(result);
     }
 
     /// <summary>Deletes one or more configuration entries by ID.</summary>
@@ -54,7 +54,7 @@ public class SysConfigController : ControllerBase
 
     /// <summary>Returns a single configuration entry by ID.</summary>
     [HttpGet("specific-by")]
-    public async Task<ActionResult> GetConfigById(string id)
+    public async Task<ActionResult<ConfigResponse>> GetConfigById([FromQuery] string id)
     {
         var response = await _configServices.GetConfigByIdAsync(id);
         return Ok(response);

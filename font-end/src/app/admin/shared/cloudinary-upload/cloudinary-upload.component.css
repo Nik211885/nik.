@@ -1,0 +1,158 @@
+.cu-root { width: 100%; }
+
+/* ── Zone ──────────────────────────────────────────────────────────────── */
+.cu-zone {
+  border: 2px dashed #ced4da;
+  border-radius: 14px;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  background: #f8f9fa;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+  outline: none;
+}
+.cu-zone:hover {
+  border-color: #6c757d;
+  background: #f1f3f5;
+}
+.cu-zone--drag {
+  border-color: #0d6efd !important;
+  background: #e7f0fd !important;
+}
+.cu-zone-icon {
+  font-size: 2.6rem;
+  color: #adb5bd;
+  display: block;
+  margin-bottom: .5rem;
+  transition: color .15s;
+  pointer-events: none;
+}
+.cu-zone--drag .cu-zone-icon { color: #0d6efd; }
+.cu-zone-title {
+  font-weight: 600;
+  color: #343a40;
+  margin: 0 0 .2rem;
+  font-size: .9rem;
+  pointer-events: none;
+}
+.cu-zone-sub {
+  color: #6c757d;
+  font-size: .82rem;
+  margin: 0 0 .35rem;
+  pointer-events: none;
+}
+.cu-zone-hint {
+  color: #adb5bd;
+  font-size: .74rem;
+  margin: 0;
+  letter-spacing: .02em;
+  pointer-events: none;
+}
+
+/* ── Preview ────────────────────────────────────────────────────────────── */
+.cu-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .875rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+}
+.cu-preview-img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  flex-shrink: 0;
+  background: #e9ecef;
+}
+.cu-preview-info { flex: 1; min-width: 0; }
+.cu-preview-url { margin-bottom: .5rem; max-width: 100%; }
+
+.cu-btn {
+  border: none;
+  border-radius: 7px;
+  padding: .3rem .8rem;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s;
+  white-space: nowrap;
+}
+.cu-btn--change { background: #343a40; color: #fff; }
+.cu-btn--change:hover { background: #1c1f23; }
+.cu-btn--remove { background: #f8d7da; color: #842029; }
+.cu-btn--remove:hover { background: #f1aeb5; }
+
+/* ── Upload progress ────────────────────────────────────────────────────── */
+.cu-uploading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 14px;
+}
+.cu-uploading-icon {
+  font-size: 1.9rem;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+.cu-uploading-body { flex: 1; }
+.cu-uploading-label {
+  font-size: .82rem;
+  color: #6c757d;
+  margin: 0 0 .5rem;
+}
+.cu-progress {
+  height: 5px;
+  border-radius: 3px;
+}
+
+/* ── Error ──────────────────────────────────────────────────────────────── */
+.cu-error {
+  margin-top: .5rem;
+  padding: .5rem .875rem;
+  background: #fff5f5;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  font-size: .82rem;
+  color: #842029;
+  display: flex;
+  align-items: center;
+}
+.cu-error-close {
+  background: none;
+  border: none;
+  color: #842029;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Manual URL ─────────────────────────────────────────────────────────── */
+.cu-manual {
+  margin-top: .625rem;
+  text-align: center;
+}
+.cu-manual-toggle {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: .8rem;
+  cursor: pointer;
+  padding: 0;
+}
+.cu-manual-toggle:hover { color: #343a40; text-decoration: underline; }
+.cu-manual-input {
+  display: flex;
+  gap: .375rem;
+  align-items: center;
+}
+.cu-manual-input .form-control { flex: 1; }
