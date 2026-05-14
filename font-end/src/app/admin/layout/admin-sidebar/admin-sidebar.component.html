@@ -20,6 +20,36 @@
   </ul>
 
   <div class="sidebar-footer">
+
+    <!-- Language switcher -->
+    <div class="lang-switcher mb-2">
+      @if (langMenuOpen) {
+        <div class="lang-backdrop" (click)="langMenuOpen=false"></div>
+      }
+      <button class="lang-toggle" (click)="langMenuOpen=!langMenuOpen"
+              [class.lang-toggle--open]="langMenuOpen">
+        <i class="bi bi-translate"></i>
+        <span class="lang-code">{{ currentLang | uppercase }}</span>
+        <i class="bi ms-auto" [class.bi-chevron-up]="langMenuOpen" [class.bi-chevron-down]="!langMenuOpen"></i>
+      </button>
+      @if (langMenuOpen) {
+        <div class="lang-menu">
+          @if (availableLanguages.length === 0) {
+            <div class="lang-empty">—</div>
+          }
+          @for (lang of availableLanguages; track lang.code) {
+            <button class="lang-option" [class.active]="lang.code === currentLang"
+                    (click)="changeLang(lang.code)">
+              <i class="bi bi-check2 me-2"
+                 [style.visibility]="lang.code === currentLang ? 'visible' : 'hidden'"></i>
+              <span>{{ lang.name || lang.code }}</span>
+              <small class="lang-opt-code ms-auto">{{ lang.code | uppercase }}</small>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
     <a routerLink="/" class="btn btn-outline-light btn-sm w-100 mb-2">
       <i class="bi bi-house me-1"></i>{{ AdminMessage.SIDEBAR_HOME | language }}
     </a>

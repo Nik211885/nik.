@@ -1,15 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
+import { LanguageService, AvailableLanguage } from '../../../core/services/language.service';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
 
-interface NavItem {
-  label: string;
-  icon: string;
-  route: string;
-}
+interface NavItem { label: string; icon: string; route: string; }
 
 @Component({
   selector: 'app-admin-sidebar',
@@ -18,7 +16,7 @@ interface NavItem {
   templateUrl: './admin-sidebar.component.html',
   styleUrl: './admin-sidebar.component.css'
 })
-export class AdminSidebarComponent {
+export class AdminSidebarComponent implements OnInit, OnDestroy {
   readonly navItems: NavItem[] = [
     { label: AdminMessage.SIDEBAR_NAV_DASHBOARD,    icon: 'bi-speedometer2',      route: '/admin/dashboard' },
     { label: AdminMessage.SIDEBAR_NAV_ARTICLES,     icon: 'bi-file-earmark-text', route: '/admin/articles' },
@@ -34,7 +32,29 @@ export class AdminSidebarComponent {
 
   protected readonly AdminMessage = AdminMessage;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  availableLanguages: AvailableLanguage[] = [];
+  currentLang = '';
+  langMenuOpen = false;
+
+  private subs = new Subscription();
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private langService: LanguageService
+  ) {}
+
+  ngOnInit(): void {
+    this.subs.add(this.langService.availableLanguages$.subscribe(langs => this.availableLanguages = langs));
+    this.subs.add(this.langService.currentLanguage$.subscribe(lang => this.currentLang = lang));
+  }
+
+  ngOnDestroy(): void { this.subs.unsubscribe(); }
+
+  changeLang(code: string): void {
+    this.langMenuOpen = false;
+    this.langService.changeLanguage(code).subscribe();
+  }
 
   logout(): void {
     this.authService.logout().subscribe({
