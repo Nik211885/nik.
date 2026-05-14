@@ -26,10 +26,55 @@
         <input class="form-control" [(ngModel)]="form.key" name="key" required placeholder="site_title, logo_url...">
       </div>
       <div class="mb-3">
-        <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_FORM_VALUE_LABEL | language }} <span class="text-danger">*</span></label>
-        <textarea class="form-control" [(ngModel)]="form.value" name="value" rows="4" required
-          style="font-family:monospace;font-size:.85rem"></textarea>
-        <small class="text-muted">{{ AdminMessage.SYSCONFIG_FORM_HINT | language }}</small>
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <label class="form-label fw-semibold mb-0">{{ AdminMessage.SYSCONFIG_FORM_VALUE_LABEL | language }} <span class="text-danger">*</span></label>
+          @if (isJsonLike) {
+            <div class="d-flex align-items-center gap-2">
+              @if (jsonValid) {
+                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:.7rem">
+                  <i class="bi bi-check-circle me-1"></i>JSON
+                </span>
+              } @else {
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size:.7rem">
+                  <i class="bi bi-exclamation-circle me-1"></i>Invalid JSON
+                </span>
+              }
+              <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:.75rem" (click)="formatJson()">
+                <i class="bi bi-braces me-1"></i>Format
+              </button>
+            </div>
+          }
+        </div>
+        <textarea class="form-control" [(ngModel)]="form.value" name="value" rows="6" required
+          [class.is-invalid]="isJsonLike && !jsonValid && form.value.trim().length > 0"
+          style="font-family:monospace;font-size:.82rem;resize:vertical"></textarea>
+        @if (jsonError) {
+          <div class="invalid-feedback d-block" style="font-size:.75rem">{{ jsonError }}</div>
+        }
+        @if (!jsonError) {
+          <small class="text-muted">{{ AdminMessage.SYSCONFIG_FORM_HINT | language }}</small>
+        }
+
+        <!-- JSON preview table -->
+        @if (jsonRows.length > 0) {
+          <div class="mt-2" style="border:1px solid #dee2e6;border-radius:6px;overflow:hidden">
+            <div class="px-2 py-1 bg-light border-bottom" style="font-size:.72rem;color:#6c757d;font-weight:600;letter-spacing:.03em">
+              PREVIEW
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+              @for (row of jsonRows; track row.key) {
+                <tr style="border-bottom:1px solid #f0f0f0">
+                  <td style="padding:.3rem .6rem;width:38%;font-weight:600;color:#495057;background:#fafafa;white-space:nowrap;border-right:1px solid #f0f0f0">
+                    {{ row.key }}
+                  </td>
+                  <td style="padding:.3rem .6rem;color:#212529;font-family:monospace;word-break:break-all">
+                    {{ row.value }}
+                  </td>
+                </tr>
+              }
+            </table>
+          </div>
+        }
       </div>
       <div class="d-flex gap-2 mt-3">
         <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showModal=false">{{ AdminMessage.CANCEL | language }}</button>

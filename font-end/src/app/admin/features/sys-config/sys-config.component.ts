@@ -22,10 +22,12 @@ export class SysConfigAdminComponent implements OnInit {
   showConfirm = false;
   isEditing = false;
   selected: SysConfigItem | null = null;
+  deleteItems: SysConfigItem[] = [];
   saving = false;
   error = '';
 
   form = { key: '', value: '' };
+  jsonError = '';
 
   protected readonly AdminMessage = AdminMessage;
 
@@ -53,12 +55,45 @@ export class SysConfigAdminComponent implements OnInit {
   openEdit(item: SysConfigItem): void {
     this.isEditing = true;
     this.selected = item;
-    this.form = { key: item.key, value: typeof item.value === 'object' ? JSON.stringify(item.value) : String(item.value) };
+    const raw = typeof item.value === 'object' ? JSON.stringify(item.value, null, 2) : String(item.value ?? '');
+    this.form = { key: item.key, value: raw };
+    this.jsonError = '';
     this.error = '';
     this.showModal = true;
   }
 
-  openDelete(item: SysConfigItem): void { this.selected = item; this.showConfirm = true; }
+  get isJsonLike(): boolean {
+    const v = this.form.value.trim();
+    return v.startsWith('{') || v.startsWith('[');
+  }
+
+  get jsonValid(): boolean {
+    if (!this.isJsonLike) return false;
+    try { JSON.parse(this.form.value); return true; } catch { return false; }
+  }
+
+  formatJson(): void {
+    try {
+      this.form.value = JSON.stringify(JSON.parse(this.form.value), null, 2);
+      this.jsonError = '';
+    } catch (e: any) {
+      this.jsonError = e.message;
+    }
+  }
+
+  get jsonRows(): { key: string; value: string }[] {
+    if (!this.jsonValid) return [];
+    try {
+      const parsed = JSON.parse(this.form.value);
+      if (typeof parsed !== 'object' || Array.isArray(parsed)) return [];
+      return Object.entries(parsed).map(([k, v]) => ({
+        key: k,
+        value: typeof v === 'object' ? JSON.stringify(v) : String(v ?? '')
+      }));
+    } catch { return []; }
+  }
+
+  openDelete(items: SysConfigItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   save(): void {
     this.saving = true;
@@ -76,7 +111,7 @@ export class SysConfigAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(); },
       error: () => { this.showConfirm = false; }
     });

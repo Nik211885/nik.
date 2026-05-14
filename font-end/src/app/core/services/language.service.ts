@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, of, tap, switchMap } from 'rxjs';
+
+export interface AvailableLanguage { id: string; code: string; name: string; icon?: string; }
 import { HttpClient } from '@angular/common/http';
 
 /**
@@ -72,6 +74,9 @@ export class LanguageService {
    */
   lang$ = this.dictionarySubject.asObservable();
 
+  private availableLanguagesSubject = new BehaviorSubject<AvailableLanguage[]>([]);
+  availableLanguages$ = this.availableLanguagesSubject.asObservable();
+
   constructor(private http: HttpClient) {}
 
   /**
@@ -93,6 +98,7 @@ export class LanguageService {
     this.currentLang = savedLang;
     this.currentLanguageSubject.next(savedLang);
 
+    this.loadAvailableLanguages();
     return this.loadLanguage();
   }
 
@@ -176,6 +182,12 @@ export class LanguageService {
    */
   translate(key: string): string {
     return this.dictionarySubject.getValue()[key] ?? key;
+  }
+
+  loadAvailableLanguages(): void {
+    this.http.get<AvailableLanguage[]>('api/languages').pipe(
+      catchError(() => of([]))
+    ).subscribe(langs => this.availableLanguagesSubject.next(langs));
   }
 
   /**

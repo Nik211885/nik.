@@ -101,22 +101,26 @@ export enum AdminMessage {
   ARTICLES_SAVE          = 'admin.articles.save',
 
   // ─── Albums ───────────────────────────────────────────────────────────────
-  ALBUMS_PAGE_TITLE    = 'admin.albums.title',
-  ALBUMS_SUBTITLE      = 'admin.albums.subtitle',
-  ALBUMS_CREATE_BTN    = 'admin.albums.create',
-  ALBUMS_MODAL_CREATE  = 'admin.albums.modal.create',
-  ALBUMS_MODAL_EDIT    = 'admin.albums.modal.edit',
+  ALBUMS_PAGE_TITLE     = 'admin.albums.title',
+  ALBUMS_SUBTITLE       = 'admin.albums.subtitle',
+  ALBUMS_CREATE_BTN     = 'admin.albums.create',
+  ALBUMS_MODAL_CREATE   = 'admin.albums.modal.create',
+  ALBUMS_MODAL_EDIT     = 'admin.albums.modal.edit',
   ALBUMS_FORM_PARENT    = 'admin.albums.form.parent',
   ALBUMS_FORM_NO_PARENT = 'admin.albums.form.no-parent',
-  ALBUMS_VIEW_LIST     = 'admin.albums.view.list',
-  ALBUMS_VIEW_TREE     = 'admin.albums.view.tree',
-  ALBUMS_VIEW_EXPLORER = 'admin.albums.view.explorer',
+  ALBUMS_VIEW_LIST      = 'admin.albums.view.list',
+  ALBUMS_VIEW_TREE      = 'admin.albums.view.tree',
+  ALBUMS_VIEW_EXPLORER  = 'admin.albums.view.explorer',
   ALBUMS_EMPTY_CHILDREN = 'admin.albums.empty-children',
-  ALBUMS_FILES_TITLE   = 'admin.albums.files.title',
-  ALBUMS_FILES_EMPTY   = 'admin.albums.files.empty',
-  ALBUMS_FILES_ADD     = 'admin.albums.files.add',
-  ALBUMS_FILES_REMOVE  = 'admin.albums.files.remove',
-  ALBUMS_ROOT          = 'admin.albums.root',
+  ALBUMS_FILES_TITLE    = 'admin.albums.files.title',
+  ALBUMS_FILES_EMPTY    = 'admin.albums.files.empty',
+  ALBUMS_FILES_ADD      = 'admin.albums.files.add',
+  ALBUMS_FILES_REMOVE   = 'admin.albums.files.remove',
+  ALBUMS_ROOT           = 'admin.albums.root',
+  ALBUMS_EXPAND_ALL     = 'admin.albums.expand-all',
+  ALBUMS_COLLAPSE_ALL   = 'admin.albums.collapse-all',
+  ALBUMS_COPY_URL       = 'admin.albums.copy-url',
+  ALBUMS_COUNT_SUFFIX   = 'admin.albums.count-suffix',
 
   // ─── Tags ─────────────────────────────────────────────────────────────────
   TAGS_PAGE_TITLE   = 'admin.tags.title',
@@ -149,7 +153,14 @@ export enum AdminMessage {
   LANGUAGES_MODAL_EDIT   = 'admin.languages.modal.edit',
   LANGUAGES_FORM_CODE    = 'admin.languages.form.code',
 
+  // ─── Comments ─────────────────────────────────────────────────────────────
+  COMMENTS_PAGE_TITLE          = 'admin.comments.title',
+  COMMENTS_SUBTITLE            = 'admin.comments.subtitle',
+  COMMENTS_SEARCH_PLACEHOLDER  = 'admin.comments.search-placeholder',
+  COMMENTS_SEARCH_BTN          = 'admin.comments.search',
+
   // ─── Translations ─────────────────────────────────────────────────────────
+  TRANSLATIONS_ALL_LANGS       = 'admin.translations.all-langs',
   TRANSLATIONS_PAGE_TITLE      = 'admin.translations.title',
   TRANSLATIONS_SUBTITLE        = 'admin.translations.subtitle',
   TRANSLATIONS_ADD_KEY_BTN     = 'admin.translations.add-key',
@@ -221,11 +232,14 @@ export enum AdminMessage {
 
 
   // ─── Table ────────────────────────────────────────────────────
-  TABLE_ACTION = "admin.table.actions",
-  TABLE_LOADING = "admin.table.loading",
-  TABLE_EMPTY_DATA = "admin.table.empty-data",
-  TABLE_ACTION_EDIT = "admin.table.action.edit",
-  TABLE_ACTION_DELETE = "admin.table.action.delete",
+  TABLE_ACTION      = 'admin.table.actions',
+  TABLE_LOADING     = 'admin.table.loading',
+  TABLE_EMPTY_DATA  = 'admin.table.empty-data',
+  TABLE_ACTION_EDIT = 'admin.table.action.edit',
+  TABLE_ACTION_DELETE = 'admin.table.action.delete',
+  TABLE_PER_PAGE    = 'admin.table.per-page',
+  TABLE_SELECTED    = 'admin.table.selected',
+  TABLE_DESELECT    = 'admin.table.deselect',
 
 
   // ───Diaglog────────────────────────────────────────────────────
