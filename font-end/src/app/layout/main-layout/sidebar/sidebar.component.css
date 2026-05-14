@@ -1,0 +1,135 @@
+/* ── Language switcher ── */
+.lang-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 20px;
+}
+
+.lang-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+}
+
+.lang-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 5px 12px 5px 8px;
+  cursor: pointer;
+  color: #555;
+  font-size: 0.8rem;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.lang-trigger:hover {
+  border-color: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.04);
+  color: #222;
+}
+
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 20px;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.lang-trigger-name {
+  font-size: 0.8rem;
+  color: #444;
+  white-space: nowrap;
+}
+
+.lang-chevron {
+  margin-left: 2px;
+  color: #888;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.lang-chevron--up {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 99;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.lang-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.lang-row:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.lang-row--active {
+  background: #222;
+}
+
+.lang-row--active:hover {
+  background: #111;
+}
+
+.lang-row-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.lang-row--active .lang-row-code {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.lang-row-name {
+  font-size: 0.8rem;
+  color: #444;
+  white-space: nowrap;
+}
+
+.lang-row--active .lang-row-name {
+  color: #fff;
+}

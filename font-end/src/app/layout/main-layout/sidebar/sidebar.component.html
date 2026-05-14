@@ -1,5 +1,35 @@
 <aside id="colorlib-aside" role="complementary" class="js-fullheight text-center">
   <h1 id="colorlib-logo"><a href="index.html">Nik<span>.</span></a></h1>
+
+  <!-- Language switcher — below logo, above nav -->
+  @if (availableLanguages.length > 0) {
+    <div class="lang-wrap" [class.lang-wrap--open]="langMenuOpen">
+      @if (langMenuOpen) {
+        <div class="lang-backdrop" (click)="langMenuOpen=false"></div>
+      }
+      <button class="lang-trigger" (click)="langMenuOpen=!langMenuOpen">
+        <span class="lang-badge">{{ currentLang | uppercase }}</span>
+        <span class="lang-trigger-name">{{ currentLangName }}</span>
+        <svg class="lang-chevron" [class.lang-chevron--up]="langMenuOpen"
+             width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      @if (langMenuOpen) {
+        <div class="lang-dropdown">
+          @for (lang of availableLanguages; track lang.code) {
+            <button class="lang-row" [class.lang-row--active]="lang.code === currentLang"
+                    (click)="changeLang(lang.code)">
+              <span class="lang-row-code">{{ lang.code | uppercase }}</span>
+              <span class="lang-row-name">{{ lang.name }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+
   <nav id="colorlib-main-menu" role="navigation">
     <ul>
       @if(configService.config | async; as config){
