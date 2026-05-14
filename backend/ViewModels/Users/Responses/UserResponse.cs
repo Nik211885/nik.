@@ -17,6 +17,9 @@ public class UserResponse
     /// <summary>Phone number.</summary>
     public string? Phone { get; set; }
 
+    /// <summary>Profile picture URL.</summary>
+    public string? Avatar { get; set; }
+
     /// <summary>Short biography.</summary>
     public string Bio { get; set; }
 
@@ -44,6 +47,7 @@ public static class UserResponseExtensions
                 UserName = user.UserName,
                 Email = user.Email,
                 Phone = user.Phone,
+                Avatar = user.Avatar,
                 Bio = user.Bio,
                 Slug = user.Slug,
                 CreatedDate = user.CreatedDate,
@@ -63,6 +67,7 @@ public static class UserResponseExtensions
                 UserName = u.UserName,
                 Email = u.Email,
                 Phone = u.Phone,
+                Avatar = u.Avatar,
                 Bio = u.Bio,
                 Slug = u.Slug,
                 CreatedDate = u.CreatedDate,

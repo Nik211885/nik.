@@ -4,11 +4,17 @@
 
 ```
 font-end/src/app/
+├── admin/                  # Admin panel (lazy-loaded, /admin routes)
+│   ├── features/           # One component per resource (articles, albums, …)
+│   ├── layout/             # AdminLayoutComponent + AdminSidebarComponent
+│   ├── services/           # Admin-specific HTTP services (*.admin.service.ts)
+│   ├── shared/             # admin-table, admin-confirm-modal, cloudinary-upload
+│   └── models/             # admin.model.ts
 ├── core/
 │   ├── auth/               # Auth service, guard, models
-│   ├── interceptors/       # HTTP interceptors
-│   └── services/           # App-wide singleton services
-├── features/               # Page-level components (one per route)
+│   ├── interceptors/       # authInterceptor, acceptLanguageInterceptor
+│   └── services/           # App-wide singletons (LanguageService, ConfigService)
+├── features/               # Public page-level components (one per route)
 │   ├── home/
 │   ├── photography/
 │   ├── travel/
@@ -24,8 +30,8 @@ font-end/src/app/
 │   └── pipes/              # Custom pipes
 ├── app.ts                  # Root component
 ├── app.routes.ts           # Route definitions
-├── app.config.ts           # DI providers
-└── app.message.ts          # Translation key constants
+├── app.config.ts           # DI providers + app initializers
+└── app.message.ts          # Translation key constants (AdminMessage, ApplicationTitle enums)
 ```
 
 ## Naming Conventions

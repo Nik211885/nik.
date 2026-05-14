@@ -1,17 +1,17 @@
 @if (configService.config | async; as config) {
   <div class="hero-wrap hero-wrap-2 js-fullheight"
-       [style.backgroundImage]="'url(' + config.infoPageConfig.avatar + ')'"
+       [style.backgroundImage]="'url(' + config.info.avatar + ')'"
        data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
     <div class="js-fullheight d-flex justify-content-center align-items-center">
       <div class="col-md-8 text text-center">
-        <div class="img mb-4" [style.backgroundImage]="'url(' + config.infoPageConfig.avatar + ')'"></div>
+        <div class="img mb-4" [style.backgroundImage]="'url(' + config.info.avatar + ')'"></div>
         <div class="desc">
           <h2 class="subheading">{{ ApplicationTitle.HELLO_I_AM | language }}</h2>
-          <h1 class="mb-4">{{ config.infoPageConfig.name }}</h1>
-          <p class="mb-4">{{ config.infoPageConfig.bio }}</p>
+          <h1 class="mb-4">{{ config.info.name }}</h1>
+          <p class="mb-4">{{ config.info.bio }}</p>
           <ul class="ftco-social mt-3">
-            @for (item of config.socialConfigs; track item.id) {
+            @for (item of config.social; track item.id) {
               <li class="ftco-animate">
                 <a [href]="item.ref" target="_blank">
                   <span class="icon-{{ item.name.toLowerCase() }}"></span>

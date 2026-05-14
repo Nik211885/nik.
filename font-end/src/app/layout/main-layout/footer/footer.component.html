@@ -41,20 +41,20 @@
               @if (configService.config | async; as config) {
                 <li>
                   <span class="icon icon-map-marker"></span>
-                  <span class="text">{{ config.infoPageConfig.address }}</span>
+                  <span class="text">{{ config.info.address }}</span>
                 </li>
 
                 <li>
-                  <a [href]="'tel:' + config.infoPageConfig.phone">
+                  <a [href]="'tel:' + config.info.phone">
                     <span class="icon icon-phone"></span>
-                    <span class="text">{{ config.infoPageConfig.phone }}</span>
+                    <span class="text">{{ config.info.phone }}</span>
                   </a>
                 </li>
 
                 <li>
-                  <a [href]="'mailto:' + config.infoPageConfig.email">
+                  <a [href]="'mailto:' + config.info.email">
                     <span class="icon icon-envelope"></span>
-                    <span class="text">{{ config.infoPageConfig.email }}</span>
+                    <span class="text">{{ config.info.email }}</span>
                   </a>
                 </li>
               }

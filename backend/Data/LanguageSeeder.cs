@@ -280,6 +280,14 @@ public static class LanguageSeeder
         ("file.max.size",      "File exceeds the maximum size.",    "Tệp vượt quá kích thước cho phép."),
         ("loading.process",    "Processing...",                     "Đang xử lý..."),
 
+        // ─── Public navigation keys (used in config.sidebar) ─────────────────
+        ("nav.home",                  "Home",                "Trang chủ"),
+        ("nav.photography",           "Photography",         "Nhiếp ảnh"),
+        ("nav.travel",                "Travel",              "Du lịch"),
+        ("nav.fashion",               "Fashion",             "Thời trang"),
+        ("nav.about",                 "About",               "Giới thiệu"),
+        ("nav.contact",               "Contact",             "Liên hệ"),
+
         // ─── ApplicationTitle (public site keys) ─────────────────────────────
         ("category",                  "Category",                  "Danh mục"),
         ("archives",                  "Archives",                  "Lưu trữ"),

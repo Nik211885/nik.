@@ -3,27 +3,27 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
-        <div class="row">
-          @for (item of [1,2,3,4,5,6,7,8,9,10,11,12]; track item) {
+        <div class="row" #articleList>
+          @for (article of articles; track article.id) {
             <div class="col-md-6">
-              <app-post-card></app-post-card>
+              <app-post-card [post]="article"></app-post-card>
             </div>
           }
         </div>
+        <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="load($event)"></app-pagination>
       </div>
-      <div class="col-lg-4 sidebar ftco-animate">
+      <div class="col-lg-4 sidebar">
         <div class="sidebar-box">
           <app-search-input [searchDescription]="ApplicationTitle.DESCRIPTION_SEARCH_BOX"></app-search-input>
         </div>
-        <app-sidebar-list [title]="ApplicationTitle.CATEGORY"[statistics]="statisticsCategories"
-        ></app-sidebar-list>
-        <div class="sidebar-box ftco-animate">
+        <app-sidebar-list [title]="ApplicationTitle.CATEGORY" [statistics]="statisticsCategories"></app-sidebar-list>
+        <div class="sidebar-box">
           <h3 class="sidebar-heading">{{ApplicationTitle.POPULAR_ARTICLES | language}}</h3>
           @for (i of [1,2,3]; track i) {
             <app-post-card-compact></app-post-card-compact>
           }
         </div>
-        <div class="sidebar-box ftco-animate">
+        <div class="sidebar-box">
           <h3 class="sidebar-heading">{{ApplicationTitle.TAG_CLOUD | language}}</h3>
           <ul class="tagcloud">
             @for (tag of listTagCloud; track tag.id) {
@@ -32,12 +32,11 @@
           </ul>
         </div>
         <app-news-letter></app-news-letter>
-        <app-sidebar-list [title]="ApplicationTitle.ARCHIVES"[statistics]="statisticsArchives"
-        ></app-sidebar-list>
-        <div class="sidebar-box ftco-animate">
+        <app-sidebar-list [title]="ApplicationTitle.ARCHIVES" [statistics]="statisticsArchives"></app-sidebar-list>
+        <div class="sidebar-box">
           <h3 class="sidebar-heading">{{ApplicationTitle.OUR_STORY | language}}</h3>
           @if(configService.config | async; as config){
-            <p>{{config.infoPageConfig.introduction}}</p>
+            <p>{{config.info.introduction}}</p>
           }
         </div>
       </div>

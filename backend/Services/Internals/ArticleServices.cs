@@ -204,6 +204,22 @@ public class ArticleServices
             .PaginationItemAsync(request);
     }
 
+    /// <summary>
+    /// Returns the top <paramref name="count"/> articles ranked by total engagement score
+    /// (views + likes + hearts + comments).
+    /// </summary>
+    /// <param name="count">Maximum number of articles to return. Defaults to 12.</param>
+    /// <returns>List of article responses ordered by engagement descending.</returns>
+    public async Task<List<ArticleResponse>> GetTopArticlesAsync(int count = 12)
+    {
+        return await _dbContext.Articles
+            .AsNoTracking()
+            .OrderByDescending(a => a.CountSee + a.CountLikeRef + a.CountHeartRef + a.CountCommentRef)
+            .Take(count)
+            .ToArticleResponses()
+            .ToListAsync();
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────
 
     /// <summary>Returns the base article projection query used by all read methods.</summary>

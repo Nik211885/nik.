@@ -14,6 +14,9 @@ public class UpdateUserRequest
     /// <summary>New phone number. <see langword="null"/> leaves the existing value unchanged.</summary>
     public string? Phone { get; set; }
 
+    /// <summary>Profile picture URL. <see langword="null"/> leaves the existing value unchanged.</summary>
+    public string? Avatar { get; set; }
+
     /// <summary>Updated short biography.</summary>
     public string Bio { get; set; }
 }

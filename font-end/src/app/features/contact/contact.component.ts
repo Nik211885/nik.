@@ -16,9 +16,9 @@ export class ContactComponent implements OnInit {
 
   ngOnInit(): void {
     this.configService.config.subscribe((config) => {
-      if (config?.infoPageConfig?.address) {
+      if (config?.info?.address) {
         this.loadGoogleMaps().then(() => {
-          this.initMap(config.infoPageConfig.address);
+          this.initMap(config.info.address);
         });
       }
     });

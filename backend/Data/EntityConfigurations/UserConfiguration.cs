@@ -22,6 +22,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Password)
             .IsRequired()
             .HasMaxLength(255);
+        builder.Property(u => u.Avatar)
+            .HasMaxLength(500);
         builder.Property(u => u.Bio)
             .HasMaxLength(1000);
         builder.Property(u => u.CreatedDate)

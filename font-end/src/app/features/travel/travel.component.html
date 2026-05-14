@@ -4,14 +4,14 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
-        <div class="col-md-12">
-          @for (i of [1,2,3,4,5]; track i) {
-            <app-post-card></app-post-card>
+        <div class="col-md-12" #articleList>
+          @for (article of articles; track article.id) {
+            <app-post-card [post]="article"></app-post-card>
           }
         </div>
-        <app-pagination></app-pagination>
+        <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="load($event)"></app-pagination>
       </div>
-      <div  class="col-lg-4 sidebar ftco-animate">
+      <div class="col-lg-4 sidebar">
         <app-plant-banner></app-plant-banner>
       </div>
     </div>

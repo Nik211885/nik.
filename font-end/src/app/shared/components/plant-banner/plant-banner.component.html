@@ -5,13 +5,13 @@
   <app-sidebar-list [title]="ApplicationTitle.CATEGORY"
                     [statistics]="statisticsCategories"
   ></app-sidebar-list>
-  <div class="sidebar-box ftco-animate">
+  <div class="sidebar-box">
     <h3 class="sidebar-heading">{{ApplicationTitle.POPULAR_ARTICLES | language}}</h3>
     @for (i of [1,2,3,4]; track i) {
       <app-post-card-compact></app-post-card-compact>
     }
   </div>
-  <div class="sidebar-box ftco-animate">
+  <div class="sidebar-box">
     <h3 class="sidebar-heading">{{ApplicationTitle.TAG_CLOUD | language}}</h3>
     <ul class="tagcloud">
       @for (i of [1,2,3,4]; track i) {
@@ -24,10 +24,10 @@
   <app-sidebar-list [title]="ApplicationTitle.ARCHIVES"
                     [statistics]="statisticsArchives"
   ></app-sidebar-list>
-  <div class="sidebar-box ftco-animate">
+  <div class="sidebar-box">
     <h3 class="sidebar-heading">{{ApplicationTitle.OUR_STORY | language}}</h3>
     @if(configService.config | async; as config){
-      <p>{{config.infoPageConfig.introduction}}</p>
+      <p>{{config.info.introduction}}</p>
     }
   </div>
 </div>

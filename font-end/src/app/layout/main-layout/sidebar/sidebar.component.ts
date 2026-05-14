@@ -5,10 +5,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { ConfigService } from '../../../core/services/config.service';
 import { LanguageService, AvailableLanguage } from '../../../core/services/language.service';
+import {LanguagePipe} from "../../../shared/pipes/language.pipe";
 
 @Component({
   selector: 'app-sidebar',
-  imports: [AsyncPipe, RouterLink, RouterLinkActive, UpperCasePipe],
+  imports: [AsyncPipe, RouterLink, RouterLinkActive, UpperCasePipe, LanguagePipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })

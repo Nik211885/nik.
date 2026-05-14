@@ -45,6 +45,9 @@ public class ArticleAuthorItem
 
     /// <summary>URL-friendly slug for the author profile page.</summary>
     public string Slug { get; set; }
+
+    /// <summary>Profile picture URL of the author.</summary>
+    public string? Avatar { get; set; }
 }
 
 /// <summary>
@@ -128,7 +131,8 @@ public static class ArticleResponseExtensions
                 {
                     Id = a.Author.Id,
                     UserName = a.Author.UserName,
-                    Slug = a.Author.Slug
+                    Slug = a.Author.Slug,
+                    Avatar = a.Author.Avatar
                 },
                 Tags = a.ArticleTags.Select(at => new ArticleTagItem
                 {

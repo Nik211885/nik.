@@ -2,3 +2,20 @@ ul {
   display: flex;
   gap: 3px;
 }
+
+li a, li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+li.disabled a {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: default;
+}

@@ -1,16 +1,15 @@
-using System.Net.Mime;
+using System.Globalization;
 using backend.Data;
 using backend.Entities;
 using backend.Exceptions;
 using backend.Services;
 using backend.ViewModels.Configs.Requests;
 using backend.ViewModels.Configs.Responses;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Internals;
 
-/// <summary>Provides CRUD operations for system configuration key-value entries.</summary>
+/// <summary>Provides CRUD operations and public aggregation for system configuration entries.</summary>
 public class SysConfigServices
 {
     private readonly ApplicationDbContext _dbContext;
@@ -125,5 +124,48 @@ public class SysConfigServices
     {
         await _dbContext.SysConfigs.Where(x => ids.Contains(x.Id))
             .ExecuteDeleteAsync();
+    }
+
+    /// <summary>
+    /// Returns all SysConfig entries keyed by the segment after the first dot
+    /// (e.g. <c>config.sidebar</c> → <c>sidebar</c>), plus computed article archive
+    /// and category archive statistics.
+    /// </summary>
+    public async Task<Dictionary<string, object?>> GetPublicConfigAsync()
+    {
+        var allConfigs = await _dbContext.SysConfigs.AsNoTracking().ToListAsync();
+
+        var result = new Dictionary<string, object?>();
+        foreach (var cfg in allConfigs)
+        {
+            var dot = cfg.Key.IndexOf('.');
+            var key = dot >= 0 ? cfg.Key[(dot + 1)..] : cfg.Key;
+            result[key] = cfg.Value.RootElement;
+        }
+
+        var archivesRaw = await _dbContext.Articles
+            .AsNoTracking()
+            .GroupBy(a => new { a.CreatedDate.Year, a.CreatedDate.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .OrderByDescending(g => g.Year)
+            .ThenByDescending(g => g.Month)
+            .ToListAsync();
+        result["archivesCountAtTime"] = archivesRaw
+            .Select(g => new
+            {
+                time = new DateTime(g.Year, g.Month, 1).ToString("MMMM yyyy", CultureInfo.InvariantCulture),
+                count = g.Count,
+                @ref  = $"/archives/{g.Year}/{g.Month:D2}"
+            })
+            .ToList<object>();
+
+        result["categoryCountArchives"] = await _dbContext.Categories
+            .AsNoTracking()
+            .Where(c => c.CountRef > 0)
+            .OrderByDescending(c => c.CountRef)
+            .Select(c => new { id = c.Id, name = c.Title, count = c.CountRef, @ref = "/" + c.Slug })
+            .ToListAsync<object>();
+
+        return result;
     }
 }

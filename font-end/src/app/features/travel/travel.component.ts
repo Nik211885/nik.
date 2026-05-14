@@ -1,35 +1,37 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HeroCarouselComponent} from '../../shared/components/hero-carousel/hero-carousel.component';
 import {PostCardComponent} from '../../shared/components/post-card/post-card.component';
 import {PaginationComponent} from '../../shared/components/pagination/pagination.component';
-import {SearchInputComponent} from '../../shared/components/search-input/search-input.component';
-import {ApplicationTitle} from '../../app.message';
-import {SidebarListComponent} from '../../shared/components/sidebar-list/sidebar-list.component';
-import {listTagCloud, statisticsArchives, statisticsCategories} from '../../app-data.fake';
-import {LanguagePipe} from '../../shared/pipes/language.pipe';
-import {PostCardCompactComponent} from '../../shared/components/post-card-compact/post-card-compact.component';
-import {TagCloudComponent} from '../../shared/components/tag-cloud/tag-cloud.component';
-import {AsyncPipe} from '@angular/common';
-import {NewsLetterComponent} from '../../shared/components/news-letter/news-letter.component';
-import {ConfigService} from '../../core/services/config.service';
 import {PlantBannerComponent} from '../../shared/components/plant-banner/plant-banner.component';
+import {ArticleService} from '../../core/services/article.service';
+import {ArticleModel} from '../../shared/models/article.model';
 
 @Component({
   selector: 'app-travel',
-  imports: [
-    HeroCarouselComponent,
-    PostCardComponent,
-    PaginationComponent,
-    PlantBannerComponent
-  ],
+  imports: [HeroCarouselComponent, PostCardComponent, PaginationComponent, PlantBannerComponent],
   templateUrl: './travel.component.html',
   styleUrl: './travel.component.css',
 })
-export class TravelComponent {
-  constructor(protected readonly configService: ConfigService) {
+export class TravelComponent implements OnInit {
+  @ViewChild('articleList') articleList!: ElementRef;
+
+  articles: ArticleModel[] = [];
+  currentPage = 1;
+  pageCount = 0;
+
+  constructor(private articleService: ArticleService) {}
+
+  ngOnInit(): void {
+    this.load(1);
   }
-  protected readonly ApplicationTitle = ApplicationTitle;
-  protected readonly statisticsCategories = statisticsCategories;
-  protected readonly listTagCloud = listTagCloud;
-  protected readonly statisticsArchives = statisticsArchives;
+
+  load(page: number): void {
+    this.currentPage = page;
+    this.articleService.getArticles(page, 6).subscribe(res => {
+      this.articles = res.data;
+      this.currentPage = res.pageNumber;
+      this.pageCount = res.pageCount;
+      this.articleList?.nativeElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+    });
+  }
 }

@@ -63,6 +63,8 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
     await LanguageSeeder.SeedAsync(dbContext);
     await AlbumSeeder.SeedAsync(dbContext);
+    await ArticleSeeder.SeedAsync(dbContext);
+    await SysConfigSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())

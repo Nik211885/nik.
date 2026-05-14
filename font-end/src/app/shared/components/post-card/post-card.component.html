@@ -1,23 +1,24 @@
+@if (post) {
 <div>
-  <div class="blog-entry ftco-animate">
+  <div class="blog-entry">
     <a [routerLink]="post.slug" class="img img-2" [style.background-image]="'url('+post.image +')'"></a>
     <div class="text text-2 pt-2 mt-3">
-      <span class="category mb-3 d-block"><a [routerLink]="post.category.slug">{{post.category.name}}</a></span>
+      <span class="category mb-3 d-block"><a [routerLink]="post.categories[0]?.slug">{{post.categories[0]?.name}}</a></span>
       <h3 class="mb-4 line-clamp-2"><a [routerLink]="post.slug">{{post.title}}</a></h3>
       <p class="mb-4 line-clamp-2">{{post.description}}</p>
       <div class="author mb-4 d-flex align-items-center">
-        <a [routerLink]="post.writer.slug" class="img" [style.background-image]="'url('+post.writer.avatar+')'"></a>
+        <a [routerLink]="post.author.slug" class="img" [style.background-image]="post.author.avatar ? 'url(' + post.author.avatar + ')' : ''"></a>
         <div class="ml-3 info">
           <span>{{ApplicationTitle.WRITE_BY | language}}</span>
-          <h3><a [routerLink]="post.writer.slug">{{post.writer.name}}</a>, <span>{{(post.updatedAt ?? post.createdAt) | appDate}}</span></h3>
+          <h3><a [routerLink]="post.author.slug">{{post.author.userName}}</a>, <span>{{(post.updatedDate ?? post.createdDate) | appDate}}</span></h3>
         </div>
       </div>
       <div class="meta-wrap align-items-center">
         <div class="half order-md-last">
           <p class="meta">
-            <span><i class="icon-heart"></i>{{post.heart}}</span>
-            <span><i class="icon-eye"></i>{{post.see}}</span>
-            <span><i class="icon-comment"></i>{{post.comment}}</span>
+            <span><i class="icon-heart"></i>{{post.countHeartRef}}</span>
+            <span><i class="icon-eye"></i>{{post.countSee}}</span>
+            <span><i class="icon-comment"></i>{{post.countCommentRef}}</span>
           </p>
         </div>
         <div class="half">
@@ -27,3 +28,4 @@
     </div>
   </div>
 </div>
+}

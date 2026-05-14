@@ -59,4 +59,12 @@ public class SysConfigController : ControllerBase
         var response = await _configServices.GetConfigByIdAsync(id);
         return Ok(response);
     }
+
+    /// <summary>Returns all SysConfig entries plus article and category archive stats. No authentication required.</summary>
+    [HttpGet("~/public-api/config")]
+    public async Task<ActionResult> GetPublicConfig()
+    {
+        var result = await _configServices.GetPublicConfigAsync();
+        return Ok(result);
+    }
 }

@@ -4,11 +4,11 @@
     @if(configService.config  | async; as config)
     {
       <div class="col-md-8 text text-center">
-        <div class="img mb-4" [style.background-image]="'url('+config.infoPageConfig.avatar+')'"></div>
+        <div class="img mb-4" [style.background-image]="'url('+config.info.avatar+')'"></div>
         <div class="desc">
           <h2 class="subheading">{{ApplicationTitle.HELLO_I_AM | language}}</h2>
-          <h1 class="mb-4">{{config.infoPageConfig.name}}</h1>
-          <p class="mb-4">{{config.infoPageConfig.bio}}</p>
+          <h1 class="mb-4">{{config.info.name}}</h1>
+          <p class="mb-4">{{config.info.bio}}</p>
           <p><a routerLink="about" class="btn-custom">{{ApplicationTitle.MORE_ABOUT_ME | language}} <span class="ion-ios-arrow-forward"></span></a></p>
         </div>
       </div>

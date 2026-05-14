@@ -17,6 +17,9 @@ public class User : BaseEntity
     /// <summary>Hashed password for local authentication.</summary>
     public string Password { get; set; }
 
+    /// <summary>Profile picture URL.</summary>
+    public string? Avatar { get; set; }
+
     /// <summary>Short biography displayed on the about/profile page.</summary>
     public string Bio { get; set; }
 

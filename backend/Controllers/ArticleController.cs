@@ -66,6 +66,14 @@ public class ArticleController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Returns the top 12 articles ranked by total engagement (views + likes + hearts + comments).</summary>
+    [HttpGet("top")]
+    public async Task<ActionResult> GetTopArticles()
+    {
+        var result = await _articleServices.GetTopArticlesAsync();
+        return Ok(result);
+    }
+
     /// <summary>Returns a paginated list of articles, optionally filtered by category slug, tag slug, or keyword.</summary>
     [HttpGet("")]
     public async Task<ActionResult> GetPagination([FromQuery] GetArticlesPaginationRequest request)
