@@ -10,7 +10,7 @@ namespace backend.ViewModels.Albums.Responses;
 public class AlbumFileResponse
 {
     /// <summary>ID of the file record.</summary>
-    public string FileId { get; set; }
+    public string Id { get; set; }
 
     /// <summary>ID of the album this file belongs to.</summary>
     public string AlbumId { get; set; }
@@ -41,7 +41,7 @@ public static class AlbumFileResponseExtensions
         {
             return albumFiles.Select(af => new AlbumFileResponse
             {
-                FileId = af.FileId,
+                Id = af.FileId,
                 AlbumId = af.AlbumId,
                 Name = af.File.Name,
                 Title = af.File.Title,

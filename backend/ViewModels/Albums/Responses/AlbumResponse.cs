@@ -26,8 +26,8 @@ public class AlbumResponse
     /// <summary>Denormalised count of files in this album.</summary>
     public int CountImageRef { get; set; }
 
-    /// <summary>Cover file ID.</summary>
-    public string FileDescriptionId { get; set; }
+    /// <summary>Cover file ID. <see langword="null"/> when no cover is set.</summary>
+    public string? FileDescriptionId { get; set; }
 
     /// <summary>Display order index.</summary>
     public int OrderIndex { get; set; }
@@ -81,7 +81,20 @@ public static class AlbumResponseExtensions
         /// </summary>
         public IQueryable<AlbumResponse> ToAlbumResponses()
         {
-            return albums.Select(album => album.ToAlbumResponse());
+            return albums.Select(album => new AlbumResponse
+            {
+                Id = album.Id,
+                Name = album.Name,
+                Title = album.Title,
+                Description = album.Description,
+                Slug = album.Slug,
+                CountImageRef = album.CountImageRef,
+                FileDescriptionId = album.FileDescriptionId,
+                OrderIndex = album.OrderIndex,
+                AlbumId = album.AlbumId,
+                CreatedDate = album.CreatedDate,
+                UpdatedDate = album.UpdatedDate
+            });
         }
     }
 }

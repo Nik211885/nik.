@@ -30,8 +30,8 @@ public class Album : BaseEntity
     /// <summary>Navigation property for the cover/description file.</summary>
     public File File { get; set; }
 
-    /// <summary>Foreign key referencing the cover <see cref="File"/>.</summary>
-    public string FileDescriptionId { get; set; }
+    /// <summary>Foreign key referencing the cover <see cref="File"/>. <see langword="null"/> when no cover is set.</summary>
+    public string? FileDescriptionId { get; set; }
 
     /// <summary>Junction records linking this album to its files.</summary>
     public ICollection<AlbumFile> AlbumFiles { get; set; }

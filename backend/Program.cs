@@ -15,16 +15,12 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:4200",
-                "http://localhost:5173",
-                "https://localhost:4200")
+        policy
+            .AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
     });
 });
-
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -66,6 +62,7 @@ using (var scope = app.Services.CreateScope())
     ArgumentNullException.ThrowIfNull(dbContext);
     await dbContext.Database.MigrateAsync();
     await LanguageSeeder.SeedAsync(dbContext);
+    await AlbumSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())
