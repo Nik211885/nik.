@@ -11,4 +11,7 @@ public class LanguageResponse
 
     /// <summary>Human-readable display name (e.g. "English").</summary>
     public string Name { get; set; }
+
+    /// <summary>Flag emoji for display in language switchers (e.g. <c>🇬🇧</c>).</summary>
+    public string? Icon { get; set; }
 }

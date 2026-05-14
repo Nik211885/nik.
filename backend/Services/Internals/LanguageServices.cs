@@ -190,7 +190,8 @@ public class LanguageServices
             {
                 Id = x.Id,
                 Code = x.Code,
-                Name = x.Name
+                Name = x.Name,
+                Icon = x.Icon
             }).AsNoTracking().ToListAsync();
         return result;
     }
@@ -253,11 +254,11 @@ public class LanguageServices
             throw new BadRequestException(ApplicationMessage.ExitsCode);
         }
 
-        var entity = new Language { Code = request.Code, Name = request.Name };
+        var entity = new Language { Code = request.Code, Name = request.Name, Icon = request.Icon };
         _dbContext.Languages.Add(entity);
         await _dbContext.SaveChangesAsync();
 
-        return new LanguageResponse { Id = entity.Id, Code = entity.Code, Name = entity.Name };
+        return new LanguageResponse { Id = entity.Id, Code = entity.Code, Name = entity.Name, Icon = entity.Icon };
     }
 
     /// <summary>
@@ -284,10 +285,11 @@ public class LanguageServices
 
         language.Code = request.Code;
         language.Name = request.Name;
+        language.Icon = request.Icon;
         _dbContext.Languages.Update(language);
         await _dbContext.SaveChangesAsync();
 
-        return new LanguageResponse { Id = language.Id, Code = language.Code, Name = language.Name };
+        return new LanguageResponse { Id = language.Id, Code = language.Code, Name = language.Name, Icon = language.Icon };
     }
 
     /// <summary>Deletes one or more languages by ID.</summary>

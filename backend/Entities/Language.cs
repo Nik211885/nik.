@@ -12,6 +12,9 @@ public class Language : BaseEntity
     /// <summary>Human-readable display name of the language (e.g. "English").</summary>
     public string Name { get; set; }
 
+    /// <summary>Flag emoji displayed in the language switcher (e.g. <c>🇬🇧</c>).</summary>
+    public string? Icon { get; set; }
+
     /// <summary>All translation strings that belong to this language.</summary>
     public ICollection<Translate> Translates { get; set; }
 }

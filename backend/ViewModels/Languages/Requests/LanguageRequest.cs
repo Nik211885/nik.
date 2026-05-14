@@ -8,4 +8,7 @@ public class LanguageRequest
 
     /// <summary>Human-readable display name of the language (e.g. "English").</summary>
     public string Name { get; set; }
+
+    /// <summary>Flag emoji or short icon string (e.g. <c>🇬🇧</c>). Optional.</summary>
+    public string? Icon { get; set; }
 }

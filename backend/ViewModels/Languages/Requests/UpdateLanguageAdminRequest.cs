@@ -11,4 +11,7 @@ public class UpdateLanguageAdminRequest
 
     /// <summary>New human-readable display name (e.g. "English").</summary>
     public string Name { get; set; }
+
+    /// <summary>Flag emoji or short icon string (e.g. <c>🇬🇧</c>). Optional.</summary>
+    public string? Icon { get; set; }
 }
