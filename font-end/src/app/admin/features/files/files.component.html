@@ -64,7 +64,7 @@
         <div class="file-actions">
           <button class="file-action-btn" (click)="copyUrl(item.url)"><i class="bi bi-clipboard"></i></button>
           <button class="file-action-btn" (click)="openEdit(item)"><i class="bi bi-pencil"></i></button>
-          <button class="file-action-btn file-action-btn--danger" (click)="openDelete(item)"><i class="bi bi-trash3"></i></button>
+          <button class="file-action-btn file-action-btn--danger" (click)="openDelete([item])"><i class="bi bi-trash3"></i></button>
         </div>
       </div>
       <div class="file-meta">

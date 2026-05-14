@@ -5,8 +5,8 @@ import { CommentAdminService } from '../../services/comment.admin.service';
 import { AdminTableComponent } from '../../shared/admin-table.component';
 import { AdminConfirmModalComponent } from '../../shared/admin-confirm-modal.component';
 import { CommentItem, TableColumn } from '../../models/admin.model';
-import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 
 @Component({
   selector: 'app-comments-admin',
@@ -20,6 +20,7 @@ export class CommentsAdminComponent implements OnInit {
   loading = false;
   showConfirm = false;
   selected: CommentItem | null = null;
+  deleteItems: CommentItem[] = [];
   articleId = '';
 
   protected readonly AdminMessage = AdminMessage;
@@ -44,10 +45,10 @@ export class CommentsAdminComponent implements OnInit {
     });
   }
 
-  openDelete(item: CommentItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: CommentItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.search(); },
       error: () => { this.showConfirm = false; }
     });

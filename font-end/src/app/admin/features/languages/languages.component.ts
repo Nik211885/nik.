@@ -22,6 +22,7 @@ export class LanguagesAdminComponent implements OnInit {
   showConfirm = false;
   isEditing = false;
   selected: LanguageItem | null = null;
+  deleteItems: LanguageItem[] = [];
   saving = false;
   error = '';
 
@@ -58,7 +59,7 @@ export class LanguagesAdminComponent implements OnInit {
     this.showModal = true;
   }
 
-  openDelete(item: LanguageItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: LanguageItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   save(): void {
     this.saving = true;
@@ -73,7 +74,7 @@ export class LanguagesAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.deleteLanguage([this.selected!.id]).subscribe({
+    this.svc.deleteLanguage(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(); },
       error: () => { this.showConfirm = false; }
     });

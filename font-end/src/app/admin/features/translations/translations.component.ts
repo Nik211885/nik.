@@ -26,11 +26,14 @@ export class TranslationsAdminComponent implements OnInit {
   showKeyModal = false;
   isEditing = false;
   selected: TranslateItem | null = null;
+  deleteItems: TranslateItem[] = [];
   saving = false;
   error = '';
 
   form = { codeId: '', languageId: '', value: '' };
   keyForm = { code: '' };
+
+  filterLang = '';
 
   protected readonly AdminMessage = AdminMessage;
 
@@ -65,6 +68,11 @@ export class TranslationsAdminComponent implements OnInit {
     });
   }
 
+  get filteredItems(): TranslateItem[] {
+    if (!this.filterLang) return this.items;
+    return this.items.filter(t => t.languageId === this.filterLang);
+  }
+
   openCreate(): void {
     this.isEditing = false;
     this.form = { codeId: '', languageId: '', value: '' };
@@ -80,7 +88,7 @@ export class TranslationsAdminComponent implements OnInit {
     this.showModal = true;
   }
 
-  openDelete(item: TranslateItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: TranslateItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   openKeyModal(): void { this.keyForm = { code: '' }; this.showKeyModal = true; }
 
@@ -105,7 +113,7 @@ export class TranslationsAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.deleteTranslation([this.selected!.id]).subscribe({
+    this.svc.deleteTranslation(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(); },
       error: () => { this.showConfirm = false; }
     });

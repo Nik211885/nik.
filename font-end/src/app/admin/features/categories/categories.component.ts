@@ -23,6 +23,7 @@ export class CategoriesAdminComponent implements OnInit {
   showConfirm = false;
   isEditing = false;
   selected: CategoryItem | null = null;
+  deleteItems: CategoryItem[] = [];
   saving = false;
   error = '';
 
@@ -62,7 +63,7 @@ export class CategoriesAdminComponent implements OnInit {
     this.showModal = true;
   }
 
-  openDelete(item: CategoryItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: CategoryItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   save(): void {
     this.saving = true;
@@ -77,7 +78,7 @@ export class CategoriesAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(); },
       error: () => { this.showConfirm = false; }
     });

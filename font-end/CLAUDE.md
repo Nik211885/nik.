@@ -107,6 +107,37 @@ this.langSvc.translate(ApplicationTitle.LOGIN_TITLE)
 
 > Admin panel UI also uses `AdminMessage` enum keys + `LanguagePipe`. Add keys to `app.message.ts` under the `AdminMessage` enum and register translations in the `/admin/translations` page.
 
+## i18n Enforcement Rules — Zero Hardcoded Strings
+
+**Every visible string in every template must go through `| language`.** No exceptions.
+
+This applies to:
+- Element text content: `<button>`, `<label>`, `<span>`, `<p>`, `<h*>`, `<th>`, `<option>`, `<small>` …
+- Attribute values that users see: `placeholder`, `title`, `alt`
+- `[title]="AdminMessage.KEY | language"` — use property binding for translated attributes
+
+**What NOT to translate:** format hints in `placeholder` like `"vi, en, fr..."` or `"exception.not_found"` (technical examples), inline SVG fallback text, and pure icon classes.
+
+**Checklist when adding any user-facing text:**
+
+1. Add the key to `app.message.ts` → `AdminMessage` (admin UI) or `ApplicationTitle` (public site)
+2. Use `{{ AdminMessage.KEY | language }}` in the template (or `[attr]="AdminMessage.KEY | language"`)
+3. Add the key + EN + VI translations to `backend/Data/LanguageSeeder.cs` → `GetEntries()`
+4. Restart the backend — `LanguageSeeder` runs on startup and is idempotent
+
+```typescript
+// app.message.ts
+ALBUMS_EXPAND_ALL = 'admin.albums.expand-all',
+
+// template
+{{ AdminMessage.ALBUMS_EXPAND_ALL | language }}
+
+// LanguageSeeder.cs
+("admin.albums.expand-all", "Expand all", "Mở rộng tất cả"),
+```
+
+**Never** write Vietnamese or English text directly in a template. If a key is missing from the seeder, the pipe shows the raw key string as a fallback — which makes it easy to spot omissions.
+
 ## Component Pattern
 
 All components are **standalone**:

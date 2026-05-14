@@ -31,6 +31,7 @@ export class FilesAdminComponent implements OnInit, OnDestroy {
   showConfirm = false;
   isEditing = false;
   selected: FileItem | null = null;
+  deleteItems: FileItem[] = [];
   saving = false;
   error = '';
 
@@ -74,7 +75,7 @@ export class FilesAdminComponent implements OnInit, OnDestroy {
     this.showModal = true;
   }
 
-  openDelete(item: FileItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: FileItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   save(): void {
     if (!this.isEditing && !this.form.url) {
@@ -93,7 +94,7 @@ export class FilesAdminComponent implements OnInit, OnDestroy {
   }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(this.page.pageNumber); },
       error: () => { this.showConfirm = false; }
     });

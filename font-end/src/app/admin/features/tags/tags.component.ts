@@ -23,6 +23,7 @@ export class TagsAdminComponent implements OnInit {
   showConfirm = false;
   isEditing = false;
   selected: TagItem | null = null;
+  deleteItems: TagItem[] = [];
   saving = false;
   error = '';
 
@@ -62,7 +63,7 @@ export class TagsAdminComponent implements OnInit {
     this.showModal = true;
   }
 
-  openDelete(item: TagItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: TagItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   save(): void {
     this.saving = true;
@@ -77,7 +78,7 @@ export class TagsAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.load(); },
       error: () => { this.showConfirm = false; }
     });

@@ -43,6 +43,7 @@ export class ArticlesAdminComponent implements OnInit {
   showConfirm = false;
   isEditing = false;
   selected: ArticleItem | null = null;
+  deleteItems: ArticleItem[] = [];
   saving = false;
   error = '';
 
@@ -105,7 +106,7 @@ export class ArticlesAdminComponent implements OnInit {
     this.showModal = true;
   }
 
-  openDelete(item: ArticleItem): void { this.selected = item; this.showConfirm = true; }
+  openDelete(items: ArticleItem[]): void { this.deleteItems = items; this.selected = items[0] ?? null; this.showConfirm = true; }
 
   toggleTag(id: string): void {
     const idx = this.form.tagIds.indexOf(id);
@@ -130,7 +131,7 @@ export class ArticlesAdminComponent implements OnInit {
   }
 
   delete(): void {
-    this.svc.delete([this.selected!.id]).subscribe({
+    this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => { this.showConfirm = false; this.loadAll(this.page.pageNumber); },
       error: () => { this.showConfirm = false; }
     });

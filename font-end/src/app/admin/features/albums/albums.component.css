@@ -1,1 +1,170 @@
 @import '../../shared/admin-page.css';
+
+/* ── Drag & drop overlay ──────────────────────────────────────────────── */
+.page-drop-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(13,110,253,.12); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.page-drop-inner {
+  background: #fff; border: 3px dashed #0d6efd;
+  border-radius: 20px; padding: 3rem 5rem;
+  text-align: center; color: #0d6efd;
+}
+.page-drop-inner i { font-size: 3.5rem; display: block; margin-bottom: .75rem; }
+.page-drop-inner p { font-size: 1.1rem; font-weight: 600; margin: 0; }
+
+/* ── Batch upload tray ────────────────────────────────────────────────── */
+.batch-tray {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; width: 300px;
+  background: #fff; border: 1px solid #dee2e6; border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12); z-index: 1050; overflow: hidden;
+}
+.batch-header { padding: .625rem 1rem; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+.batch-item { padding: .5rem 1rem; border-bottom: 1px solid #f1f3f5; }
+.batch-item:last-child { border-bottom: none; }
+.batch-name { max-width: 200px; display: inline-block; }
+
+/* ── Tree view ────────────────────────────────────────────────────────── */
+.tree-list { display: flex; flex-direction: column; gap: 2px; }
+
+.tree-node-inner {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .45rem .75rem; border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background .12s, border-color .12s;
+}
+.tree-node-inner:hover { background: #f8f9fa; border-color: #e9ecef; }
+
+.tree-expand-btn {
+  width: 22px; height: 22px; padding: 0; border: none; background: none;
+  display: flex; align-items: center; justify-content: center;
+  color: #6c757d; border-radius: 4px; flex-shrink: 0; cursor: pointer;
+  transition: background .1s;
+}
+.tree-expand-btn:hover { background: #e9ecef; }
+
+.tree-folder-icon { color: #f0c040; font-size: 1rem; flex-shrink: 0; }
+
+.tree-name { font-weight: 500; font-size: .9rem; }
+.tree-title { font-size: .8rem; }
+
+.tree-actions {
+  display: flex; gap: .35rem; opacity: 0; transition: opacity .15s;
+}
+.tree-node-inner:hover .tree-actions { opacity: 1; }
+
+/* ── Explorer breadcrumb ──────────────────────────────────────────────── */
+.explorer-breadcrumb {
+  display: flex; align-items: center; gap: .25rem;
+  flex-wrap: wrap; background: #f8f9fa;
+  border-radius: 8px; padding: .5rem .75rem;
+}
+
+.crumb-btn {
+  padding: .2rem .55rem; border: none; background: none;
+  font-size: .85rem; border-radius: 6px; cursor: pointer; color: #495057;
+  transition: background .12s, color .12s;
+}
+.crumb-btn:hover { background: #e9ecef; color: #000; }
+.crumb-btn--active { color: #212529; font-weight: 600; }
+
+.crumb-sep { color: #adb5bd; font-size: .75rem; display: flex; align-items: center; }
+
+/* ── Album folder grid ────────────────────────────────────────────────── */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.album-folder-card {
+  border: 1px solid #e9ecef; border-radius: 12px;
+  padding: 1rem; cursor: pointer; background: #fff;
+  transition: box-shadow .15s, transform .15s, border-color .15s;
+  position: relative;
+}
+.album-folder-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  transform: translateY(-2px);
+  border-color: #dee2e6;
+}
+
+.album-folder-icon {
+  position: relative; font-size: 2.5rem; color: #f0c040;
+  margin-bottom: .5rem; line-height: 1;
+}
+.album-folder-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: #212529; color: #fff; font-size: .65rem;
+  font-weight: 700; border-radius: 999px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.album-folder-meta { min-width: 0; }
+.album-folder-name {
+  font-weight: 600; font-size: .88rem; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.album-folder-subtitle {
+  font-size: .78rem; color: #6c757d; margin: .1rem 0 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.album-folder-actions {
+  position: absolute; top: .5rem; right: .5rem;
+  display: flex; gap: .25rem;
+  opacity: 0; transition: opacity .15s;
+}
+.album-folder-card:hover .album-folder-actions { opacity: 1; }
+
+/* ── Files section ────────────────────────────────────────────────────── */
+.files-section { border-top: 1px solid #e9ecef; padding-top: 1.25rem; margin-top: .5rem; }
+
+.file-drop-hint { border: 2px dashed #dee2e6; border-radius: 12px; padding: 3rem; }
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.file-card {
+  border: 1px solid #e9ecef; border-radius: 12px;
+  overflow: hidden; background: #fff;
+  transition: box-shadow .15s, transform .15s;
+}
+.file-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-2px); }
+
+.file-thumb-wrap { position: relative; aspect-ratio: 1; background: #f8f9fa; overflow: hidden; }
+.file-thumb { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s; }
+.file-card:hover .file-thumb { transform: scale(1.04); }
+
+.file-actions {
+  position: absolute; inset: 0; background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  gap: .5rem; opacity: 0; transition: opacity .15s;
+}
+.file-card:hover .file-actions { opacity: 1; }
+
+.file-action-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,.9); color: #343a40; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .12s, color .12s;
+}
+.file-action-btn:hover { background: #fff; color: #000; }
+.file-action-btn--danger:hover { background: #f8d7da; color: #842029; }
+
+.file-meta { padding: .5rem .75rem .625rem; }
+.file-name {
+  font-size: .8rem; font-weight: 600; color: #343a40;
+  margin: 0 0 .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.file-title {
+  font-size: .74rem; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}

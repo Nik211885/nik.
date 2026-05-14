@@ -1,15 +1,26 @@
 <div class="page-header d-flex justify-content-between align-items-center">
   <div>
     <h4 class="fw-bold mb-1">{{ AdminMessage.TRANSLATIONS_PAGE_TITLE | language }}</h4>
-    <p class="text-muted mb-0 small">{{ AdminMessage.TRANSLATIONS_SUBTITLE | language }}</p>
+    <p class="text-muted mb-0 small">{{ items.length }}</p>
   </div>
   <div class="d-flex gap-2">
     <button class="btn btn-outline-dark btn-sm" (click)="openKeyModal()"><i class="bi bi-key me-1"></i>{{ AdminMessage.TRANSLATIONS_ADD_KEY_BTN | language }}</button>
     <button class="btn btn-dark" (click)="openCreate()"><i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.TRANSLATIONS_CREATE_BTN | language }}</button>
   </div>
 </div>
+
 <div class="admin-card">
-  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+  <div class="filter-bar mb-3">
+    <select class="form-select form-select-sm filter-lang-select"
+      [(ngModel)]="filterLang">
+      <option value="">{{ AdminMessage.TRANSLATIONS_ALL_LANGS | language }}</option>
+      @for (l of languages; track l.id) {
+      <option [value]="l.id">{{ l.code }} — {{ l.name }}</option>
+      }
+    </select>
+  </div>
+
+  <app-admin-table [columns]="columns" [data]="filteredItems" [loading]="loading"
     (editClick)="openEdit($event)" (deleteClick)="openDelete($event)"></app-admin-table>
 </div>
 
