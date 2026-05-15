@@ -121,3 +121,7 @@ Both sides use the same shape. Backend produces `PaginationItem<T>` (`data`, `to
 ### File Uploads
 
 Cloudinary uploads go directly from the frontend using absolute URLs — they bypass `authInterceptor` automatically (URL contains `cloudinary.com`). The `Files` entity on the backend stores metadata only.
+
+### Angular 21 Zoneless Change Detection
+
+Angular 21 defaults to **zoneless mode** — `ApplicationRef.tick()` is a no-op, plain property assignments in HTTP subscribe callbacks do not update the view. Fixed globally via `font-end/src/app/core/interceptors/zone.interceptor.ts` which calls `queueMicrotask(() => appRef.components[0]?.changeDetectorRef.detectChanges())` after every HTTP response. See `font-end/CLAUDE.md` for full details and the list of failed approaches to avoid.

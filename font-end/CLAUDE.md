@@ -363,3 +363,40 @@ For simple components and feature pages, omit comments — code should be self-e
 4. Create services in `core/services/` if data is shared; keep local if feature-specific
 5. Use `LanguagePipe` for all user-facing strings
 6. Register new translation keys in `app.message.ts`
+
+## Angular 21 Zoneless Change Detection
+
+Angular 21 bootstraps with **zoneless mode by default** (`provideZonelessChangeDetectionInternal()` is injected automatically before user providers). This means:
+
+- `NgZone` is replaced with `NoopNgZone` — zone.js does **not** trigger Angular CD
+- `ApplicationRef.tick()` is a **no-op** in zoneless mode (skips dirty flag setup, loop never runs)
+- Plain property assignments in subscribe callbacks (e.g. `this.items = data`) **do not trigger view updates**
+- DOM events from Angular template bindings (`(click)="..."`) **do** trigger CD because Angular's renderer wraps them
+
+### The fix — `zone.interceptor.ts`
+
+`font-end/src/app/core/interceptors/zone.interceptor.ts` is a global HTTP interceptor that forces CD after every HTTP response:
+
+```typescript
+tap({
+  next: () => {
+    queueMicrotask(() => {
+      appRef.components[0]?.changeDetectorRef.detectChanges();
+    });
+  }
+})
+```
+
+**Why `queueMicrotask`:** `tap` runs before the component's `.subscribe()` callback. The microtask defers `detectChanges()` until after the component has assigned `this.data = response`, so the view update picks up the new values.
+
+**Why `detectChanges()` works:** It sets `lView[FLAGS] |= 1024` directly and calls `detectChangesInternal(lView, mode=0)` — a full global tree check that bypasses the dirty-flag guards that block `tick()` in zoneless mode.
+
+### What NOT to do
+
+| Approach | Why it fails |
+|---|---|
+| `provideZoneChangeDetection()` in providers | Conflicts with Angular's default `provideZonelessChangeDetectionInternal()` → blank page |
+| `provideZoneChangeDetection({ eventCoalescing: true })` | Same conflict, worse — coalescing causes bootstrap failure |
+| `appRef.tick()` | No-op in zoneless: `if (!this.zonelessEnabled) { this.dirtyFlags \|= 1; }` guard skips setup |
+| `NgZone.run()` | `NgZone` is `NoopNgZone` — just calls the function directly, no CD |
+| `tap(detectChanges)` synchronously | Runs before component sets data — detects nothing new |

@@ -2,16 +2,16 @@ import {
   ApplicationConfig, inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import {provideRouter, withInMemoryScrolling} from '@angular/router';
 
 import { routes } from './app.routes';
-import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {LanguageService} from './core/services/language.service';
 import {authInterceptor} from './core/interceptors/auth.interceptor';
 import {ConfigService} from './core/services/config.service';
 import {acceptLanguageInterceptor} from './core/interceptors/accept-language.interceptor';
+import {zoneInterceptor} from './core/interceptors/zone.interceptor';
 import {PageViewTrackerService} from './core/services/page-view-tracker.service';
 
 export const appConfig: ApplicationConfig = {
@@ -23,13 +23,10 @@ export const appConfig: ApplicationConfig = {
        })
     ),
     provideHttpClient(
-      withFetch(),
-       withInterceptors([authInterceptor, acceptLanguageInterceptor])
+       withInterceptors([authInterceptor, acceptLanguageInterceptor, zoneInterceptor])
        ),
     provideAppInitializer(()=> inject(ConfigService).readConfig()),
     provideAppInitializer(() =>inject(LanguageService).init()),
     provideAppInitializer(() => { inject(PageViewTrackerService); }),
-    // provideAppInitializer(()=> inject(AuthService).initSession()),
-    // provideAppInitializer(()=> inject(ConfigService).readConfigAuth())
   ]
 };
