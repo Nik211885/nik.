@@ -113,7 +113,14 @@ public static class AlbumSeeder
             foreach (var file in files)
                 db.AlbumFiles.Add(new AlbumFile { AlbumId = album.Id, FileId = file.Id });
             album.CountImageRef = files.Length;
+            album.FileDescriptionId = files[0].Id;
         }
+
+        // cover for parent albums — pick first file from a representative child
+        travel.FileDescriptionId      = demoImages[0].Id;   // Tokyo Tower
+        nature.FileDescriptionId      = demoImages[7].Id;   // Misty Forest
+        photography.FileDescriptionId = demoImages[0].Id;   // Tokyo Tower
+        blog.FileDescriptionId        = demoImages[15].Id;  // Cover 1
 
         await db.SaveChangesAsync();
     }

@@ -1,17 +1,17 @@
 <div class="vcard bio">
-  <img [src]="comment.writer.avatar" [alt]="comment.writer.name">
+  <img [src]="comment.authorAvatar || defaultAvatar" [alt]="comment.authorName">
 </div>
 <div class="comment-body">
-  <h3>{{ comment.writer.name }}</h3>
-  <div class="meta">{{ comment.createdDate | appDate: 'detail'}}</div>
-  <p>{{ comment.content }}</p>
-  <p><a href="#" class="reply">{{ ApplicationTitle.REPLY | language }}</a></p>
+  <h3>{{ comment.authorName }}</h3>
+  <div class="meta">{{ comment.createdDate | appDate: 'detail' }}</div>
+  <p>{{ comment.text }}</p>
+  <p><a (click)="replyClicked.emit(comment)" class="reply" style="cursor:pointer">{{ ApplicationTitle.REPLY | language }}</a></p>
 </div>
 
-@if (comment.commentChild && comment.commentChild.length > 0) {
+@if (comment.children && comment.children.length > 0) {
   <ul class="children">
-    @for (child of comment.commentChild; track child.id) {
-      <li app-post-comment [comment]="child"></li>
+    @for (child of comment.children; track child.id) {
+      <li app-post-comment [comment]="child" (replyClicked)="replyClicked.emit($event)"></li>
     }
   </ul>
 }

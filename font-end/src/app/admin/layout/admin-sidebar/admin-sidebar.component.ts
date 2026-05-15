@@ -28,6 +28,9 @@ export class AdminSidebarComponent implements OnInit, OnDestroy {
     { label: AdminMessage.SIDEBAR_NAV_LANGUAGES,    icon: 'bi-translate',         route: '/admin/languages' },
     { label: AdminMessage.SIDEBAR_NAV_TRANSLATIONS, icon: 'bi-card-text',         route: '/admin/translations' },
     { label: AdminMessage.SIDEBAR_NAV_SETTINGS,     icon: 'bi-gear',              route: '/admin/sys-config' },
+    { label: AdminMessage.SIDEBAR_NAV_CONTACTS,    icon: 'bi-envelope',          route: '/admin/contacts' },
+    { label: AdminMessage.SIDEBAR_NAV_PAGE_VIEWS, icon: 'bi-bar-chart-line',    route: '/admin/page-views' },
+    { label: AdminMessage.SIDEBAR_NAV_HERO_SLIDES,icon: 'bi-collection-play',  route: '/admin/hero-slides' },
   ];
 
   protected readonly AdminMessage = AdminMessage;

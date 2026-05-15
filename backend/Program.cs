@@ -65,6 +65,7 @@ using (var scope = app.Services.CreateScope())
     await AlbumSeeder.SeedAsync(dbContext);
     await ArticleSeeder.SeedAsync(dbContext);
     await SysConfigSeeder.SeedAsync(dbContext);
+    await HeroSlideSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())

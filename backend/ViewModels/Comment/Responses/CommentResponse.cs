@@ -11,8 +11,17 @@ public class CommentResponse
     /// <summary>ID of the article the comment belongs to.</summary>
     public string ArticleId { get; set; }
 
-    /// <summary>ID of the user who posted the comment.</summary>
-    public string AuthorId { get; set; }
+    /// <summary>ID of the registered user who posted the comment. <see langword="null"/> for guest comments.</summary>
+    public string? AuthorId { get; set; }
+
+    /// <summary>Display name: author's username for registered users, GuestName for guests.</summary>
+    public string AuthorName { get; set; }
+
+    /// <summary>Profile picture URL. <see langword="null"/> for guest comments.</summary>
+    public string? AuthorAvatar { get; set; }
+
+    /// <summary>Optional website URL provided by guest commenters.</summary>
+    public string? GuestWebsite { get; set; }
 
     /// <summary>UTC timestamp when the comment was posted.</summary>
     public DateTimeOffset CreatedDate { get; set; }
@@ -22,25 +31,4 @@ public class CommentResponse
 
     /// <summary>Parent comment ID for threaded replies. <see langword="null"/> for top-level comments.</summary>
     public string? ParentId { get; set; }
-}
-
-/// <summary>Mapping extensions for <see cref="backend.Entities.Comment"/>.</summary>
-public static class CommentResponseExtensions
-{
-    extension(backend.Entities.Comment comment)
-    {
-        /// <summary>Maps a single <see cref="backend.Entities.Comment"/> entity to <see cref="CommentResponse"/>.</summary>
-        public CommentResponse ToCommentResponse()
-        {
-            return new CommentResponse
-            {
-                Id = comment.Id,
-                ArticleId = comment.ArticleId,
-                AuthorId = comment.AuthorId,
-                CreatedDate = comment.CreatedDate,
-                Text = comment.Text,
-                ParentId = comment.ParentId
-            };
-        }
-    }
 }

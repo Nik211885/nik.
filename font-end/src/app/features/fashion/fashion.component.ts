@@ -4,7 +4,7 @@ import {PostCardComponent} from '../../shared/components/post-card/post-card.com
 import {SearchInputComponent} from '../../shared/components/search-input/search-input.component';
 import {ApplicationTitle} from '../../app.message';
 import {SidebarListComponent} from '../../shared/components/sidebar-list/sidebar-list.component';
-import {listTagCloud, statisticsArchives, statisticsCategories} from '../../app-data.fake';
+import {SidebarStatItemModel} from '../../shared/components/sidebar-list/sidebar-stat-item.model';
 import {LanguagePipe} from '../../shared/pipes/language.pipe';
 import {PostCardCompactComponent} from '../../shared/components/post-card-compact/post-card-compact.component';
 import {TagCloudComponent} from '../../shared/components/tag-cloud/tag-cloud.component';
@@ -14,6 +14,8 @@ import {AsyncPipe} from '@angular/common';
 import {PaginationComponent} from '../../shared/components/pagination/pagination.component';
 import {ArticleService} from '../../core/services/article.service';
 import {ArticleModel} from '../../shared/models/article.model';
+import {TagService} from '../../core/services/tag.service';
+import {TagCloudModel} from '../../shared/components/tag-cloud/tag-cloud.model';
 
 @Component({
   selector: 'app-fashion',
@@ -36,21 +38,33 @@ export class FashionComponent implements OnInit {
   @ViewChild('articleList') articleList!: ElementRef;
 
   articles: ArticleModel[] = [];
+  topArticles: ArticleModel[] = [];
+  tags: TagCloudModel[] = [];
+  categories: SidebarStatItemModel[] = [];
+  archives: SidebarStatItemModel[] = [];
   currentPage = 1;
   pageCount = 0;
 
   constructor(
     protected readonly configService: ConfigService,
     private articleService: ArticleService,
+    private tagService: TagService,
   ) {}
 
   ngOnInit(): void {
+    this.articleService.getTopArticles().subscribe({ next: a => this.topArticles = a.slice(0, 3), error: () => {} });
+    this.tagService.getTags().subscribe({ next: t => this.tags = t, error: () => {} });
+    this.configService.config.subscribe(config => {
+      if (!config) return;
+      this.categories = config.categoryCountArchives.map(c => ({ id: c.id, name: c.name, slug: c.ref, count: c.count }));
+      this.archives = config.archivesCountAtTime.map((a, i) => ({ id: String(i), name: a.time, slug: a.ref, count: a.count }));
+    });
     this.load(1);
   }
 
   load(page: number): void {
     this.currentPage = page;
-    this.articleService.getArticles(page, 12).subscribe(res => {
+    this.articleService.getArticles(page, 12, 'lifestyle').subscribe(res => {
       this.articles = res.data;
       this.currentPage = res.pageNumber;
       this.pageCount = res.pageCount;
@@ -59,7 +73,4 @@ export class FashionComponent implements OnInit {
   }
 
   protected readonly ApplicationTitle = ApplicationTitle;
-  protected readonly statisticsCategories = statisticsCategories;
-  protected readonly listTagCloud = listTagCloud;
-  protected readonly statisticsArchives = statisticsArchives;
 }

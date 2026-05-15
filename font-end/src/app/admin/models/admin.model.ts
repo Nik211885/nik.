@@ -120,3 +120,63 @@ export interface SysConfigItem {
   key: string;
   value: any;
 }
+
+export interface PageViewItem {
+  id: string;
+  path: string;
+  ipAddress: string;
+  browser: string;
+  os: string;
+  referer?: string;
+  createdDate: string;
+}
+
+export interface ChartDataPoint {
+  label: string;
+  views: number;
+  uniqueIps: number;
+}
+
+export interface TopPage {
+  path: string;
+  count: number;
+}
+
+export interface PieSlice {
+  label: string;
+  count: number;
+}
+
+export interface HourlyPoint {
+  hour: number;
+  views: number;
+}
+
+export interface PageViewStats {
+  chart: ChartDataPoint[];
+  totalViews: number;
+  uniqueIps: number;
+  topPages: TopPage[];
+  browsers: PieSlice[];
+  operatingSystems: PieSlice[];
+  hourlyDistribution: HourlyPoint[];
+}
+
+export interface HeroSlideItem {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  orderIndex: number;
+  isActive: boolean;
+}
+
+export interface ContactItem {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  createdDate: string;
+  isRead: boolean;
+}

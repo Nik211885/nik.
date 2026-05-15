@@ -1,4 +1,10 @@
-img {
-  aspect-ratio: 1 / 1;
+.about-author .bio {
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.about-author .bio img {
+  width: 80px;
+  height: 80px;
   object-fit: cover;
 }

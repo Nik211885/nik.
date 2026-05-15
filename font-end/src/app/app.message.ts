@@ -34,10 +34,17 @@ export enum ApplicationTitle {
   TAG_CLOUD             = "tag-cloud",
   OUR_STORY             = "our-story",
   PHOTO                 = "photo",
+  BACK                  = "back",
+  PHOTOGRAPHY           = "photography",
+  ALBUM_COUNT           = "photography.album-count",
+  ALBUM_SUB_COUNT       = "photography.album-sub-count",
+  ALBUM_EMPTY           = "photography.album-empty",
   COMMENT               = "comment",
   REPLY                 = "reply",
   LEAVE_COMMENT         = "leave-a-comment",
   POST_COMMENT          = "post-comment",
+  CONTACT_SEND_SUCCESS  = "contact.send-success",
+  CONTACT_SEND_ERROR    = "contact.send-error",
 }
 
 export enum AdminMessage {
@@ -194,6 +201,20 @@ export enum AdminMessage {
   FILES_UPLOAD_REQUIRED = 'admin.files.upload-required',
   FILES_SAVE_FAILED     = 'admin.files.save-failed',
 
+  // ─── Contacts ─────────────────────────────────────────────────────────────
+  CONTACTS_PAGE_TITLE   = 'admin.contacts.title',
+  CONTACTS_SUBTITLE     = 'admin.contacts.subtitle',
+  CONTACTS_LABEL_NAME   = 'admin.contacts.label.name',
+  CONTACTS_LABEL_EMAIL  = 'admin.contacts.label.email',
+  CONTACTS_LABEL_SUBJECT= 'admin.contacts.label.subject',
+  CONTACTS_LABEL_MESSAGE= 'admin.contacts.label.message',
+  CONTACTS_LABEL_STATUS = 'admin.contacts.label.status',
+  CONTACTS_STATUS_READ  = 'admin.contacts.status.read',
+  CONTACTS_STATUS_UNREAD= 'admin.contacts.status.unread',
+  CONTACTS_MARK_READ    = 'admin.contacts.mark-read',
+  CONTACTS_DETAIL_TITLE = 'admin.contacts.detail.title',
+  CONTACTS_CLOSE        = 'admin.contacts.close',
+
   // ─── Sidebar ──────────────────────────────────────────────────────────────
   SIDEBAR_HOME              = 'admin.sidebar.home',
   SIDEBAR_LOGOUT            = 'admin.sidebar.logout',
@@ -208,6 +229,62 @@ export enum AdminMessage {
   SIDEBAR_NAV_LANGUAGES     = 'admin.sidebar.nav.languages',
   SIDEBAR_NAV_TRANSLATIONS  = 'admin.sidebar.nav.translations',
   SIDEBAR_NAV_SETTINGS      = 'admin.sidebar.nav.settings',
+  SIDEBAR_NAV_CONTACTS      = 'admin.sidebar.nav.contacts',
+  SIDEBAR_NAV_PAGE_VIEWS    = 'admin.sidebar.nav.page-views',
+  SIDEBAR_NAV_HERO_SLIDES   = 'admin.sidebar.nav.hero-slides',
+
+  // ─── Hero Slides ──────────────────────────────────────────────────────────
+  HERO_SLIDES_TITLE         = 'admin.hero-slides.title',
+  HERO_SLIDES_SUBTITLE      = 'admin.hero-slides.subtitle',
+  HERO_SLIDES_CREATE        = 'admin.hero-slides.create',
+  HERO_SLIDES_MODAL_CREATE  = 'admin.hero-slides.modal.create',
+  HERO_SLIDES_MODAL_EDIT    = 'admin.hero-slides.modal.edit',
+  HERO_SLIDES_LABEL_IMAGE   = 'admin.hero-slides.label.image',
+  HERO_SLIDES_LABEL_TITLE   = 'admin.hero-slides.label.title',
+  HERO_SLIDES_LABEL_DESC    = 'admin.hero-slides.label.desc',
+  HERO_SLIDES_LABEL_ORDER   = 'admin.hero-slides.label.order',
+  HERO_SLIDES_LABEL_ACTIVE  = 'admin.hero-slides.label.active',
+  HERO_SLIDES_EMPTY         = 'admin.hero-slides.empty',
+
+  // ─── Topbar ───────────────────────────────────────────────────────────────
+  TOPBAR_NOTIFICATIONS     = 'admin.topbar.notifications',
+  TOPBAR_NO_NOTIFICATIONS  = 'admin.topbar.no-notifications',
+  TOPBAR_VIEW_ALL          = 'admin.topbar.view-all',
+
+  // ─── Dashboard (extended) ─────────────────────────────────────────────────
+  DASHBOARD_WELCOME        = 'admin.dashboard.welcome',
+  DASHBOARD_SESSION_TITLE  = 'admin.dashboard.session.title',
+  DASHBOARD_SESSION_BROWSER= 'admin.dashboard.session.browser',
+  DASHBOARD_SESSION_TZ     = 'admin.dashboard.session.timezone',
+  DASHBOARD_SESSION_LANG   = 'admin.dashboard.session.lang',
+  DASHBOARD_RECENT_MSG     = 'admin.dashboard.recent-messages',
+  DASHBOARD_NO_UNREAD      = 'admin.dashboard.no-unread',
+  DASHBOARD_VIEW_ALL       = 'admin.dashboard.view-all',
+  DASHBOARD_STAT_CONTACTS  = 'admin.dashboard.stat.contacts',
+
+  // ─── Page Views ───────────────────────────────────────────────────────────
+  PV_PAGE_TITLE     = 'admin.page-views.title',
+  PV_SUBTITLE       = 'admin.page-views.subtitle',
+  PV_EXPORT         = 'admin.page-views.export',
+  PV_TAB_CHART      = 'admin.page-views.tab.chart',
+  PV_TAB_TABLE      = 'admin.page-views.tab.table',
+  PV_PERIOD_WEEK    = 'admin.page-views.period.week',
+  PV_PERIOD_MONTH   = 'admin.page-views.period.month',
+  PV_PERIOD_YEAR    = 'admin.page-views.period.year',
+  PV_TOTAL_VIEWS    = 'admin.page-views.total-views',
+  PV_UNIQUE_IPS     = 'admin.page-views.unique-ips',
+  PV_AVG_DAY        = 'admin.page-views.avg-day',
+  PV_TOP_PAGES      = 'admin.page-views.top-pages',
+  PV_CHART_TITLE    = 'admin.page-views.chart-title',
+  PV_NO_DATA        = 'admin.page-views.no-data',
+  PV_LABEL_IP       = 'admin.page-views.label.ip',
+  PV_LABEL_PATH     = 'admin.page-views.label.path',
+  PV_LABEL_BROWSER  = 'admin.page-views.label.browser',
+  PV_LABEL_OS       = 'admin.page-views.label.os',
+  PV_LABEL_REFERER  = 'admin.page-views.label.referer',
+  PV_BROWSER_CHART  = 'admin.page-views.browser-chart',
+  PV_OS_CHART       = 'admin.page-views.os-chart',
+  PV_HOURLY_CHART   = 'admin.page-views.hourly-chart',
 
   // ─── Login ────────────────────────────────────────────────────────────────
   LOGIN_TITLE               = 'admin.login.title',

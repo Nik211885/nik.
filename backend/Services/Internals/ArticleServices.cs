@@ -180,13 +180,15 @@ public class ArticleServices
         if (!string.IsNullOrWhiteSpace(request.CategorySlug))
         {
             query = query.Where(a => a.ArticleCategories
-                .Any(ac => ac.Category.Slug == request.CategorySlug));
+                .Any(ac => ac.Category.Slug == request.CategorySlug ||
+                           ac.Category.Name == request.CategorySlug));
         }
 
         if (!string.IsNullOrWhiteSpace(request.TagSlug))
         {
             query = query.Where(a => a.ArticleTags
-                .Any(at => at.Tag.Slug == request.TagSlug));
+                .Any(at => at.Tag.Slug == request.TagSlug ||
+                           at.Tag.Name == request.TagSlug));
         }
 
         if (!string.IsNullOrWhiteSpace(request.Keyword))

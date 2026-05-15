@@ -9,8 +9,17 @@ public class Comment : BaseEntity
     /// <summary>Foreign key to the <see cref="Article"/> being commented on.</summary>
     public string ArticleId { get; set; }
 
-    /// <summary>Foreign key to the <see cref="User"/> who wrote the comment.</summary>
-    public string AuthorId { get; set; }
+    /// <summary>Foreign key to the <see cref="User"/> who wrote the comment. <see langword="null"/> for guest comments.</summary>
+    public string? AuthorId { get; set; }
+
+    /// <summary>Display name for guest commenters. <see langword="null"/> when <see cref="AuthorId"/> is set.</summary>
+    public string? GuestName { get; set; }
+
+    /// <summary>Email address for guest commenters. <see langword="null"/> when <see cref="AuthorId"/> is set.</summary>
+    public string? GuestEmail { get; set; }
+
+    /// <summary>Optional website URL for guest commenters.</summary>
+    public string? GuestWebsite { get; set; }
 
     /// <summary>UTC timestamp when the comment was posted.</summary>
     public DateTimeOffset CreatedDate { get; set; }

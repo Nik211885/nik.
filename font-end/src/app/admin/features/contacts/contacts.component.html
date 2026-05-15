@@ -1,0 +1,67 @@
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.CONTACTS_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.CONTACTS_SUBTITLE | language }}</p>
+  </div>
+</div>
+
+<div class="admin-card">
+  <app-admin-table
+    [columns]="columns"
+    [data]="items"
+    [loading]="loading"
+    [showActions]="true"
+    (editClick)="openDetail($event)"
+    (deleteClick)="openDelete($event)">
+  </app-admin-table>
+
+  @if (pageCount > 1) {
+    <div class="d-flex justify-content-center mt-3">
+      <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="load($event)"></app-pagination>
+    </div>
+  }
+</div>
+
+@if (detailItem) {
+  <div class="admin-overlay" (click)="closeDetail()">
+    <div class="admin-modal" style="max-width:600px" (click)="$event.stopPropagation()">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold mb-0">{{ AdminMessage.CONTACTS_DETAIL_TITLE | language }}</h5>
+        <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="closeDetail()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <div class="text-muted small mb-1">{{ AdminMessage.CONTACTS_LABEL_NAME | language }}</div>
+        <div class="fw-semibold">{{ detailItem.name }}</div>
+      </div>
+      <div class="mb-3">
+        <div class="text-muted small mb-1">{{ AdminMessage.CONTACTS_LABEL_EMAIL | language }}</div>
+        <div><a [href]="'mailto:' + detailItem.email">{{ detailItem.email }}</a></div>
+      </div>
+      <div class="mb-3">
+        <div class="text-muted small mb-1">{{ AdminMessage.CONTACTS_LABEL_SUBJECT | language }}</div>
+        <div class="fw-semibold">{{ detailItem.subject }}</div>
+      </div>
+      <div class="mb-3">
+        <div class="text-muted small mb-1">{{ AdminMessage.CONTACTS_LABEL_MESSAGE | language }}</div>
+        <div class="p-3 bg-light rounded" style="white-space:pre-wrap">{{ detailItem.message }}</div>
+      </div>
+      <div class="text-muted small">{{ detailItem.createdDate | date:'dd/MM/yyyy HH:mm' }}</div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-outline-secondary" (click)="closeDetail()">
+          {{ AdminMessage.CONTACTS_CLOSE | language }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<app-admin-confirm-modal
+  [show]="showConfirm"
+  [itemName]="selected?.subject ?? ''"
+  (confirmed)="delete()"
+  (cancelled)="showConfirm=false">
+</app-admin-confirm-modal>

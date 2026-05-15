@@ -1,26 +1,42 @@
 <div class="comment-form-wrap pt-5">
-  <h3 class="mb-5">{{ApplicationTitle.LEAVE_COMMENT | language}}</h3>
-  <form action="#" class="p-3 p-md-5 bg-light">
-    <div class="form-group">
-      <label for="name">{{ApplicationTitle.YOUR_NAME}} *</label>
-      <input type="text" class="form-control" id="name">
-    </div>
-    <div class="form-group">
-      <label for="email">{{ApplicationTitle.YOUR_EMAIL}} *</label>
-      <input type="email" class="form-control" id="email">
-    </div>
-    <div class="form-group">
-      <label for="website">{{ApplicationTitle.WEBSITE}}</label>
-      <input type="url" class="form-control" id="website">
-    </div>
+  <h3 class="mb-5">
+    @if (replyTo) {
+      {{ ApplicationTitle.REPLY | language }}: <span class="text-primary">{{ replyTo.authorName }}</span>
+      <a (click)="cancelReply.emit()" class="ml-3 small text-muted" style="cursor:pointer">✕</a>
+    } @else {
+      {{ ApplicationTitle.LEAVE_COMMENT | language }}
+    }
+  </h3>
+
+  <form (ngSubmit)="submit()" class="p-3 p-md-5 bg-light">
+    @if (!isLoggedIn) {
+      <div class="form-group">
+        <label for="guestName">{{ ApplicationTitle.YOUR_NAME }} *</label>
+        <input type="text" id="guestName" class="form-control" [(ngModel)]="guestName" name="guestName" required>
+      </div>
+      <div class="form-group">
+        <label for="guestEmail">{{ ApplicationTitle.YOUR_EMAIL }} *</label>
+        <input type="email" id="guestEmail" class="form-control" [(ngModel)]="guestEmail" name="guestEmail" required>
+      </div>
+      <div class="form-group">
+        <label for="guestWebsite">{{ ApplicationTitle.WEBSITE }}</label>
+        <input type="url" id="guestWebsite" class="form-control" [(ngModel)]="guestWebsite" name="guestWebsite">
+      </div>
+    } @else if (currentUser) {
+      <div class="d-flex align-items-center mb-4 gap-2">
+        <strong>{{ currentUser.userName }}</strong>
+        <span class="text-muted small">({{ currentUser.email }})</span>
+      </div>
+    }
 
     <div class="form-group">
-      <label for="message">{{ApplicationTitle.MESSAGE}}</label>
-      <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
+      <label for="message">{{ ApplicationTitle.MESSAGE }}</label>
+      <textarea id="message" cols="30" rows="6" class="form-control" [(ngModel)]="text" name="text" required></textarea>
     </div>
     <div class="form-group">
-      <input type="submit" value="{{ApplicationTitle.POST_COMMENT | language}}" class="btn py-3 px-4 btn-primary">
+      <button type="submit" class="btn py-3 px-4 btn-primary" [disabled]="submitting">
+        {{ ApplicationTitle.POST_COMMENT | language }}
+      </button>
     </div>
-
   </form>
 </div>

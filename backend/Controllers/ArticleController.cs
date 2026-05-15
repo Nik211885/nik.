@@ -57,7 +57,7 @@ public class ArticleController : ControllerBase
     }
 
     /// <summary>Returns a single article by slug and increments its view count, or 404 if not found.</summary>
-    [HttpGet("slug/{slug}")]
+    [HttpGet("slug/{**slug}")]
     public async Task<ActionResult> GetBySlug(string slug)
     {
         var result = await _articleServices.GetArticleBySlugAsync(slug);

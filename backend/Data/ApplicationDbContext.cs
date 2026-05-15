@@ -55,6 +55,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Application users.</summary>
     public DbSet<User> Users { get; set; }
 
+    /// <summary>Contact form submissions from the public site.</summary>
+    public DbSet<Contact> Contacts { get; set; }
+
+    /// <summary>Page-view events recorded by the public frontend on every route change.</summary>
+    public DbSet<PageView> PageViews { get; set; }
+
+    /// <summary>Hero carousel slides shown on the homepage.</summary>
+    public DbSet<HeroSlide> HeroSlides { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

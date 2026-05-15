@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Content \"C:\\\\Users\\\\ninhl\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ninhl-Desktop-nik\\\\ba965b3c-c540-4598-93ac-f3288ceaf3fe\\\\tasks\\\\bkcvbhnlt.output\" -Wait -Tail 20)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\ninhl\\\\Desktop\\\\nik\\\\backend\\\\Controllers\\\\PublicConfigController.cs\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\ninhl\\\\Desktop\\\\nik\\\\backend\\\\Services\\\\Internals\\\\PublicConfigServices.cs\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\ninhl\\\\Desktop\\\\nik\\\\backend\\\\ViewModels\\\\Configs\\\\Responses\\\\PublicConfigResponse.cs\" -Force)",
+      "PowerShell(cd \"c:\\\\Users\\\\ninhl\\\\Desktop\\\\nik\\\\backend\"; dotnet build 2>&1 | Select-String -Pattern \"error|Error|warning CS\" | Where-Object { $_ -notmatch \"MSB302[67]|CS8618|CS8600|CS8601|CS8602|CS8603|CS8604\" } | Select-Object -Last 15)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\ninhl\\\\Desktop\\\\nik\\\\backend\\\\Controllers\" -Filter \"*rchive*\" -ErrorAction SilentlyContinue)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

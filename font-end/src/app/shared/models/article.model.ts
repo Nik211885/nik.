@@ -3,6 +3,7 @@ export interface ArticleAuthorModel {
   userName: string;
   slug: string;
   avatar?: string;
+  bio: string;
 }
 
 export interface ArticleTagModel {

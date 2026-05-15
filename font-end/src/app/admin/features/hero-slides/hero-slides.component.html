@@ -1,0 +1,125 @@
+<!-- Header -->
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.HERO_SLIDES_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.HERO_SLIDES_SUBTITLE | language }}</p>
+  </div>
+  <button class="btn btn-primary btn-sm" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.HERO_SLIDES_CREATE | language }}
+  </button>
+</div>
+
+<!-- Slide cards -->
+@if (loading) {
+  <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+} @else if (items.length === 0) {
+  <div class="admin-card text-center py-5 text-muted">
+    <i class="bi bi-images fs-1 d-block mb-2 opacity-25"></i>
+    <p class="mb-3">{{ AdminMessage.HERO_SLIDES_EMPTY | language }}</p>
+    <button class="btn btn-primary btn-sm" (click)="openCreate()">
+      <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.HERO_SLIDES_CREATE | language }}
+    </button>
+  </div>
+} @else {
+  <div class="row g-3">
+    @for (slide of items; track slide.id) {
+      <div class="col-md-6 col-xl-4">
+        <div class="slide-card">
+          <!-- Image preview -->
+          <div class="slide-img" [style.background-image]="'url(' + slide.imageUrl + ')'">
+            <div class="slide-img-overlay">
+              <span class="slide-order-badge">#{{ slide.orderIndex }}</span>
+              <span class="slide-status-badge" [class.active]="slide.isActive">
+                @if (slide.isActive) {
+                  <i class="bi bi-check-circle-fill me-1"></i>{{ AdminMessage.HERO_SLIDES_LABEL_ACTIVE | language }}
+                } @else {
+                  <i class="bi bi-dash-circle me-1"></i>Hidden
+                }
+              </span>
+            </div>
+          </div>
+          <!-- Info -->
+          <div class="slide-body">
+            <div class="slide-title">{{ slide.title }}</div>
+            <div class="slide-desc text-muted small">{{ slide.description }}</div>
+            <div class="slide-actions mt-3 d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm flex-grow-1" (click)="openEdit(slide)">
+                <i class="bi bi-pencil me-1"></i>{{ AdminMessage.TABLE_ACTION_EDIT | language }}
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="openDelete(slide)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Create / Edit Modal -->
+@if (showModal) {
+  <div class="modal-backdrop-custom" (click)="showModal = false"></div>
+  <div class="modal-panel">
+    <div class="modal-panel-header">
+      <h5 class="mb-0 fw-semibold">
+        {{ (isEditing ? AdminMessage.HERO_SLIDES_MODAL_EDIT : AdminMessage.HERO_SLIDES_MODAL_CREATE) | language }}
+      </h5>
+      <button class="btn-close" (click)="showModal = false"></button>
+    </div>
+    <div class="modal-panel-body">
+
+      <!-- Image -->
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">{{ AdminMessage.HERO_SLIDES_LABEL_IMAGE | language }}</label>
+        <app-cloudinary-upload [(value)]="form.imageUrl"></app-cloudinary-upload>
+      </div>
+
+      <!-- Title -->
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">{{ AdminMessage.HERO_SLIDES_LABEL_TITLE | language }}</label>
+        <input class="form-control form-control-sm" [(ngModel)]="form.title" maxlength="255">
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">{{ AdminMessage.HERO_SLIDES_LABEL_DESC | language }}</label>
+        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="form.description" maxlength="500"></textarea>
+      </div>
+
+      <!-- Order + Active row -->
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label small fw-semibold">{{ AdminMessage.HERO_SLIDES_LABEL_ORDER | language }}</label>
+          <input type="number" class="form-control form-control-sm" [(ngModel)]="form.orderIndex" min="1">
+        </div>
+        <div class="col-6 d-flex align-items-end pb-1">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="activeSwitch" [(ngModel)]="form.isActive">
+            <label class="form-check-label small" for="activeSwitch">
+              {{ AdminMessage.HERO_SLIDES_LABEL_ACTIVE | language }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      @if (error) {
+        <div class="alert alert-danger py-2 small">{{ error | language }}</div>
+      }
+    </div>
+    <div class="modal-panel-footer">
+      <button class="btn btn-secondary btn-sm" (click)="showModal = false">{{ AdminMessage.CANCEL | language }}</button>
+      <button class="btn btn-primary btn-sm" [disabled]="saving || !form.title || !form.imageUrl" (click)="save()">
+        @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+        {{ AdminMessage.SAVE | language }}
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Confirm delete -->
+<app-admin-confirm-modal
+  [show]="showConfirm"
+  (confirmed)="delete()"
+  (cancelled)="showConfirm = false">
+</app-admin-confirm-modal>

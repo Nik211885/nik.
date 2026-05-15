@@ -19,6 +19,9 @@ public static class AddServicesInternalExtensions
             services.AddScoped<UserServices>();
             services.AddScoped<SysConfigServices>();
             services.AddScoped<LanguageServices>();
+            services.AddScoped<ContactServices>();
+            services.AddScoped<PageViewServices>();
+            services.AddScoped<HeroSlideServices>();
             return services;
         }
     }

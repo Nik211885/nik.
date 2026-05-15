@@ -35,6 +35,9 @@ public class AlbumResponse
     /// <summary>Parent album ID. <see langword="null"/> for root albums.</summary>
     public string AlbumId { get; set; }
 
+    /// <summary>Cloudinary URL of the cover file. <see langword="null"/> when no cover is set.</summary>
+    public string? CoverUrl { get; set; }
+
     /// <summary>UTC creation timestamp.</summary>
     public DateTimeOffset CreatedDate { get; set; }
 
@@ -65,6 +68,7 @@ public static class AlbumResponseExtensions
                 Slug = album.Slug,
                 CountImageRef = album.CountImageRef,
                 FileDescriptionId = album.FileDescriptionId,
+                CoverUrl = album.File?.Url,
                 OrderIndex = album.OrderIndex,
                 AlbumId = album.AlbumId,
                 CreatedDate = album.CreatedDate,
@@ -90,6 +94,7 @@ public static class AlbumResponseExtensions
                 Slug = album.Slug,
                 CountImageRef = album.CountImageRef,
                 FileDescriptionId = album.FileDescriptionId,
+                CoverUrl = album.File != null ? album.File.Url : null,
                 OrderIndex = album.OrderIndex,
                 AlbumId = album.AlbumId,
                 CreatedDate = album.CreatedDate,

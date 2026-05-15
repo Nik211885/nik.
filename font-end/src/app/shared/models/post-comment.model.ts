@@ -1,9 +1,12 @@
-import {UserModel} from './user.model';
-
 export interface PostCommentModel {
   id: string;
-  writer: UserModel,
-  createdDate: Date,
-  content: string,
-  commentChild: PostCommentModel[]
+  articleId: string;
+  authorId?: string;
+  authorName: string;
+  authorAvatar?: string;
+  guestWebsite?: string;
+  createdDate: string;
+  text: string;
+  parentId?: string;
+  children: PostCommentModel[];
 }

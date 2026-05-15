@@ -3,10 +3,17 @@
   min-height: 100vh;
 }
 
-.admin-content {
+.admin-content-wrap {
   margin-left: 240px;
   flex: 1;
-  background: #f4f6fb;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.admin-content {
+  flex: 1;
+  background: #f4f6fb;
   padding: 2rem;
+  margin-top: 52px;
 }

@@ -48,6 +48,9 @@ public class ArticleAuthorItem
 
     /// <summary>Profile picture URL of the author.</summary>
     public string? Avatar { get; set; }
+
+    /// <summary>Short biography of the author.</summary>
+    public string Bio { get; set; }
 }
 
 /// <summary>
@@ -132,7 +135,8 @@ public static class ArticleResponseExtensions
                     Id = a.Author.Id,
                     UserName = a.Author.UserName,
                     Slug = a.Author.Slug,
-                    Avatar = a.Author.Avatar
+                    Avatar = a.Author.Avatar,
+                    Bio = a.Author.Bio
                 },
                 Tags = a.ArticleTags.Select(at => new ArticleTagItem
                 {

@@ -34,6 +34,9 @@ export const routes: Routes = [
       { path: 'languages',    loadComponent: () => import('./admin/features/languages/languages.component').then(m => m.LanguagesAdminComponent) },
       { path: 'translations', loadComponent: () => import('./admin/features/translations/translations.component').then(m => m.TranslationsAdminComponent) },
       { path: 'sys-config',   loadComponent: () => import('./admin/features/sys-config/sys-config.component').then(m => m.SysConfigAdminComponent) },
+      { path: 'contacts',     loadComponent: () => import('./admin/features/contacts/contacts.component').then(m => m.ContactsAdminComponent) },
+      { path: 'page-views',   loadComponent: () => import('./admin/features/page-views/page-views.component').then(m => m.PageViewsAdminComponent) },
+      { path: 'hero-slides',  loadComponent: () => import('./admin/features/hero-slides/hero-slides.component').then(m => m.HeroSlidesAdminComponent) },
     ]
   },
 
@@ -49,7 +52,7 @@ export const routes: Routes = [
       { path: 'fashion',     component: FashionComponent },
       { path: 'about',       component: AboutComponent },
       { path: 'contact',     component: ContactComponent },
-      { path: 'post/:slug',  component: PostDetailComponent },
+      { path: 'post/:prefix/:slug', component: PostDetailComponent },
     ]
   },
 

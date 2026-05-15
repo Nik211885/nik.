@@ -21,24 +21,46 @@
   </div>
   <div class="row block-9">
     <div class="col-md-6 order-md-last pr-md-5">
-      <form action="#">
+      @if (success) {
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+          <i class="bi bi-check-circle-fill fs-5"></i>
+          <span>{{ ApplicationTitle.CONTACT_SEND_SUCCESS | language }}</span>
+        </div>
+      }
+      @if (error) {
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+          <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+          <span>{{ ApplicationTitle.CONTACT_SEND_ERROR | language }}</span>
+        </div>
+      }
+
+      <form (ngSubmit)="submit()">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="{{ApplicationTitle.YOUR_NAME | language}}">
+          <input type="text" class="form-control"
+            [placeholder]="ApplicationTitle.YOUR_NAME | language"
+            [(ngModel)]="name" name="name" required>
         </div>
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="{{ApplicationTitle.YOUR_EMAIL | language}}">
+          <input type="email" class="form-control"
+            [placeholder]="ApplicationTitle.YOUR_EMAIL | language"
+            [(ngModel)]="email" name="email" required>
         </div>
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="{{ApplicationTitle.SUBJECT | language}}">
+          <input type="text" class="form-control"
+            [placeholder]="ApplicationTitle.SUBJECT | language"
+            [(ngModel)]="subject" name="subject" required>
         </div>
         <div class="form-group">
-          <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="{{ApplicationTitle.MESSAGE | language}}"></textarea>
+          <textarea cols="30" rows="7" class="form-control"
+            [placeholder]="ApplicationTitle.MESSAGE | language"
+            [(ngModel)]="message" name="message" required></textarea>
         </div>
         <div class="form-group">
-          <input type="submit" value="{{ApplicationTitle.SEND_MESSAGE | language}}" class="btn btn-primary py-3 px-5">
+          <button type="submit" class="btn btn-primary py-3 px-5" [disabled]="submitting">
+            {{ ApplicationTitle.SEND_MESSAGE | language }}
+          </button>
         </div>
       </form>
-
     </div>
 
     <div class="col-md-6">

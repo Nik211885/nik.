@@ -12,6 +12,7 @@ import {LanguageService} from './core/services/language.service';
 import {authInterceptor} from './core/interceptors/auth.interceptor';
 import {ConfigService} from './core/services/config.service';
 import {acceptLanguageInterceptor} from './core/interceptors/accept-language.interceptor';
+import {PageViewTrackerService} from './core/services/page-view-tracker.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
        ),
     provideAppInitializer(()=> inject(ConfigService).readConfig()),
     provideAppInitializer(() =>inject(LanguageService).init()),
+    provideAppInitializer(() => { inject(PageViewTrackerService); }),
     // provideAppInitializer(()=> inject(AuthService).initSession()),
     // provideAppInitializer(()=> inject(ConfigService).readConfigAuth())
   ]

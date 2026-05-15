@@ -1,10 +1,10 @@
 @if (post) {
 <div>
   <div class="blog-entry">
-    <a [routerLink]="post.slug" class="img img-2" [style.background-image]="'url('+post.image +')'"></a>
+    <a [routerLink]="['/post'].concat(post.slug.split('/'))" class="img img-2" [style.background-image]="'url('+post.image +')'"></a>
     <div class="text text-2 pt-2 mt-3">
       <span class="category mb-3 d-block"><a [routerLink]="post.categories[0]?.slug">{{post.categories[0]?.name}}</a></span>
-      <h3 class="mb-4 line-clamp-2"><a [routerLink]="post.slug">{{post.title}}</a></h3>
+      <h3 class="mb-4 line-clamp-2"><a [routerLink]="['/post'].concat(post.slug.split('/'))">{{post.title}}</a></h3>
       <p class="mb-4 line-clamp-2">{{post.description}}</p>
       <div class="author mb-4 d-flex align-items-center">
         <a [routerLink]="post.author.slug" class="img" [style.background-image]="post.author.avatar ? 'url(' + post.author.avatar + ')' : ''"></a>
@@ -22,7 +22,7 @@
           </p>
         </div>
         <div class="half">
-          <p><a [routerLink]="['/post', post.slug]" class="btn py-2">{{ApplicationTitle.CONTINUE_READING | language}} <span class="ion-ios-arrow-forward"></span></a></p>
+          <p><a [routerLink]="['/post'].concat(post.slug.split('/'))" class="btn py-2">{{ApplicationTitle.CONTINUE_READING | language}} <span class="ion-ios-arrow-forward"></span></a></p>
         </div>
       </div>
     </div>

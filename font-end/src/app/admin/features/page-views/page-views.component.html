@@ -1,0 +1,180 @@
+<!-- Header -->
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h4 class="fw-bold mb-1">{{ AdminMessage.PV_PAGE_TITLE | language }}</h4>
+    <p class="text-muted mb-0 small">{{ AdminMessage.PV_SUBTITLE | language }}</p>
+  </div>
+  <div class="d-flex gap-2">
+    @if (activeTab === 'chart') {
+      <button class="btn btn-outline-success btn-sm" (click)="exportChartExcel()">
+        <i class="bi bi-file-earmark-excel me-1"></i>{{ AdminMessage.PV_EXPORT | language }}
+      </button>
+    } @else {
+      <button class="btn btn-outline-success btn-sm" (click)="exportTableExcel()">
+        <i class="bi bi-file-earmark-excel me-1"></i>{{ AdminMessage.PV_EXPORT | language }}
+      </button>
+    }
+  </div>
+</div>
+
+<!-- Tab switcher -->
+<div class="tab-bar mb-3">
+  <button class="tab-btn" [class.active]="activeTab === 'chart'" (click)="switchTab('chart')">
+    <i class="bi bi-bar-chart-line me-1"></i>{{ AdminMessage.PV_TAB_CHART | language }}
+  </button>
+  <button class="tab-btn" [class.active]="activeTab === 'table'" (click)="switchTab('table')">
+    <i class="bi bi-table me-1"></i>{{ AdminMessage.PV_TAB_TABLE | language }}
+  </button>
+</div>
+
+<!-- ─── CHART TAB ─── -->
+@if (activeTab === 'chart') {
+  <!-- Period selector -->
+  <div class="period-bar mb-3">
+    <button class="period-btn" [class.active]="period === 'week'"  (click)="setPeriod('week')">{{ AdminMessage.PV_PERIOD_WEEK | language }}</button>
+    <button class="period-btn" [class.active]="period === 'month'" (click)="setPeriod('month')">{{ AdminMessage.PV_PERIOD_MONTH | language }}</button>
+    <button class="period-btn" [class.active]="period === 'year'"  (click)="setPeriod('year')">{{ AdminMessage.PV_PERIOD_YEAR | language }}</button>
+  </div>
+
+  @if (statsLoading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  } @else if (stats) {
+
+    <!-- KPI cards -->
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#0f3460"><i class="bi bi-eye"></i></div>
+          <div>
+            <div class="kpi-val">{{ stats.totalViews | number }}</div>
+            <div class="kpi-label">{{ AdminMessage.PV_TOTAL_VIEWS | language }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#e94560"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="kpi-val">{{ stats.uniqueIps | number }}</div>
+            <div class="kpi-label">{{ AdminMessage.PV_UNIQUE_IPS | language }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#028090"><i class="bi bi-graph-up-arrow"></i></div>
+          <div>
+            <div class="kpi-val">
+              {{ stats.totalViews > 0 && stats.chart.length > 0
+                  ? (stats.totalViews / stats.chart.length | number:'1.1-1')
+                  : 0 }}
+            </div>
+            <div class="kpi-label">{{ AdminMessage.PV_AVG_DAY | language }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#533483"><i class="bi bi-file-earmark-text"></i></div>
+          <div>
+            <div class="kpi-val">{{ stats.topPages.length }}</div>
+            <div class="kpi-label">{{ AdminMessage.PV_TOP_PAGES | language }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Traffic overview (full width) -->
+    <div class="admin-card mb-3">
+      <div class="chart-header">
+        <span class="fw-semibold">{{ AdminMessage.PV_CHART_TITLE | language }}</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas #chartCanvas></canvas>
+      </div>
+    </div>
+
+    <!-- Row 3: Browser + OS side by side -->
+    <div class="row g-3 mb-3">
+      <div class="col-lg-6">
+        <div class="admin-card h-100">
+          <div class="chart-header">
+            <span class="fw-semibold"><i class="bi bi-browser-chrome me-2 text-primary"></i>{{ AdminMessage.PV_BROWSER_CHART | language }}</span>
+          </div>
+          <div class="chart-wrap-sm">
+            @if (stats.browsers?.length) {
+              <canvas #browserCanvas></canvas>
+            } @else {
+              <div class="no-data-msg">{{ AdminMessage.PV_NO_DATA | language }}</div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="admin-card h-100">
+          <div class="chart-header">
+            <span class="fw-semibold"><i class="bi bi-laptop me-2 text-success"></i>{{ AdminMessage.PV_OS_CHART | language }}</span>
+          </div>
+          <div class="chart-wrap-sm">
+            @if (stats.operatingSystems?.length) {
+              <canvas #osCanvas></canvas>
+            } @else {
+              <div class="no-data-msg">{{ AdminMessage.PV_NO_DATA | language }}</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Peak hours (full width) -->
+    <div class="admin-card mb-3">
+      <div class="chart-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold"><i class="bi bi-clock me-2 text-warning"></i>{{ AdminMessage.PV_HOURLY_CHART | language }}</span>
+        <span class="badge-peak">{{ AdminMessage.PV_PERIOD_WEEK | language }}</span>
+      </div>
+      <div class="chart-wrap-hourly">
+        <canvas #hourlyCanvas></canvas>
+      </div>
+    </div>
+
+    <!-- Row 5: Top pages -->
+    <div class="admin-card">
+      <div class="chart-header">
+        <span class="fw-semibold"><i class="bi bi-trophy me-2 text-warning"></i>{{ AdminMessage.PV_TOP_PAGES | language }}</span>
+      </div>
+      <div class="top-pages-list">
+        @for (p of stats.topPages; track p.path; let i = $index) {
+          <div class="top-page-row">
+            <span class="top-page-rank">#{{ i + 1 }}</span>
+            <span class="top-page-path">{{ p.path }}</span>
+            <div class="top-page-bar-wrap">
+              <div class="top-page-bar" [style.width.%]="(p.count / (stats!.topPages[0]?.count || 1)) * 100"></div>
+            </div>
+            <span class="top-page-count">{{ p.count | number }}</span>
+          </div>
+        }
+        @if (stats.topPages.length === 0) {
+          <div class="text-muted text-center py-3 small">{{ AdminMessage.PV_NO_DATA | language }}</div>
+        }
+      </div>
+    </div>
+  }
+}
+
+<!-- ─── TABLE TAB ─── -->
+@if (activeTab === 'table') {
+  <div class="admin-card">
+    <app-admin-table
+      [columns]="columns"
+      [data]="items"
+      [loading]="tableLoading"
+      [showActions]="false">
+    </app-admin-table>
+
+    @if (pageCount > 1) {
+      <div class="d-flex justify-content-center mt-3">
+        <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="loadTable($event)"></app-pagination>
+      </div>
+    }
+  </div>
+}

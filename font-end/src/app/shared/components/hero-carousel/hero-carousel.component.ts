@@ -9,20 +9,7 @@ import {HeroCarouselModel} from './hero-carousel.model';
 })
 export class HeroCarouselComponent implements AfterViewInit, OnDestroy{
   private carouselTimer: any;
-  @Input() listCarousel: HeroCarouselModel[] = [
-    {
-      id: '1',
-      img: '/assets/images/img.png',
-      title: 'Discover the Place',
-      description: 'Find great places to stay, eat, shop, or visit from local experts'
-    },
-    {
-      id: '2',
-      img: '/assets/images/img_1.png',
-      title: 'Explore and travel',
-      description: 'Find great places to stay, eat, shop, or visit from local experts'
-    }
-  ];
+  @Input() listCarousel: HeroCarouselModel[] = [];
   ngOnDestroy(): void {
     clearInterval(this.carouselTimer);
   }

@@ -79,18 +79,18 @@ public static class SysConfigSeeder
             },
         }));
 
-        yield return ("config.info", Serialize(new
-        {
-            id           = "1",
-            name         = "Ninh. Le Khac",
-            email        = "ninhlk@nik.com",
-            phone        = "+84 388 080 661",
-            address      = "311-313 Đ. Trường Chinh, Khương Thượng, Phương Liệt, Hà Nội 100000, Việt Nam",
-            website      = "https://nik.com",
-            avatar       = "https://res.cloudinary.com/worldpackers/image/upload/c_limit,f_auto,q_auto,w_1140/nmfu9poa8vyz3ylmcxax",
-            bio          = "Writer, photographer, and software developer. I share stories from the road and lessons from the code editor.",
-            introduction = "Explore stories about fashion, travel, and lifestyle. We share inspiration, trends, and experiences to make everyday life more exciting.",
-        }));
+        // yield return ("config.info", Serialize(new
+        // {
+        //     id           = "1",
+        //     name         = "Ninh. Le Khac",
+        //     email        = "ninhlk@nik.com",
+        //     phone        = "+84 388 080 661",
+        //     address      = "311-313 Đ. Trường Chinh, Khương Thượng, Phương Liệt, Hà Nội 100000, Việt Nam",
+        //     website      = "https://nik.com",
+        //     avatar       = "https://res.cloudinary.com/worldpackers/image/upload/c_limit,f_auto,q_auto,w_1140/nmfu9poa8vyz3ylmcxax",
+        //     bio          = "Writer, photographer, and software developer. I share stories from the road and lessons from the code editor.",
+        //     introduction = "Explore stories about fashion, travel, and lifestyle. We share inspiration, trends, and experiences to make everyday life more exciting.",
+        // }));
     }
 
     private static JsonDocument Serialize<T>(T value) =>

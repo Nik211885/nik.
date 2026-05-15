@@ -1,16 +1,128 @@
-import { Component } from '@angular/core';
-import {PostCardComponent} from "../../shared/components/post-card/post-card.component";
-import {PhotoMasonryGridComponent} from '../../shared/components/photo-masonry-grid/photo-masonry-grid.component';
-import {photoLocationMasonryGrid} from '../../app-data.fake';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { AlbumFileModel, AlbumModel } from '../../shared/models/album.model';
+import { AlbumService } from '../../core/services/album.service';
+import { LanguagePipe } from '../../shared/pipes/language.pipe';
+import { ApplicationTitle } from '../../app.message';
+
+type View = 'albums' | 'children' | 'photos';
 
 @Component({
   selector: 'app-photography',
-  imports: [
-    PhotoMasonryGridComponent
-  ],
+  imports: [LanguagePipe],
   templateUrl: './photography.component.html',
   styleUrl: './photography.component.css',
 })
-export class PhotographyComponent {
-  protected readonly photoLocationMasonryGrid = photoLocationMasonryGrid;
+export class PhotographyComponent implements OnInit {
+  view: View = 'albums';
+  loading = false;
+
+  rootAlbums: AlbumModel[] = [];
+  currentAlbum: AlbumModel | null = null;
+  currentChildren: AlbumModel[] = [];
+  files: AlbumFileModel[] = [];
+  breadcrumbs: { title: string; album: AlbumModel | null }[] = [];
+
+  lightboxIndex: number | null = null;
+
+  protected readonly ApplicationTitle = ApplicationTitle;
+
+  constructor(private albumService: AlbumService) {}
+
+  ngOnInit(): void {
+    this.loading = true;
+    this.albumService.getParents().subscribe({
+      next: albums => {
+        // leaf albums (no children) first, then albums with children, each group by orderIndex
+        this.rootAlbums = [...albums].sort((a, b) => {
+          const aLeaf = !a.children?.length ? 0 : 1;
+          const bLeaf = !b.children?.length ? 0 : 1;
+          if (aLeaf !== bLeaf) return aLeaf - bLeaf;
+          return a.orderIndex - b.orderIndex;
+        });
+        this.loading = false;
+      },
+      error: () => { this.loading = false; }
+    });
+  }
+
+  openAlbum(album: AlbumModel): void {
+    if (album.children?.length) {
+      this.currentAlbum = album;
+      this.currentChildren = [...album.children].sort((a, b) => {
+        const aLeaf = !a.children?.length ? 0 : 1;
+        const bLeaf = !b.children?.length ? 0 : 1;
+        if (aLeaf !== bLeaf) return aLeaf - bLeaf;
+        return a.orderIndex - b.orderIndex;
+      });
+      this.breadcrumbs = [{ title: album.title, album }];
+      this.view = 'children';
+    } else {
+      this.openPhotos(album, this.view === 'children' ? [{ title: this.currentAlbum!.title, album: this.currentAlbum }] : []);
+    }
+  }
+
+  openChildAlbum(album: AlbumModel): void {
+    if (album.children?.length) {
+      this.breadcrumbs = [...this.breadcrumbs, { title: album.title, album }];
+      this.currentChildren = [...album.children].sort((a, b) => {
+        const aLeaf = !a.children?.length ? 0 : 1;
+        const bLeaf = !b.children?.length ? 0 : 1;
+        if (aLeaf !== bLeaf) return aLeaf - bLeaf;
+        return a.orderIndex - b.orderIndex;
+      });
+    } else {
+      this.openPhotos(album, this.breadcrumbs);
+    }
+  }
+
+  private openPhotos(album: AlbumModel, crumbs: { title: string; album: AlbumModel | null }[]): void {
+    this.loading = true;
+    this.albumService.getFiles(album.id).subscribe({
+      next: files => {
+        this.files = files;
+        this.breadcrumbs = [...crumbs, { title: album.title, album }];
+        this.view = 'photos';
+        this.loading = false;
+      },
+      error: () => { this.loading = false; }
+    });
+  }
+
+  goBack(): void {
+    if (this.view === 'photos' && this.breadcrumbs.length > 1) {
+      // back to children view
+      this.breadcrumbs = this.breadcrumbs.slice(0, -1);
+      this.view = 'children';
+    } else if (this.view === 'photos' || this.view === 'children') {
+      this.view = 'albums';
+      this.currentAlbum = null;
+      this.breadcrumbs = [];
+    }
+  }
+
+  openLightbox(index: number): void {
+    this.lightboxIndex = index;
+  }
+
+  closeLightbox(): void {
+    this.lightboxIndex = null;
+  }
+
+  prevPhoto(): void {
+    if (this.lightboxIndex === null) return;
+    this.lightboxIndex = (this.lightboxIndex - 1 + this.files.length) % this.files.length;
+  }
+
+  nextPhoto(): void {
+    if (this.lightboxIndex === null) return;
+    this.lightboxIndex = (this.lightboxIndex + 1) % this.files.length;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent): void {
+    if (this.lightboxIndex === null) return;
+    if (e.key === 'ArrowLeft') this.prevPhoto();
+    if (e.key === 'ArrowRight') this.nextPhoto();
+    if (e.key === 'Escape') this.closeLightbox();
+  }
 }

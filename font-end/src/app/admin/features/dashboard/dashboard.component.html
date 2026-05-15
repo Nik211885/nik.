@@ -1,39 +1,148 @@
-<div class="page-header mb-4">
-  <h3 class="fw-bold mb-1">{{ AdminMessage.DASHBOARD_TITLE | language }}</h3>
-  <p class="text-muted mb-0">{{ AdminMessage.DASHBOARD_SUBTITLE | language }}</p>
-</div>
-
-@if (!loading) {
-<div class="row g-3">
-  @for (s of stats; track s.label) {
-  <div class="col-md-4 col-sm-6">
-    <a [routerLink]="s.route" class="stat-card text-decoration-none">
-      <div class="stat-icon" [style.background]="s.color">
-        <i class="bi {{ s.icon }}"></i>
-      </div>
-      <div>
-        <div class="stat-value">{{ s.value }}</div>
-        <div class="stat-label">{{ s.label | language }}</div>
-      </div>
-    </a>
+<!-- Welcome banner -->
+<div class="welcome-banner mb-4">
+  <div class="welcome-left">
+    <div class="welcome-avatar">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    <div>
+      <div class="welcome-greeting">{{ greeting }}, <strong>Admin</strong></div>
+      <div class="welcome-date">{{ now | date:'EEEE, MMMM d, y' }}</div>
+    </div>
   </div>
-  }
+  <div class="welcome-clock">
+    <span class="clock-time">{{ now | date:'HH:mm:ss' }}</span>
+    <span class="clock-tz">{{ timezone }}</span>
+  </div>
 </div>
-}
 
+<!-- Stats -->
 @if (loading) {
-<div class="text-center py-5">
-  <div class="spinner-border text-primary"></div>
-</div>
+  <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+} @else {
+  <div class="row g-3 mb-4">
+    @for (s of stats; track s.label) {
+      <div class="col-xl-3 col-md-4 col-sm-6">
+        <a [routerLink]="s.route" class="stat-card text-decoration-none">
+          <div class="stat-icon" [style.background]="s.color">
+            <i class="bi {{ s.icon }}"></i>
+          </div>
+          <div>
+            <div class="stat-value">{{ s.value }}</div>
+            <div class="stat-label">{{ s.label | language }}</div>
+          </div>
+        </a>
+      </div>
+    }
+  </div>
 }
 
-<div class="mt-4 p-4 bg-white rounded-3 border">
-  <h5 class="fw-semibold mb-3">{{ AdminMessage.DASHBOARD_QUICK | language }}</h5>
-  <div class="d-flex flex-wrap gap-2">
+<!-- Two-column row -->
+<div class="row g-3 mb-4">
+
+  <!-- Session info -->
+  <div class="col-lg-5">
+    <div class="info-card h-100">
+      <div class="info-card-header">
+        <i class="bi bi-shield-check me-2 text-success"></i>
+        <span>{{ AdminMessage.DASHBOARD_SESSION_TITLE | language }}</span>
+      </div>
+      <ul class="session-list">
+        <li>
+          <span class="session-key">
+            <i class="bi bi-browser-chrome me-2 opacity-50"></i>
+            {{ AdminMessage.DASHBOARD_SESSION_BROWSER | language }}
+          </span>
+          <span class="session-val">{{ browser }} · {{ os }}</span>
+        </li>
+        <li>
+          <span class="session-key">
+            <i class="bi bi-globe2 me-2 opacity-50"></i>
+            {{ AdminMessage.DASHBOARD_SESSION_TZ | language }}
+          </span>
+          <span class="session-val">{{ timezone }}</span>
+        </li>
+        <li>
+          <span class="session-key">
+            <i class="bi bi-translate me-2 opacity-50"></i>
+            {{ AdminMessage.DASHBOARD_SESSION_LANG | language }}
+          </span>
+          <span class="session-val">{{ language }}</span>
+        </li>
+        <li>
+          <span class="session-key">
+            <i class="bi bi-clock-history me-2 opacity-50"></i>
+            Session
+          </span>
+          <span class="session-val">{{ sessionDuration }}</span>
+        </li>
+        <li>
+          <span class="session-key">
+            <i class="bi bi-calendar3 me-2 opacity-50"></i>
+            Login time
+          </span>
+          <span class="session-val">{{ sessionStart | date:'HH:mm:ss, dd/MM/yyyy' }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Recent messages -->
+  <div class="col-lg-7">
+    <div class="info-card h-100">
+      <div class="info-card-header">
+        <i class="bi bi-envelope me-2 text-danger"></i>
+        <span>{{ AdminMessage.DASHBOARD_RECENT_MSG | language }}</span>
+        @if ((notifSvc.unreadCount$ | async) ?? 0; as cnt) {
+          @if (cnt > 0) {
+            <span class="badge bg-danger ms-auto">{{ cnt }}</span>
+          }
+        }
+      </div>
+
+      @if (recentContacts.length === 0) {
+        <div class="msg-empty">
+          <i class="bi bi-inbox fs-3 d-block mb-2 opacity-30"></i>
+          {{ AdminMessage.DASHBOARD_NO_UNREAD | language }}
+        </div>
+      } @else {
+        <ul class="msg-list">
+          @for (c of recentContacts; track c.id) {
+            <li class="msg-item">
+              <a routerLink="/admin/contacts" (click)="openContact(c)" class="msg-link">
+                <div class="msg-avatar"><i class="bi bi-person-fill"></i></div>
+                <div class="msg-body">
+                  <div class="msg-name">{{ c.name }}
+                    <span class="msg-email">{{ c.email }}</span>
+                  </div>
+                  <div class="msg-subject">{{ c.subject }}</div>
+                </div>
+                <div class="msg-time">{{ c.createdDate | date:'HH:mm' }}<br>{{ c.createdDate | date:'dd/MM' }}</div>
+              </a>
+            </li>
+          }
+        </ul>
+        <div class="text-end px-3 pb-2">
+          <a routerLink="/admin/contacts" class="small fw-semibold text-primary text-decoration-none">
+            {{ AdminMessage.DASHBOARD_VIEW_ALL | language }} <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<div class="info-card">
+  <div class="info-card-header">
+    <i class="bi bi-lightning-charge me-2 text-warning"></i>
+    <span>{{ AdminMessage.DASHBOARD_QUICK | language }}</span>
+  </div>
+  <div class="d-flex flex-wrap gap-2 p-3 pt-0">
     <a routerLink="/admin/articles"   class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_ARTICLE | language }}</a>
     <a routerLink="/admin/albums"     class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_ALBUM | language }}</a>
     <a routerLink="/admin/categories" class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_CATEGORY | language }}</a>
     <a routerLink="/admin/tags"       class="btn btn-outline-dark btn-sm"><i class="bi bi-plus me-1"></i>{{ AdminMessage.DASHBOARD_NEW_TAG | language }}</a>
     <a routerLink="/admin/sys-config" class="btn btn-outline-secondary btn-sm"><i class="bi bi-gear me-1"></i>{{ AdminMessage.DASHBOARD_SETTINGS | language }}</a>
+    <a routerLink="/admin/contacts"   class="btn btn-outline-danger btn-sm"><i class="bi bi-envelope me-1"></i>{{ AdminMessage.CONTACTS_PAGE_TITLE | language }}</a>
   </div>
 </div>
