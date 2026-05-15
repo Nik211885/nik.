@@ -20,6 +20,12 @@
   <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
     [showActions]="true" (deleteClick)="openDelete($event)">
   </app-admin-table>
+
+  @if (pageCount > 1) {
+    <div class="d-flex justify-content-center mt-3">
+      <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="load($event)"></app-pagination>
+    </div>
+  }
 </div>
 
 <app-admin-confirm-modal [show]="showConfirm" [itemName]="(selected?.text ?? '') | slice:0:40"

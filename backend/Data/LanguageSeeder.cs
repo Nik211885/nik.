@@ -91,6 +91,7 @@ public static class LanguageSeeder
         ("admin.label.article-count", "Articles",           "Số bài viết"),
         ("admin.label.content",       "Content",            "Nội dung"),
         ("admin.label.article-id",    "Article ID",         "ID bài viết"),
+        ("admin.label.author",        "Author",             "Tác giả"),
         ("admin.label.reply-id",      "Reply ID",           "ID trả lời"),
         ("admin.label.lang-code",     "Language Code",      "Mã ngôn ngữ"),
         ("admin.label.username",      "Username",           "Tên đăng nhập"),

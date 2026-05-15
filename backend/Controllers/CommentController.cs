@@ -1,5 +1,6 @@
 using backend.Pipes.Filter;
 using backend.Services.Internals;
+using backend.ViewModels;
 using backend.ViewModels.Comment.Requests;
 using backend.ViewModels.Comment.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,16 @@ public class CommentController : ControllerBase
     public async Task<ActionResult<List<CommentResponse>>> GetComments([FromQuery] string articleId)
     {
         var result = await _commentServices.GetByArticleAsync(articleId);
+        return Ok(result);
+    }
+
+    /// <summary>Returns a paginated list of all comments for admin use, optionally filtered by article.</summary>
+    /// <param name="request">Pagination parameters.</param>
+    /// <param name="articleId">Optional article ID filter.</param>
+    [HttpGet("admin")]
+    public async Task<ActionResult<PaginationItem<CommentResponse>>> GetAdminComments([FromQuery] PaginationRequest request, [FromQuery] string? articleId)
+    {
+        var result = await _commentServices.GetPaginationAsync(request, articleId);
         return Ok(result);
     }
 

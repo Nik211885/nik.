@@ -71,6 +71,7 @@ export enum AdminMessage {
   LABEL_ARTICLE_COUNT = 'admin.label.article-count',
   LABEL_CONTENT       = 'admin.label.content',
   LABEL_ARTICLE_ID    = 'admin.label.article-id',
+  LABEL_AUTHOR        = 'admin.label.author',
   LABEL_REPLY_ID      = 'admin.label.reply-id',
   LABEL_LANG_CODE     = 'admin.label.lang-code',
   LABEL_USERNAME      = 'admin.label.username',

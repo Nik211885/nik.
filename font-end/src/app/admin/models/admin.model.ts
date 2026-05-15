@@ -72,8 +72,11 @@ export interface CommentItem {
   text: string;
   articleId: string;
   parentId?: string;
+  authorId?: string;
+  authorName: string;
+  authorAvatar?: string;
+  guestWebsite?: string;
   createdDate: string;
-  author?: { id: string; userName: string };
 }
 
 export interface FileItem {

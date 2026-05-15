@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Exceptions;
 using backend.Extensions;
+using backend.ViewModels;
 using backend.ViewModels.Comment.Requests;
 using backend.ViewModels.Comment.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -98,6 +99,34 @@ public class CommentServices
                 ParentId = c.ParentId
             })
             .FirstAsync();
+    }
+
+    /// <summary>Returns a paginated list of comments for admin use, optionally filtered by article.</summary>
+    /// <param name="request">Pagination parameters.</param>
+    /// <param name="articleId">Optional article ID filter; returns all comments when <see langword="null"/>.</param>
+    /// <returns>A paginated result of <see cref="CommentResponse"/>.</returns>
+    public async Task<PaginationItem<CommentResponse>> GetPaginationAsync(PaginationRequest request, string? articleId)
+    {
+        var query = _context.Comments.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(articleId))
+            query = query.Where(c => c.ArticleId == articleId);
+
+        return await query
+            .OrderByDescending(c => c.CreatedDate)
+            .Select(c => new CommentResponse
+            {
+                Id = c.Id,
+                ArticleId = c.ArticleId,
+                AuthorId = c.AuthorId,
+                AuthorName = c.AuthorId != null ? c.Author.UserName : c.GuestName,
+                AuthorAvatar = c.AuthorId != null ? c.Author.Avatar : null,
+                GuestWebsite = c.GuestWebsite,
+                CreatedDate = c.CreatedDate,
+                Text = c.Text,
+                ParentId = c.ParentId
+            })
+            .PaginationItemAsync(request);
     }
 
     /// <summary>Deletes one or more comments by ID.</summary>
