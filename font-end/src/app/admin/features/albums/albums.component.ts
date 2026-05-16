@@ -9,6 +9,7 @@ import { FileCloudinaryService } from '../../../core/services/file.cloudinary.se
 import { AlbumItem, FileItem } from '../../models/admin.model';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 interface TreeNode {
   item: AlbumItem;
@@ -60,6 +61,9 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   fileToRemove: FileItem | null = null;
   showFileConfirm = false;
 
+  // Cover target — which album in the drillStack gets the cover assignment
+  coverTargetAlbumId = '';
+
   // Drag-drop batch upload
   isDroppingPage = false;
   batchItems: BatchItem[] = [];
@@ -71,7 +75,8 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   constructor(
     private svc: AlbumAdminService,
     private fileSvc: FileAdminService,
-    private cloudinary: FileCloudinaryService
+    private cloudinary: FileCloudinaryService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void { this.load(); }
@@ -134,6 +139,14 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
     return this.drillStack.length ? this.drillStack[this.drillStack.length - 1].id : null;
   }
 
+  get currentAlbum(): AlbumItem | null {
+    return this.drillStack.length ? this.drillStack[this.drillStack.length - 1] : null;
+  }
+
+  get coverTargetAlbum(): AlbumItem | null {
+    return this.drillStack.find(a => a.id === this.coverTargetAlbumId) ?? null;
+  }
+
   get currentLevelAlbums(): AlbumItem[] {
     if (this.currentAlbumId === null) return this.getRoots();
     return this.getChildren(this.currentAlbumId);
@@ -146,6 +159,7 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   drillInto(album: AlbumItem): void {
     this.drillStack = [...this.drillStack, album];
     if (this.getChildren(album.id).length === 0) {
+      this.coverTargetAlbumId = album.id;
       this.loadFiles(album.id);
     } else {
       this.albumFiles = [];
@@ -156,6 +170,7 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
     this.drillStack = this.drillStack.slice(0, index + 1);
     const album = this.drillStack[this.drillStack.length - 1];
     if (this.getChildren(album.id).length === 0) {
+      this.coverTargetAlbumId = album.id;
       this.loadFiles(album.id);
     } else {
       this.albumFiles = [];
@@ -165,6 +180,7 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   drillToRoot(): void {
     this.drillStack = [];
     this.albumFiles = [];
+    this.coverTargetAlbumId = '';
   }
 
   loadFiles(albumId: string): void {
@@ -188,19 +204,34 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
         this.albumFiles = this.albumFiles.filter(f => f.id !== this.fileToRemove!.id);
         this.showFileConfirm = false;
         this.fileToRemove = null;
-        // Update countImageRef on the current album
         this.allAlbums = this.allAlbums.map(a =>
           a.id === this.currentAlbumId
             ? { ...a, countImageRef: Math.max(0, a.countImageRef - 1) }
             : a
         );
+        this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS);
       },
-      error: () => { this.showFileConfirm = false; }
+      error: () => { this.showFileConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 
   copyUrl(url: string): void {
     navigator.clipboard.writeText(url).catch(() => {});
+  }
+
+  setCover(file: FileItem): void {
+    const album = this.coverTargetAlbum;
+    if (!album) return;
+    const newFileId = file.id === album.fileDescriptionId ? null : file.id;
+    this.svc.setCover(album.id, newFileId).subscribe({
+      next: updated => {
+        const patch = { fileDescriptionId: updated.fileDescriptionId, coverUrl: updated.coverUrl };
+        this.allAlbums = this.allAlbums.map(a => a.id === album.id ? { ...a, ...patch } : a);
+        this.drillStack = this.drillStack.map(a => a.id === album.id ? { ...a, ...patch } : a);
+        this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS);
+      },
+      error: () => this.toast.error(AdminMessage.TOAST_SAVE_ERROR)
+    });
   }
 
   // ── Parent dropdown options (indented tree labels) ─────────────────────
@@ -251,8 +282,8 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
       : this.svc.create(body);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
@@ -260,14 +291,14 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
     this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
       next: () => {
         this.showConfirm = false;
-        // If deleted album is in drill stack, reset explorer
         if (this.drillStack.some(a => this.deleteItems.some(d => d.id === a.id))) {
           this.drillStack = [];
           this.albumFiles = [];
         }
         this.load();
+        this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS);
       },
-      error: () => { this.showConfirm = false; }
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 

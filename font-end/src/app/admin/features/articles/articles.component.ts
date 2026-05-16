@@ -12,6 +12,7 @@ import { ArticleItem, CategoryItem, PaginationResponse, TableColumn, TagItem } f
 import { forkJoin } from 'rxjs';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-articles-admin',
@@ -62,7 +63,8 @@ export class ArticlesAdminComponent implements OnInit {
   constructor(
     private svc: ArticleAdminService,
     private catSvc: CategoryAdminService,
-    private tagSvc: TagAdminService
+    private tagSvc: TagAdminService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void { this.loadAll(); }
@@ -125,15 +127,15 @@ export class ArticlesAdminComponent implements OnInit {
       : this.svc.create(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.loadAll(this.page.pageNumber); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.loadAll(this.page.pageNumber); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.loadAll(this.page.pageNumber); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.loadAll(this.page.pageNumber); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 

@@ -1,9 +1,10 @@
 <div class="admin-wrapper">
-  <app-admin-sidebar></app-admin-sidebar>
-  <div class="admin-content-wrap">
-    <app-admin-topbar></app-admin-topbar>
+  <app-admin-sidebar [collapsed]="collapsed"></app-admin-sidebar>
+  <div class="admin-content-wrap" [class.sidebar-collapsed]="collapsed">
+    <app-admin-topbar [collapsed]="collapsed" (toggle)="collapsed = !collapsed"></app-admin-topbar>
     <main class="admin-content">
       <router-outlet></router-outlet>
     </main>
   </div>
 </div>
+<app-toast></app-toast>

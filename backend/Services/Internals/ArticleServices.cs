@@ -18,6 +18,7 @@ public class ArticleServices
     private readonly ILogger<ArticleServices> _logger;
     private readonly ApplicationDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly ContentTranslationService _translationService;
 
     /// <summary>
     /// Initialises the service with required dependencies.
@@ -25,11 +26,13 @@ public class ArticleServices
     public ArticleServices(
         ILogger<ArticleServices> logger,
         ApplicationDbContext dbContext,
-        IHttpContextAccessor httpContext)
+        IHttpContextAccessor httpContext,
+        ContentTranslationService translationService)
     {
         _logger = logger;
         _dbContext = dbContext;
         _httpContext = httpContext;
+        _translationService = translationService;
     }
 
     /// <summary>
@@ -130,37 +133,40 @@ public class ArticleServices
             .Where(a => ids.Contains(a.Id))
             .ExecuteDeleteAsync();
 
+        await _translationService.DeleteByEntityAsync(EntityType.Article, ids);
         await DecrementCountRefAsync(tagIds, categoryIds);
     }
 
     /// <summary>
     /// Returns a single article by its ID, or <see langword="null"/> if not found.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// Does not increment the view count.
     /// </summary>
     /// <param name="id">Article ID.</param>
     public async Task<ArticleResponse?> GetArticleByIdAsync(string id)
     {
-        return await ArticleQuery()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id);
+        var result = await ArticleQuery().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+        if (result is not null)
+            await OverlayTranslationsAsync(result);
+        return result;
     }
 
     /// <summary>
     /// Returns a single article by its URL slug and increments <see cref="Entities.Article.CountSee"/>
     /// by one. Returns <see langword="null"/> when the slug does not match any article.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     /// <param name="slug">URL-friendly slug of the article.</param>
     public async Task<ArticleResponse?> GetArticleBySlugAsync(string slug)
     {
-        var result = await ArticleQuery()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Slug == slug);
+        var result = await ArticleQuery().AsNoTracking().FirstOrDefaultAsync(a => a.Slug == slug);
 
         if (result is not null)
         {
             await _dbContext.Articles
                 .Where(a => a.Id == result.Id)
                 .ExecuteUpdateAsync(s => s.SetProperty(a => a.CountSee, a => a.CountSee + 1));
+            await OverlayTranslationsAsync(result);
         }
 
         return result;
@@ -170,6 +176,7 @@ public class ArticleServices
     /// Returns a paginated list of articles, optionally filtered by category slug,
     /// tag slug, or a keyword search on title and description.
     /// Results are ordered by <c>CreatedDate</c> descending (newest first).
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     /// <param name="request">Pagination and filter parameters.</param>
     public async Task<PaginationItem<ArticleResponse>> GetPaginationArticleAsync(
@@ -199,27 +206,52 @@ public class ArticleServices
                 a.Description.ToLower().Contains(keyword));
         }
 
-        return await query
+        var page = await query
             .OrderByDescending(a => a.CreatedDate)
             .ToArticleResponses()
             .AsNoTracking()
             .PaginationItemAsync(request);
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (!ctx.IsAdmin() && lang != "vi" && page.Data.Count > 0)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.Article, page.Data.Select(a => a.Id), lang);
+            foreach (var item in page.Data)
+                if (batch.TryGetValue(item.Id, out var t)) ApplyTranslations(item, t);
+        }
+
+        return page;
     }
 
     /// <summary>
     /// Returns the top <paramref name="count"/> articles ranked by total engagement score
     /// (views + likes + hearts + comments).
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     /// <param name="count">Maximum number of articles to return. Defaults to 12.</param>
     /// <returns>List of article responses ordered by engagement descending.</returns>
     public async Task<List<ArticleResponse>> GetTopArticlesAsync(int count = 12)
     {
-        return await _dbContext.Articles
+        var list = await _dbContext.Articles
             .AsNoTracking()
             .OrderByDescending(a => a.CountSee + a.CountLikeRef + a.CountHeartRef + a.CountCommentRef)
             .Take(count)
             .ToArticleResponses()
             .ToListAsync();
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (!ctx.IsAdmin() && lang != "vi" && list.Count > 0)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.Article, list.Select(a => a.Id), lang);
+            foreach (var item in list)
+                if (batch.TryGetValue(item.Id, out var t)) ApplyTranslations(item, t);
+        }
+
+        return list;
     }
 
     // ── Private helpers ───────────────────────────────────────────────────
@@ -228,6 +260,26 @@ public class ArticleServices
     private IQueryable<ArticleResponse> ArticleQuery()
     {
         return _dbContext.Articles.ToArticleResponses();
+    }
+
+    /// <summary>
+    /// Overlays translated field values onto a single article response when the request is
+    /// unauthenticated and the language is not <c>vi</c>.
+    /// </summary>
+    private async Task OverlayTranslationsAsync(ArticleResponse r)
+    {
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (ctx.IsAdmin() || lang == "vi") return;
+        var t = await _translationService.GetAsync(EntityType.Article, r.Id, lang);
+        ApplyTranslations(r, t);
+    }
+
+    private static void ApplyTranslations(ArticleResponse r, Dictionary<string, string> t)
+    {
+        if (t.TryGetValue("title", out var v)) r.Title = v;
+        if (t.TryGetValue("description", out v)) r.Description = v;
+        if (t.TryGetValue("content", out v)) r.Content = v;
     }
 
     /// <summary>

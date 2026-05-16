@@ -5,17 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data;
 
-/// <summary>
-/// Seeds demo articles, tags, categories, and threaded comments idempotently on startup.
-/// Also creates a demo author user if no users exist.
-/// </summary>
+/// <summary>Seeds Vietnamese articles, tags, categories, author, and comments.</summary>
 public static class ArticleSeeder
 {
-    /// <summary>
-    /// Ensures demo articles with tags, categories, and comments exist in the database.
-    /// Skips entirely if any articles are already present.
-    /// </summary>
-    /// <param name="db">The application database context.</param>
+    /// <summary>Seeds all article-related data. Skips if any article already exists.</summary>
     public static async Task SeedAsync(ApplicationDbContext db)
     {
         if (await db.Articles.AnyAsync()) return;
@@ -29,12 +22,12 @@ public static class ArticleSeeder
             var hasher = new PasswordHasher<User>();
             author = new User
             {
-                UserName = "Nik",
-                Email    = "nik@example.com",
-                Password = hasher.HashPassword(null!, "Demo@1234"),
-                Bio      = "Writer, photographer, and software developer. I share stories from the road and lessons from the code editor.",
-                Avatar   = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200",
-                Slug     = "nik".ToSlug(),
+                UserName    = "Ninh",
+                Email       = "ninhlk@nik.com",
+                Password    = hasher.HashPassword(null!, "Admin@123"),
+                Bio         = "Lập trình viên, nhiếp ảnh gia và người yêu thích du lịch. Tôi chia sẻ những câu chuyện từ những chuyến đi và bài học từ công việc.",
+                Avatar      = "https://res.cloudinary.com/djvpvcj9g/image/upload/v1778947411/593829710_707055712480882_4581758384697286757_n_jyqgwu.jpg",
+                Slug        = "ninh".ToSlug(),
                 CreatedDate = now,
                 UpdatedDate = now,
             };
@@ -42,193 +35,175 @@ public static class ArticleSeeder
         }
 
         // ── Tags ─────────────────────────────────────────────────────────────
-        var tagTech      = MakeTag("technology",   "Technology",   "Software, AI, and emerging tech.",        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", now);
-        var tagTravel    = MakeTag("travel",        "Travel",       "Destinations and travel stories.",        "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800", now);
-        var tagPhoto     = MakeTag("photography",   "Photography",  "Techniques and visual storytelling.",     "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800", now);
-        var tagLifestyle = MakeTag("lifestyle",     "Lifestyle",    "Habits, productivity, and everyday life.","https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800", now);
+        var tagLapTrinh  = MakeTag("lap-trinh",        "Lập trình",         "Các bài viết về lập trình, code và công nghệ phần mềm.",       "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", now);
+        var tagAI        = MakeTag("tri-tue-nhan-tao", "Trí tuệ nhân tạo", "AI, machine learning và các xu hướng công nghệ mới nổi.",     "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800", now);
+        var tagDuLich    = MakeTag("du-lich",           "Du lịch",           "Câu chuyện và kinh nghiệm từ những chuyến đi khắp nơi.",       "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800", now);
+        var tagNhiepAnh  = MakeTag("nhiep-anh",         "Nhiếp ảnh",         "Kỹ thuật và nghệ thuật nhiếp ảnh.",                           "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800", now);
+        var tagPhongCach = MakeTag("phong-cach-song",   "Phong cách sống",   "Thói quen, năng suất và cuộc sống hằng ngày.",                "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800", now);
+        var tagThoiTrang = MakeTag("thoi-trang",        "Thời trang",        "Xu hướng và phong cách thời trang đương đại.",                "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800", now);
 
-        db.Tags.AddRange(tagTech, tagTravel, tagPhoto, tagLifestyle);
+        db.Tags.AddRange(tagLapTrinh, tagAI, tagDuLich, tagNhiepAnh, tagPhongCach, tagThoiTrang);
 
         // ── Categories ───────────────────────────────────────────────────────
-        var catTech      = MakeCategory("technology",  "Technology",  "Articles about software development, AI, and emerging technologies.", "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", now);
-        var catTravel    = MakeCategory("travel",      "Travel",      "Travel guides, destinations, and road-trip experiences.",             "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800", now);
-        var catPhoto     = MakeCategory("photography", "Photography", "Photography techniques, gear, and visual essays.",                    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800", now);
-        var catLifestyle = MakeCategory("lifestyle",   "Lifestyle",   "Lifestyle tips, minimalism, and personal growth.",                    "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800", now);
+        var catCongNghe  = MakeCategory("cong-nghe", "Công nghệ",  "Bài viết về lập trình, AI và các công nghệ mới nổi.",          "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", now);
+        var catDuLich    = MakeCategory("du-lich",   "Du lịch",    "Hướng dẫn du lịch, điểm đến và trải nghiệm trên đường.",       "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800", now);
+        var catNhiepAnh  = MakeCategory("nhiep-anh", "Nhiếp ảnh",  "Kỹ thuật, thiết bị và nghệ thuật nhiếp ảnh.",                  "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800", now);
+        var catDoiSong   = MakeCategory("doi-song",  "Đời sống",   "Lối sống, tối giản và phát triển bản thân.",                   "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800", now);
 
-        db.Categories.AddRange(catTech, catTravel, catPhoto, catLifestyle);
-
-        // Save author / tags / categories before articles reference their IDs
+        db.Categories.AddRange(catCongNghe, catDuLich, catNhiepAnh, catDoiSong);
         await db.SaveChangesAsync();
 
         // ── Articles ─────────────────────────────────────────────────────────
-        var a0 = MakeArticle("The Future of AI in Everyday Life",
-            "Artificial intelligence is quietly reshaping how we work, communicate, and create — here is what to expect in the next five years.",
-            "<p>AI is no longer confined to research labs. From smart assistants to personalised medical diagnostics, machine learning models are woven into the fabric of modern life. In this article we explore the key trends driving adoption and what they mean for everyday users.</p><p>Large language models, diffusion models, and reinforcement learning are converging in ways that were unimaginable five years ago. The implications for knowledge work, creative industries, and education are profound.</p>",
+        var a0 = MakeArticle(
+            "Tương lai của Trí tuệ nhân tạo trong cuộc sống hàng ngày",
+            "Trí tuệ nhân tạo đang âm thầm định hình lại cách chúng ta làm việc, giao tiếp và sáng tạo — đây là những gì có thể xảy ra trong 5 năm tới.",
+            "<p>AI không còn bó hẹp trong phòng nghiên cứu nữa. Từ trợ lý thông minh đến chẩn đoán y tế cá nhân hóa, các mô hình học máy đã ăn sâu vào cấu trúc của cuộc sống hiện đại. Chúng ta sẽ khám phá những xu hướng chủ đạo đang thúc đẩy sự áp dụng AI và ý nghĩa của chúng đối với người dùng hằng ngày.</p><p>Các mô hình ngôn ngữ lớn, mô hình khuếch tán và học tăng cường đang hội tụ theo những cách không thể tưởng tượng được vài năm trước. Tác động đến công việc tri thức, ngành công nghiệp sáng tạo và giáo dục là vô cùng sâu sắc và toàn diện.</p>",
             "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800",
             author.Id, see: 320, like: 45, heart: 28, now.AddDays(-30));
 
-        var a1 = MakeArticle("Exploring Ha Long Bay: A Photographer's Guide",
-            "Ha Long Bay offers some of Vietnam's most dramatic coastal scenery — here is everything you need to capture it perfectly.",
-            "<p>Rising limestone karsts, emerald waters, and golden-hour light make Ha Long Bay a dream for photographers. The bay changes personality throughout the day, from ethereal morning mist to brilliant afternoon blues and warm sunset tones.</p><p>We cover the best viewpoints, optimal times, and the gear choices that make the difference between a snapshot and a photograph.</p>",
+        var a1 = MakeArticle(
+            "Khám phá Vịnh Hạ Long: Góc nhìn của một nhiếp ảnh gia",
+            "Vịnh Hạ Long mang đến những cảnh quan bờ biển ấn tượng nhất Việt Nam — đây là tất cả những gì bạn cần để ghi lại khoảnh khắc hoàn hảo.",
+            "<p>Những khối đá vôi sừng sững, làn nước xanh ngọc và ánh sáng giờ vàng biến Vịnh Hạ Long thành thiên đường của các nhiếp ảnh gia. Vịnh thay đổi sắc thái suốt cả ngày, từ làn sương huyền ảo buổi sáng đến màu xanh rực rỡ buổi chiều và sắc cam ấm áp khi hoàng hôn.</p><p>Chúng tôi chia sẻ những điểm ngắm cảnh đẹp nhất, thời điểm lý tưởng và những lựa chọn thiết bị tạo nên sự khác biệt giữa một bức ảnh thông thường và một tác phẩm nhiếp ảnh thực sự đáng nhớ.</p>",
             "https://images.unsplash.com/photo-1528127269322-539801943592?w=800",
             author.Id, see: 270, like: 38, heart: 22, now.AddDays(-25));
 
-        var a2 = MakeArticle("Mastering Street Photography",
-            "Street photography is one of the most rewarding and challenging genres — these techniques will help you capture authentic moments.",
-            "<p>The decisive moment, as Cartier-Bresson called it, is both a technical and intuitive discipline. Pre-focusing at a fixed distance, working with available light, and learning to become invisible to your subjects are skills that take time but transform results.</p><p>This guide covers everything from lens selection to the ethics of photographing strangers in public spaces.</p>",
+        var a2 = MakeArticle(
+            "Nhiếp ảnh đường phố: Bắt trọn khoảnh khắc thật",
+            "Nhiếp ảnh đường phố là một trong những thể loại thú vị và đầy thách thức nhất — những kỹ thuật này sẽ giúp bạn ghi lại những khoảnh khắc chân thực nhất.",
+            "<p>Khoảnh khắc quyết định, như Cartier-Bresson gọi, là sự kết hợp giữa kỹ thuật và trực giác. Lấy nét trước ở khoảng cách cố định, làm việc với ánh sáng tự nhiên và học cách trở nên vô hình trước đối tượng là những kỹ năng cần thời gian nhưng tạo ra sự thay đổi đáng kể trong kết quả.</p><p>Hướng dẫn này bao gồm tất cả mọi thứ từ việc lựa chọn ống kính đến đạo đức của việc chụp ảnh người lạ ở nơi công cộng, giúp bạn tự tin hơn khi bước ra đường phố với máy ảnh.</p>",
             "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
             author.Id, see: 210, like: 30, heart: 18, now.AddDays(-20));
 
-        var a3 = MakeArticle("Building a Morning Routine That Actually Works",
-            "Most morning routines fail because they ignore personal chronobiology — here is how to design one that sticks.",
-            "<p>The key to a sustainable morning routine is understanding your natural energy rhythms rather than copying someone else's 5 AM schedule. Chronobiology research shows that optimal wake times vary significantly between individuals.</p><p>This article walks through evidence-based strategies for building a routine that enhances rather than drains your energy throughout the day.</p>",
+        var a3 = MakeArticle(
+            "Xây dựng thói quen buổi sáng thực sự hiệu quả",
+            "Hầu hết các thói quen buổi sáng thất bại vì chúng bỏ qua nhịp sinh học cá nhân — đây là cách thiết kế một thói quen thực sự bền vững.",
+            "<p>Chìa khóa để duy trì thói quen buổi sáng là hiểu nhịp năng lượng tự nhiên của bạn thay vì sao chép lịch trình dậy lúc 5 giờ sáng của người khác. Nghiên cứu về nhịp sinh học cho thấy thời điểm thức dậy tối ưu khác nhau đáng kể giữa các cá nhân.</p><p>Bài viết này hướng dẫn các chiến lược dựa trên bằng chứng khoa học để xây dựng thói quen giúp nâng cao thay vì làm cạn kiệt năng lượng của bạn suốt cả ngày dài làm việc.</p>",
             "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800",
             author.Id, see: 180, like: 25, heart: 15, now.AddDays(-18));
 
-        var a4 = MakeArticle("TypeScript 5.0: What's New and Why It Matters",
-            "TypeScript 5.0 brings decorators, const type parameters, and significant performance improvements — here is a practical walkthrough.",
-            "<p>TypeScript 5.0 is the most significant release since version 4.0. The new decorator standard finally aligns with the TC39 proposal, improved enum handling eliminates a class of long-standing bugs, and bundle-size reductions improve cold-start performance across large projects.</p><p>We walk through each change with practical code examples and migration tips.</p>",
+        var a4 = MakeArticle(
+            "TypeScript 5.0: Những tính năng mới đáng chú ý",
+            "TypeScript 5.0 mang đến decorator, const type parameters và cải thiện hiệu suất đáng kể — đây là hướng dẫn thực tế chi tiết.",
+            "<p>TypeScript 5.0 là bản phát hành quan trọng nhất kể từ phiên bản 4.0. Tiêu chuẩn decorator mới cuối cùng đã phù hợp với đề xuất TC39, xử lý enum được cải thiện loại bỏ một lớp lỗi lâu năm, và giảm kích thước bundle cải thiện hiệu suất khởi động nguội trên các dự án lớn.</p><p>Chúng tôi đi qua từng thay đổi với ví dụ code thực tế và mẹo di chuyển phiên bản, giúp bạn nâng cấp dự án một cách suôn sẻ và tận dụng tối đa các tính năng mới.</p>",
             "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800",
             author.Id, see: 290, like: 42, heart: 26, now.AddDays(-15));
 
-        var a5 = MakeArticle("Japan in Autumn: A Week in Kyoto",
-            "Kyoto's autumn colours are legendary — this is a day-by-day itinerary for experiencing the best of the season.",
-            "<p>From the vermilion torii gates of Fushimi Inari reflected in fallen leaves to the golden pavilion of Kinkakuji framed by maples, Kyoto's autumn season is unlike anywhere else on earth. The koyo season typically peaks in mid-November, but crowds arrive weeks earlier.</p><p>This day-by-day itinerary balances iconic landmarks with the quiet temple gardens most visitors miss.</p>",
+        var a5 = MakeArticle(
+            "Nhật Bản mùa thu: Một tuần trải nghiệm tại Kyoto",
+            "Sắc màu mùa thu Kyoto nổi tiếng khắp thế giới — đây là lịch trình từng ngày để trải nghiệm trọn vẹn nhất mùa lá đỏ.",
+            "<p>Từ những cổng torii màu đỏ son của Fushimi Inari phản chiếu trên lớp lá rụng đến kim các lâu Kinkakuji được bao quanh bởi cây phong rực rỡ, mùa thu Kyoto là trải nghiệm độc đáo không nơi nào trên trái đất có được. Mùa koyo thường đạt đỉnh vào giữa tháng 11.</p><p>Lịch trình từng ngày này cân bằng giữa các địa danh nổi tiếng và những vườn đền yên tĩnh mà hầu hết du khách thường bỏ lỡ trong hành trình của mình.</p>",
             "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800",
             author.Id, see: 340, like: 50, heart: 32, now.AddDays(-12));
 
-        var a6 = MakeArticle("Understanding Docker for Developers",
-            "Containers have changed how we build and ship software — this guide demystifies Docker for developers coming from a traditional setup.",
-            "<p>Docker solves the 'works on my machine' problem by packaging applications with their entire runtime environment into portable containers. Understanding images, layers, volumes, and networking unlocks a fundamentally better way to develop and deploy software.</p><p>This tutorial is aimed at developers who have heard about Docker but have not yet made it part of their daily workflow.</p>",
+        var a6 = MakeArticle(
+            "Docker cho lập trình viên: Từ cơ bản đến thực chiến",
+            "Container đã thay đổi cách chúng ta xây dựng và triển khai phần mềm — hướng dẫn này giải thích Docker rõ ràng cho lập trình viên.",
+            "<p>Docker giải quyết vấn đề \"chạy được trên máy tôi\" bằng cách đóng gói ứng dụng cùng toàn bộ môi trường runtime vào các container có thể di chuyển được. Hiểu về image, layer, volume và networking mở ra một cách phát triển và triển khai phần mềm tốt hơn về cơ bản.</p><p>Hướng dẫn này dành cho các lập trình viên đã nghe về Docker nhưng chưa đưa nó vào quy trình làm việc hằng ngày của mình, với các ví dụ thực tế từ đơn giản đến phức tạp.</p>",
             "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=800",
             author.Id, see: 260, like: 36, heart: 21, now.AddDays(-10));
 
-        var a7 = MakeArticle("The Art of Landscape Photography",
-            "Great landscape photography goes beyond pointing at beautiful scenery — composition, light, and patience are everything.",
-            "<p>Understanding the relationship between foreground interest, leading lines, and the sky is fundamental to compelling landscape photography. The golden hours — the first and last hour of daylight — offer soft directional light that transforms ordinary scenes into extraordinary ones.</p><p>We cover techniques for every experience level, from the basics of the rule of thirds to advanced ND filter stacking.</p>",
+        var a7 = MakeArticle(
+            "Nghệ thuật nhiếp ảnh phong cảnh",
+            "Nhiếp ảnh phong cảnh đỉnh cao không chỉ là hướng máy vào cảnh đẹp — bố cục, ánh sáng và sự kiên nhẫn mới là yếu tố quyết định.",
+            "<p>Hiểu mối quan hệ giữa tiền cảnh, đường dẫn hướng và bầu trời là nền tảng của nhiếp ảnh phong cảnh đầy sức hút. Những giờ vàng — giờ đầu và giờ cuối của ánh sáng ban ngày — mang đến ánh sáng có hướng mềm mại biến những cảnh bình thường thành phi thường.</p><p>Chúng tôi chia sẻ kỹ thuật cho mọi trình độ, từ quy tắc một phần ba cơ bản đến xếp chồng kính lọc ND nâng cao, giúp bạn chụp được những bức ảnh phong cảnh ấn tượng hơn.</p>",
             "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
             author.Id, see: 195, like: 28, heart: 17, now.AddDays(-8));
 
-        var a8 = MakeArticle("Minimalism in Digital Life",
-            "Digital clutter costs you more than you think — here is how to apply minimalism to your devices, apps, and online habits.",
-            "<p>Between notifications, subscription services, and endless algorithmic feeds, our digital environments have become overwhelming. The cognitive load of managing a cluttered digital life quietly drains attention and creative energy.</p><p>This guide offers practical steps for simplifying your digital world — from your home screen to your email inbox to your social media habits.</p>",
+        var a8 = MakeArticle(
+            "Sống tối giản trong thế giới số",
+            "Sự lộn xộn kỹ thuật số tiêu tốn của bạn nhiều hơn bạn nghĩ — đây là cách áp dụng chủ nghĩa tối giản vào thiết bị và thói quen trực tuyến.",
+            "<p>Giữa thông báo, dịch vụ đăng ký và nguồn cấp thuật toán vô tận, môi trường kỹ thuật số của chúng ta đã trở nên quá tải. Gánh nặng nhận thức của việc quản lý cuộc sống kỹ thuật số lộn xộn âm thầm làm cạn kiệt sự chú ý và năng lượng sáng tạo.</p><p>Hướng dẫn này cung cấp các bước thực tế để đơn giản hóa thế giới kỹ thuật số của bạn — từ màn hình chính đến hộp thư đến thói quen mạng xã hội hằng ngày.</p>",
             "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800",
             author.Id, see: 155, like: 22, heart: 13, now.AddDays(-6));
 
-        var a9 = MakeArticle("Vietnam by Motorcycle: The Ho Chi Minh Trail",
-            "Riding the Ho Chi Minh trail from north to south is one of Southeast Asia's great adventures — here is how to plan yours.",
-            "<p>The Ho Chi Minh trail cuts through remote mountain passes, sleepy highland villages, and some of the most dramatic scenery in Southeast Asia. Riding it on a semi-automatic motorbike is a rite of passage for travellers in Vietnam.</p><p>We cover route planning from Hanoi to Ho Chi Minh City, essential gear, the best homestays, and the hidden stops most tour groups miss.</p>",
+        var a9 = MakeArticle(
+            "Hành trình xuyên Việt trên chiếc xe máy",
+            "Chạy xe từ Bắc vào Nam theo đường Hồ Chí Minh là một trong những cuộc phiêu lưu vĩ đại nhất Đông Nam Á — đây là cách lên kế hoạch.",
+            "<p>Đường Hồ Chí Minh xuyên qua những đèo núi hẻo lánh, những bản làng miền cao yên bình và một số cảnh quan ấn tượng nhất Đông Nam Á. Cưỡi xe số tay từ Hà Nội vào thành phố Hồ Chí Minh là nghi thức của những người đam mê du lịch Việt Nam.</p><p>Chúng tôi chia sẻ kế hoạch lộ trình chi tiết, trang bị cần thiết, những chỗ nghỉ tốt nhất và những điểm dừng ẩn mà hầu hết tour du lịch thường bỏ qua trong hành trình của họ.</p>",
             "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
             author.Id, see: 230, like: 33, heart: 20, now.AddDays(-4));
 
-        var a10 = MakeArticle("React vs Angular in 2025",
-            "Two of the most popular frontend frameworks continue to evolve — here is an honest comparison for teams choosing a stack in 2025.",
-            "<p>React's flexibility and Angular's opinionated structure serve genuinely different team needs. React's ecosystem breadth and Angular's built-in tooling represent different philosophies about where decisions should live.</p><p>This article compares developer experience, performance characteristics, ecosystem maturity, and long-term maintainability to help you make an informed decision for your next project.</p>",
+        var a10 = MakeArticle(
+            "React và Angular năm 2025: So sánh toàn diện",
+            "Hai framework frontend phổ biến nhất tiếp tục phát triển — đây là so sánh trung thực cho các nhóm đang lựa chọn công nghệ năm 2025.",
+            "<p>Sự linh hoạt của React và cấu trúc opinionated của Angular phục vụ những nhu cầu nhóm thực sự khác nhau. Độ rộng hệ sinh thái của React và công cụ tích hợp sẵn của Angular đại diện cho những triết lý khác nhau về nơi các quyết định kiến trúc nên được đặt ra.</p><p>Bài viết này so sánh trải nghiệm lập trình viên, đặc điểm hiệu suất, độ trưởng thành của hệ sinh thái và khả năng bảo trì lâu dài để giúp bạn đưa ra quyết định sáng suốt cho dự án tiếp theo.</p>",
             "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800",
             author.Id, see: 300, like: 44, heart: 27, now.AddDays(-2));
 
-        var a11 = MakeArticle("Light and Shadow: Portrait Photography Basics",
-            "Understanding how light falls on the human face is the single most important skill in portrait photography.",
-            "<p>Whether you are shooting with natural window light or a studio strobe, the classical lighting patterns — Rembrandt, loop, butterfly, and split — apply equally. Each creates a different mood and flatters different face shapes.</p><p>This guide breaks down each lighting pattern with practical setup diagrams and real-world examples, so you can apply them with whatever light source you have available.</p>",
+        var a11 = MakeArticle(
+            "Ánh sáng và bóng tối: Căn bản nhiếp ảnh chân dung",
+            "Hiểu cách ánh sáng đổ bóng lên khuôn mặt người là kỹ năng quan trọng nhất trong nhiếp ảnh chân dung — dù bạn ở trình độ nào.",
+            "<p>Dù bạn chụp với ánh sáng cửa sổ tự nhiên hay đèn studio, những mẫu ánh sáng cổ điển — Rembrandt, loop, butterfly và split — đều áp dụng như nhau. Mỗi kiểu tạo ra tâm trạng khác nhau và tôn nét đẹp khác nhau tùy hình dạng khuôn mặt.</p><p>Hướng dẫn này phân tích từng mẫu ánh sáng với sơ đồ cài đặt thực tế và ví dụ hình ảnh cụ thể, để bạn có thể áp dụng với bất kỳ nguồn sáng nào có sẵn trong điều kiện thực tế.</p>",
             "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800",
             author.Id, see: 175, like: 26, heart: 16, now.AddDays(-1));
 
         db.Articles.AddRange(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 
         // ── Tag / Category junctions ──────────────────────────────────────────
-        //  a0  AI              → tech + lifestyle  /  catTech
-        //  a1  Ha Long Bay     → travel + photo    /  catTravel
-        //  a2  Street Photo    → photo + lifestyle /  catPhoto
-        //  a3  Morning Routine → lifestyle         /  catLifestyle
-        //  a4  TypeScript      → tech              /  catTech
-        //  a5  Japan Autumn    → travel + photo    /  catTravel
-        //  a6  Docker          → tech              /  catTech
-        //  a7  Landscape Photo → photo             /  catPhoto
-        //  a8  Minimalism      → lifestyle         /  catLifestyle
-        //  a9  Vietnam Moto    → travel            /  catTravel
-        //  a10 React vs Angular→ tech              /  catTech
-        //  a11 Portrait Photo  → photo             /  catPhoto
-        AddJunctions(db, a0,  tags: [tagTech, tagLifestyle], cats: [catTech]);
-        AddJunctions(db, a1,  tags: [tagTravel, tagPhoto],   cats: [catTravel]);
-        AddJunctions(db, a2,  tags: [tagPhoto, tagLifestyle],cats: [catPhoto]);
-        AddJunctions(db, a3,  tags: [tagLifestyle],          cats: [catLifestyle]);
-        AddJunctions(db, a4,  tags: [tagTech],               cats: [catTech]);
-        AddJunctions(db, a5,  tags: [tagTravel, tagPhoto],   cats: [catTravel]);
-        AddJunctions(db, a6,  tags: [tagTech],               cats: [catTech]);
-        AddJunctions(db, a7,  tags: [tagPhoto],              cats: [catPhoto]);
-        AddJunctions(db, a8,  tags: [tagLifestyle],          cats: [catLifestyle]);
-        AddJunctions(db, a9,  tags: [tagTravel],             cats: [catTravel]);
-        AddJunctions(db, a10, tags: [tagTech],               cats: [catTech]);
-        AddJunctions(db, a11, tags: [tagPhoto],              cats: [catPhoto]);
+        AddJunctions(db, a0,  tags: [tagAI, tagLapTrinh],         cats: [catCongNghe]);
+        AddJunctions(db, a1,  tags: [tagDuLich, tagNhiepAnh],     cats: [catDuLich]);
+        AddJunctions(db, a2,  tags: [tagNhiepAnh, tagPhongCach],  cats: [catNhiepAnh]);
+        AddJunctions(db, a3,  tags: [tagPhongCach],               cats: [catDoiSong]);
+        AddJunctions(db, a4,  tags: [tagLapTrinh],                cats: [catCongNghe]);
+        AddJunctions(db, a5,  tags: [tagDuLich, tagNhiepAnh],     cats: [catDuLich]);
+        AddJunctions(db, a6,  tags: [tagLapTrinh],                cats: [catCongNghe]);
+        AddJunctions(db, a7,  tags: [tagNhiepAnh],                cats: [catNhiepAnh]);
+        AddJunctions(db, a8,  tags: [tagPhongCach],               cats: [catDoiSong]);
+        AddJunctions(db, a9,  tags: [tagDuLich],                  cats: [catDuLich]);
+        AddJunctions(db, a10, tags: [tagLapTrinh],                cats: [catCongNghe]);
+        AddJunctions(db, a11, tags: [tagNhiepAnh],                cats: [catNhiepAnh]);
 
-        // tagTech:      a0 a4 a6 a10     = 4
-        // tagTravel:    a1 a5 a9         = 3
-        // tagPhoto:     a1 a2 a5 a7 a11  = 5
-        // tagLifestyle: a0 a2 a3 a8      = 4
-        tagTech.CountRef      = 4;
-        tagTravel.CountRef    = 3;
-        tagPhoto.CountRef     = 5;
-        tagLifestyle.CountRef = 4;
+        tagLapTrinh.CountRef  = 4; tagAI.CountRef       = 1;
+        tagDuLich.CountRef    = 3; tagNhiepAnh.CountRef = 5;
+        tagPhongCach.CountRef = 3; tagThoiTrang.CountRef = 0;
 
-        // catTech:      a0 a4 a6 a10     = 4
-        // catTravel:    a1 a5 a9         = 3
-        // catPhoto:     a2 a7 a11        = 3
-        // catLifestyle: a3 a8            = 2
-        catTech.CountRef      = 4;
-        catTravel.CountRef    = 3;
-        catPhoto.CountRef     = 3;
-        catLifestyle.CountRef = 2;
+        catCongNghe.CountRef = 4; catDuLich.CountRef  = 3;
+        catNhiepAnh.CountRef = 3; catDoiSong.CountRef = 2;
 
         // ── Comments ──────────────────────────────────────────────────────────
-        // Each article gets 3 top-level comments and 2 replies (total 5 per article).
         foreach (var article in new[] { a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11 })
         {
             var c1 = MakeComment(article.Id, author.Id,
-                "Really insightful read. I've been following this topic closely and this article nailed all the key points.",
-                parentId: null, now.AddHours(-20));
-
+                "Bài viết rất hay và bổ ích! Tôi đã theo dõi chủ đề này từ lâu và bài viết đã nêu bật tất cả các điểm quan trọng.",
+                null, now.AddHours(-20));
             var c2 = MakeComment(article.Id, author.Id,
-                "Great breakdown. Would love to see a follow-up focusing on practical implementation.",
-                parentId: null, now.AddHours(-16));
-
+                "Phân tích rất sâu sắc. Mong được đọc phần tiếp theo tập trung vào cách triển khai thực tế hơn.",
+                null, now.AddHours(-16));
             var c3 = MakeComment(article.Id, author.Id,
-                "This is exactly what I was looking for. Bookmarked and sharing with my team straight away.",
-                parentId: null, now.AddHours(-10));
-
+                "Đúng thứ tôi đang tìm kiếm. Đã lưu lại và chia sẻ với cả nhóm ngay rồi.",
+                null, now.AddHours(-10));
             var r1 = MakeComment(article.Id, author.Id,
-                "Glad it helped! A follow-up post is already in the works for next month.",
-                parentId: c1.Id, now.AddHours(-8));
-
+                "Cảm ơn bạn! Phần tiếp theo đang trong quá trình viết, theo dõi nhé.",
+                c1.Id, now.AddHours(-8));
             var r2 = MakeComment(article.Id, author.Id,
-                "Thanks for the kind words — definitely more content coming on this soon.",
-                parentId: c2.Id, now.AddHours(-4));
+                "Rất vui vì bài viết có ích. Sẽ có thêm nội dung thực tế hơn trong các bài sau.",
+                c2.Id, now.AddHours(-4));
 
             db.Comments.AddRange(c1, c2, c3, r1, r2);
-            article.CountCommentRef = 5; // 3 top-level + 2 replies
+            article.CountCommentRef = 5;
         }
 
         await db.SaveChangesAsync();
     }
 
-    // ── Factory helpers ───────────────────────────────────────────────────────
+    // ── Factories ─────────────────────────────────────────────────────────────
 
     private static Article MakeArticle(
-        string title, string description, string content,
-        string image, string authorId,
-        int see, int like, int heart,
-        DateTimeOffset createdDate) => new()
+        string title, string description, string content, string image, string authorId,
+        int see, int like, int heart, DateTimeOffset createdDate) => new()
     {
-        Title       = title,
-        Description = description,
-        Content     = content,
-        Image       = image,
-        Slug        = title.ToSlug(),
-        AuthorId    = authorId,
+        Title         = title,
+        Description   = description,
+        Content       = content,
+        Image         = image,
+        Slug          = title.ToSlug(),
+        AuthorId      = authorId,
         CountSee      = see,
         CountLikeRef  = like,
         CountHeartRef = heart,
-        CreatedDate = createdDate,
-        UpdatedDate = createdDate,
+        CreatedDate   = createdDate,
+        UpdatedDate   = createdDate,
     };
 
     private static Tag MakeTag(string name, string title, string description, string image, DateTimeOffset now) => new()

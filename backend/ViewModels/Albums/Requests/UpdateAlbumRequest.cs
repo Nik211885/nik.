@@ -18,8 +18,8 @@ public class UpdateAlbumRequest
     /// <summary>Updated long-form description.</summary>
     public string Description { get; set; }
 
-    /// <summary>Updated cover file ID.</summary>
-    public string FileDescriptionId { get; set; }
+    /// <summary>Updated cover file ID. <see langword="null"/> removes the current cover.</summary>
+    public string? FileDescriptionId { get; set; }
 
     /// <summary>Updated display order index. Must be &gt;= 0.</summary>
     public int OrderIndex { get; set; }
@@ -38,7 +38,6 @@ public class UpdateAlbumRequestValidator : AbstractValidator<UpdateAlbumRequest>
         RuleFor(x => x.Name).NotEmpty().WithMessage(ApplicationMessage.NameIsRequired);
         RuleFor(x => x.Title).NotEmpty().WithMessage(ApplicationMessage.TitleIsRequired);
         RuleFor(x => x.Description).NotEmpty().WithMessage(ApplicationMessage.DescriptionIsRequired);
-        RuleFor(x => x.FileDescriptionId).NotEmpty();
         RuleFor(x => x.OrderIndex).GreaterThanOrEqualTo(0);
     }
 }

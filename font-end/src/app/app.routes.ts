@@ -33,10 +33,13 @@ export const routes: Routes = [
       { path: 'users',        loadComponent: () => import('./admin/features/users/users.component').then(m => m.UsersAdminComponent) },
       { path: 'languages',    loadComponent: () => import('./admin/features/languages/languages.component').then(m => m.LanguagesAdminComponent) },
       { path: 'translations', loadComponent: () => import('./admin/features/translations/translations.component').then(m => m.TranslationsAdminComponent) },
-      { path: 'sys-config',   loadComponent: () => import('./admin/features/sys-config/sys-config.component').then(m => m.SysConfigAdminComponent) },
+      { path: 'sys-config',              loadComponent: () => import('./admin/features/sys-config/sys-config.component').then(m => m.SysConfigAdminComponent) },
+      { path: 'sys-config/editor/:id',   loadComponent: () => import('./admin/features/sys-config/sys-config-editor-page/sys-config-editor-page.component').then(m => m.SysConfigEditorPageComponent) },
       { path: 'contacts',     loadComponent: () => import('./admin/features/contacts/contacts.component').then(m => m.ContactsAdminComponent) },
       { path: 'page-views',   loadComponent: () => import('./admin/features/page-views/page-views.component').then(m => m.PageViewsAdminComponent) },
-      { path: 'hero-slides',  loadComponent: () => import('./admin/features/hero-slides/hero-slides.component').then(m => m.HeroSlidesAdminComponent) },
+      { path: 'hero-slides',         loadComponent: () => import('./admin/features/hero-slides/hero-slides.component').then(m => m.HeroSlidesAdminComponent) },
+      { path: 'content-translations', loadComponent: () => import('./admin/features/content-translations/content-translations.component').then(m => m.ContentTranslationsAdminComponent) },
+      { path: 'content-translations/editor/:entityType/:entityId/:lang', loadComponent: () => import('./admin/features/content-translations/translation-editor-page/translation-editor-page.component').then(m => m.TranslationEditorPageComponent) },
     ]
   },
 

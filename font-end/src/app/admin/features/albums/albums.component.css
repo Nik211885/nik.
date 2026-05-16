@@ -158,6 +158,27 @@
 }
 .file-action-btn:hover { background: #fff; color: #000; }
 .file-action-btn--danger:hover { background: #f8d7da; color: #842029; }
+.file-action-btn--cover { background: rgba(255,193,7,.9); color: #000; }
+.file-action-btn--cover:hover { background: #ffc107; color: #000; }
+
+/* Cover badge overlay */
+.cover-badge {
+  position: absolute; top: 6px; left: 6px;
+  background: #ffc107; color: #000;
+  font-size: .7rem; border-radius: 999px;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+
+/* File card highlight when it's the cover */
+.file-card--cover { border-color: #ffc107; box-shadow: 0 0 0 2px rgba(255,193,7,.35); }
+
+/* Album folder cover image */
+.album-folder-cover {
+  width: 44px; height: 44px; object-fit: cover;
+  border-radius: 8px; display: block;
+}
 
 .file-meta { padding: .5rem .75rem .625rem; }
 .file-name {

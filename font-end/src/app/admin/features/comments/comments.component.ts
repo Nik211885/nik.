@@ -8,6 +8,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { CommentItem, TableColumn } from '../../models/admin.model';
 import { AdminMessage } from '../../../app.message';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-comments-admin',
@@ -38,7 +39,7 @@ export class CommentsAdminComponent implements OnInit {
     { key: 'createdDate', label: AdminMessage.LABEL_CREATED_DATE, type: 'date' },
   ];
 
-  constructor(private svc: CommentAdminService) {}
+  constructor(private svc: CommentAdminService, private toast: ToastService) {}
 
   ngOnInit(): void {
     this.load(1);
@@ -71,8 +72,8 @@ export class CommentsAdminComponent implements OnInit {
 
   delete(): void {
     this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.load(this.currentPage); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(this.currentPage); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 }

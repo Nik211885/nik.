@@ -1,0 +1,250 @@
+<div class="page-header d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn btn-outline-secondary btn-sm" (click)="back()">
+      <i class="bi bi-arrow-left me-1"></i>{{ AdminMessage.SYSCONFIG_EDITOR_BACK | language }}
+    </button>
+    <div>
+      <h4 class="fw-bold mb-0">{{ AdminMessage.SYSCONFIG_MODAL_EDIT | language }}</h4>
+      <p class="text-muted small mb-0"><code>{{ configKey }}</code></p>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <!-- Mode toggle -->
+    @if (!loading) {
+      <div class="btn-group btn-group-sm" role="group">
+        <button class="btn" [class.btn-dark]="viewMode==='form'" [class.btn-outline-secondary]="viewMode!=='form'"
+                (click)="switchMode('form')">
+          <i class="bi bi-ui-radios me-1"></i>Form
+        </button>
+        <button class="btn" [class.btn-dark]="viewMode==='json'" [class.btn-outline-secondary]="viewMode!=='json'"
+                (click)="switchMode('json')">
+          <i class="bi bi-braces me-1"></i>JSON
+        </button>
+      </div>
+    }
+    <button class="btn btn-primary px-4" (click)="save()" [disabled]="saving || loading">
+      @if (saving) { {{ AdminMessage.SAVING | language }} }
+      @else        { {{ AdminMessage.SAVE | language }} }
+    </button>
+  </div>
+</div>
+
+@if (saved) {
+  <div class="alert alert-success d-flex align-items-center py-2 mb-3">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ AdminMessage.SAVE | language }}
+  </div>
+}
+@if (error) {
+  <div class="alert alert-danger py-2 mb-3 small">{{ error | language }}</div>
+}
+@if (jsonError && viewMode === 'json') {
+  <div class="alert alert-warning py-2 mb-3 small">
+    <i class="bi bi-exclamation-triangle me-1"></i>{{ jsonError }}
+  </div>
+}
+
+@if (loading) {
+  <div class="text-center py-5">{{ AdminMessage.LOADING | language }}</div>
+} @else {
+
+  <!-- ══════════════════════════════ JSON mode ═════════════════════════════════ -->
+  @if (viewMode === 'json') {
+    <div class="admin-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label fw-semibold mb-0">{{ AdminMessage.SYSCONFIG_FORM_VALUE_LABEL | language }}</label>
+        <div class="d-flex align-items-center gap-2">
+          @if (jsonValid) {
+            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:.7rem">
+              <i class="bi bi-check-circle me-1"></i>Valid JSON
+            </span>
+          } @else {
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size:.7rem">
+              <i class="bi bi-exclamation-circle me-1"></i>Invalid JSON
+            </span>
+          }
+          <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:.75rem" (click)="formatJson()">
+            <i class="bi bi-braces me-1"></i>Format
+          </button>
+        </div>
+      </div>
+      <textarea class="form-control" [(ngModel)]="jsonValue" rows="20"
+        [class.is-invalid]="!jsonValid && jsonValue.trim().length > 0"
+        style="font-family:monospace;font-size:.82rem;resize:vertical"></textarea>
+    </div>
+  }
+
+  <!-- ══════════════════════════════ Form mode ═════════════════════════════════ -->
+  @if (viewMode === 'form') {
+
+    <!-- config.info -->
+    @if (editorType === 'info') {
+      <div class="admin-card">
+        <ul class="nav nav-tabs mb-4">
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="activeLang==='vi'" (click)="activeLang='vi'">
+              🇻🇳 {{ AdminMessage.SYSCONFIG_FORM_VI | language }}
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="activeLang==='en'" (click)="activeLang='en'">
+              🇬🇧 {{ AdminMessage.SYSCONFIG_FORM_EN | language }}
+            </button>
+          </li>
+        </ul>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_NAME | language }}</label>
+            <input class="form-control" [(ngModel)]="infoLang.name">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_EMAIL | language }}</label>
+            <input class="form-control" type="email" [(ngModel)]="infoLang.email">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_PHONE | language }}</label>
+            <input class="form-control" [(ngModel)]="infoLang.phone">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_WEBSITE | language }}</label>
+            <input class="form-control" type="url" [(ngModel)]="infoLang.website">
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_ADDRESS | language }}</label>
+            <input class="form-control" [(ngModel)]="infoLang.address">
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_AVATAR | language }}</label>
+            <input class="form-control" [(ngModel)]="infoLang.avatar" placeholder="https://...">
+            @if (infoLang.avatar) {
+              <img [src]="infoLang.avatar" class="mt-2 rounded" style="height:60px;object-fit:cover" alt="avatar">
+            }
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_BIO | language }}</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="infoLang.bio"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ AdminMessage.SYSCONFIG_INFO_INTRO | language }}</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="infoLang.introduction"></textarea>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- config.social -->
+    @if (editorType === 'social') {
+      <div class="admin-card">
+        <table class="table align-middle mb-3">
+          <thead>
+            <tr>
+              <th style="width:36px"></th>
+              <th>{{ AdminMessage.LABEL_NAME | language }}</th>
+              <th>{{ AdminMessage.SYSCONFIG_SOCIAL_URL | language }}</th>
+              <th style="width:44px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of socialItems; track item.id; let i = $index) {
+              <tr>
+                <td>
+                  @if (item.icon) {
+                    <span [innerHTML]="item.icon" style="display:inline-flex;align-items:center;width:22px;height:22px"></span>
+                  } @else {
+                    <i class="bi bi-link-45deg text-muted"></i>
+                  }
+                </td>
+                <td><input class="form-control form-control-sm" [(ngModel)]="item.name" [name]="'sn'+i"></td>
+                <td><input class="form-control form-control-sm" type="url" [(ngModel)]="item.ref" [name]="'sr'+i" placeholder="https://..."></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeSocial(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <button class="btn btn-outline-secondary btn-sm" (click)="addSocial()">
+          <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_ADD_ITEM | language }}
+        </button>
+      </div>
+    }
+
+    <!-- config.sidebar -->
+    @if (editorType === 'sidebar') {
+      <div class="admin-card">
+        <table class="table align-middle mb-3">
+          <thead>
+            <tr>
+              <th>{{ AdminMessage.SYSCONFIG_NAV_KEY | language }}</th>
+              <th>{{ AdminMessage.SYSCONFIG_NAV_ROUTE | language }}</th>
+              <th style="width:44px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of sidebarItems; track $index; let i = $index) {
+              <tr>
+                <td><input class="form-control form-control-sm" [(ngModel)]="item.nameKey" [name]="'nk'+i" placeholder="nav.home"></td>
+                <td><input class="form-control form-control-sm" [(ngModel)]="item.ref"     [name]="'nr'+i" placeholder="/photography"></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeSidebar(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <button class="btn btn-outline-secondary btn-sm" (click)="addSidebar()">
+          <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_ADD_ITEM | language }}
+        </button>
+      </div>
+    }
+
+    <!-- generic flat key-value (unknown config with object value) -->
+    @if (editorType === 'json') {
+      <div class="admin-card">
+        @if (genericProps.length > 0) {
+          <table class="table align-middle mb-3">
+            <thead>
+              <tr>
+                <th style="width:35%">{{ AdminMessage.LABEL_KEY | language }}</th>
+                <th>{{ AdminMessage.LABEL_VALUE | language }}</th>
+                <th style="width:44px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (prop of genericProps; track $index; let i = $index) {
+                <tr>
+                  <td><input class="form-control form-control-sm" [(ngModel)]="prop.key"   [name]="'pk'+i"></td>
+                  <td><input class="form-control form-control-sm" [(ngModel)]="prop.value" [name]="'pv'+i"></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-danger" (click)="removeGenericProp(i)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <button class="btn btn-outline-secondary btn-sm" (click)="addGenericProp()">
+            <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_ADD_ITEM | language }}
+          </button>
+        } @else {
+          <p class="text-muted small mb-0">
+            <i class="bi bi-info-circle me-1"></i>{{ AdminMessage.SYSCONFIG_FORM_HINT | language }}
+          </p>
+        }
+      </div>
+    }
+  }
+
+  <div class="d-flex justify-content-end mt-3 gap-2">
+    <button class="btn btn-outline-secondary" (click)="back()">{{ AdminMessage.CANCEL | language }}</button>
+    <button class="btn btn-primary px-4" (click)="save()" [disabled]="saving">
+      @if (saving) { {{ AdminMessage.SAVING | language }} }
+      @else        { {{ AdminMessage.SAVE | language }} }
+    </button>
+  </div>
+}

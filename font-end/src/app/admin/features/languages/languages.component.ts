@@ -7,6 +7,7 @@ import { AdminConfirmModalComponent } from '../../shared/admin-confirm-modal.com
 import { LanguageItem, TableColumn } from '../../models/admin.model';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-languages-admin',
@@ -35,7 +36,7 @@ export class LanguagesAdminComponent implements OnInit {
     { key: 'name', label: AdminMessage.LABEL_NAME,      type: 'text' },
   ];
 
-  constructor(private svc: LanguageAdminService) {}
+  constructor(private svc: LanguageAdminService, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -68,15 +69,15 @@ export class LanguagesAdminComponent implements OnInit {
       : this.svc.createLanguage(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     this.svc.deleteLanguage(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.load(); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 }

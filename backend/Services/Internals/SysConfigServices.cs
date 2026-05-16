@@ -1,7 +1,9 @@
 using System.Globalization;
+using System.Text.Json;
 using backend.Data;
 using backend.Entities;
 using backend.Exceptions;
+using backend.Extensions;
 using backend.Services;
 using backend.ViewModels.Configs.Requests;
 using backend.ViewModels.Configs.Responses;
@@ -14,12 +16,20 @@ public class SysConfigServices
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<SysConfigServices> _logger;
+    private readonly IHttpContextAccessor _httpContext;
+    private readonly ContentTranslationService _translationService;
 
     /// <summary>Initialises the service with required dependencies.</summary>
-    public SysConfigServices(ApplicationDbContext dbContext, ILogger<SysConfigServices> logger)
+    public SysConfigServices(
+        ApplicationDbContext dbContext,
+        ILogger<SysConfigServices> logger,
+        IHttpContextAccessor httpContext,
+        ContentTranslationService translationService)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _httpContext = httpContext;
+        _translationService = translationService;
     }
 
     /// <summary>Returns all configuration entries.</summary>
@@ -130,9 +140,12 @@ public class SysConfigServices
     /// Returns all SysConfig entries keyed by the segment after the first dot
     /// (e.g. <c>config.sidebar</c> → <c>sidebar</c>), plus computed article archive
     /// and category archive statistics.
+    /// Multilingual values stored as <c>{ "vi": "...", "en": "..." }</c> are unwrapped
+    /// to the requested language; <c>vi</c> is used as fallback when the translation is absent.
     /// </summary>
     public async Task<Dictionary<string, object?>> GetPublicConfigAsync()
     {
+        var lang = _httpContext.HttpContext?.GetLanguage() ?? "vi";
         var allConfigs = await _dbContext.SysConfigs.AsNoTracking().ToListAsync();
 
         var result = new Dictionary<string, object?>();
@@ -140,7 +153,14 @@ public class SysConfigServices
         {
             var dot = cfg.Key.IndexOf('.');
             var key = dot >= 0 ? cfg.Key[(dot + 1)..] : cfg.Key;
-            result[key] = cfg.Value.RootElement;
+            var element = cfg.Value.RootElement;
+
+            if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty(lang, out var langVal))
+                result[key] = langVal;
+            else if (element.ValueKind == JsonValueKind.Object && lang != "vi" && element.TryGetProperty("vi", out var viVal))
+                result[key] = viVal;
+            else
+                result[key] = element;
         }
 
         var archivesRaw = await _dbContext.Articles
@@ -153,18 +173,39 @@ public class SysConfigServices
         result["archivesCountAtTime"] = archivesRaw
             .Select(g => new
             {
-                time = new DateTime(g.Year, g.Month, 1).ToString("MMMM yyyy", CultureInfo.InvariantCulture),
+                time = lang == "vi"
+                    ? $"Tháng {g.Month} năm {g.Year}"
+                    : new DateTime(g.Year, g.Month, 1).ToString("MMMM yyyy", CultureInfo.InvariantCulture),
                 count = g.Count,
                 @ref  = $"/archives/{g.Year}/{g.Month:D2}"
             })
             .ToList<object>();
 
-        result["categoryCountArchives"] = await _dbContext.Categories
+        var categories = await _dbContext.Categories
             .AsNoTracking()
             .Where(c => c.CountRef > 0)
             .OrderByDescending(c => c.CountRef)
-            .Select(c => new { id = c.Id, name = c.Title, count = c.CountRef, @ref = "/" + c.Slug })
-            .ToListAsync<object>();
+            .Select(c => new { Id = c.Id, Title = c.Title, Count = c.CountRef, Ref = "/" + c.Slug })
+            .ToListAsync();
+
+        if (lang != "vi" && categories.Count > 0)
+        {
+            var catTrans = await _translationService.GetBatchAsync(
+                EntityType.Category, categories.Select(c => c.Id), lang);
+            result["categoryCountArchives"] = categories
+                .Select(c =>
+                {
+                    var name = catTrans.TryGetValue(c.Id, out var t) && t.TryGetValue("title", out var v) ? v : c.Title;
+                    return (object)new { id = c.Id, name, count = c.Count, @ref = c.Ref };
+                })
+                .ToList();
+        }
+        else
+        {
+            result["categoryCountArchives"] = categories
+                .Select(c => (object)new { id = c.Id, name = c.Title, count = c.Count, @ref = c.Ref })
+                .ToList();
+        }
 
         return result;
     }

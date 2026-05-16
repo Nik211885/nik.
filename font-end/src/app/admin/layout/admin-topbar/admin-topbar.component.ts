@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
@@ -16,6 +16,9 @@ import { AdminMessage } from '../../../app.message';
   styleUrl: './admin-topbar.component.css'
 })
 export class AdminTopbarComponent implements OnInit, OnDestroy {
+  @Input()  collapsed = false;
+  @Output() toggle = new EventEmitter<void>();
+
   now = new Date();
   bellOpen = false;
   unreadList: ContactItem[] = [];

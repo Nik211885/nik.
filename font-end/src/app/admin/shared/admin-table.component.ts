@@ -74,12 +74,14 @@ import { LanguagePipe } from '../../shared/pipes/language.pipe';
                   (click)="emitEdit()">
             <i class="bi bi-pencil"></i>
           </button>
-          <button class="btn btn-sm btn-danger action-btn"
-                  [disabled]="selectedKeys.size === 0"
-                  [title]="AdminMessage.TABLE_ACTION_DELETE | language"
-                  (click)="emitDelete()">
-            <i class="bi bi-trash3"></i>
-          </button>
+          @if (!hideDelete) {
+            <button class="btn btn-sm btn-danger action-btn"
+                    [disabled]="selectedKeys.size === 0"
+                    [title]="AdminMessage.TABLE_ACTION_DELETE | language"
+                    (click)="emitDelete()">
+              <i class="bi bi-trash3"></i>
+            </button>
+          }
         }
       </div>
     </div>
@@ -240,6 +242,7 @@ export class AdminTableComponent implements OnChanges {
   @Input() data: any[] = [];
   @Input() loading = false;
   @Input() showActions = true;
+  @Input() hideDelete = false;
   @Input() rowKey = 'id';
   @Output() editClick = new EventEmitter<any>();
   @Output() deleteClick = new EventEmitter<any[]>();

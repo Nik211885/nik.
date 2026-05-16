@@ -17,7 +17,7 @@ export class UserAdminService {
     return this.http.get<UserItem>(`${this.base}/${id}`);
   }
 
-  update(body: { userName: string; email?: string; phone?: string; bio: string }): Observable<UserItem> {
-    return this.http.put<UserItem>(`${this.base}/update`, body);
+  update(id: string, body: { userName: string; email?: string; phone?: string; bio: string }): Observable<UserItem> {
+    return this.http.put<UserItem>(`${this.base}/update/${id}`, body);
   }
 }

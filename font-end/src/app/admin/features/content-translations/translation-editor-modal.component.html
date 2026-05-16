@@ -1,0 +1,49 @@
+<div class="modal-backdrop fade show" (click)="cancel()"></div>
+<div class="modal fade show d-block" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ AdminMessage.CONTENT_TRANS_MODAL_TITLE | language }}
+          — <span class="text-muted">{{ item.sourceTitle }}</span>
+          <span class="badge bg-secondary ms-2 text-uppercase">{{ langCode }}</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="cancel()"></button>
+      </div>
+
+      <div class="modal-body">
+        @if (loading) {
+          <div class="text-center py-4">{{ AdminMessage.LOADING | language }}</div>
+        } @else {
+          @for (field of fields; track field.key) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ field.label }}</label>
+              @if (field.multiline) {
+                <textarea class="form-control" rows="5"
+                  [(ngModel)]="values[field.key]"
+                  [placeholder]="field.label"></textarea>
+              } @else {
+                <input class="form-control" type="text"
+                  [(ngModel)]="values[field.key]"
+                  [placeholder]="field.label">
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancel()" [disabled]="saving">
+          {{ AdminMessage.CANCEL | language }}
+        </button>
+        <button class="btn btn-primary" (click)="save()" [disabled]="saving || loading">
+          @if (saving) {
+            {{ AdminMessage.CONTENT_TRANS_SAVING | language }}
+          } @else {
+            {{ AdminMessage.CONTENT_TRANS_SAVE | language }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

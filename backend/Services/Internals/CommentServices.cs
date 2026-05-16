@@ -133,6 +133,6 @@ public class CommentServices
     /// <param name="ids">IDs of comments to delete.</param>
     public async Task DeleteCommentAsync(List<string> ids)
     {
-        await _context.Comments.Where(c => ids.Contains(c.Id.ToString())).ExecuteDeleteAsync();
+        await _context.Comments.Where(c => ids.Contains(c.Id)).ExecuteDeleteAsync();
     }
 }

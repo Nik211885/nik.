@@ -339,6 +339,48 @@ namespace backend.Data.Migrations
                     b.ToTable("Contacts", (string)null);
                 });
 
+            modelBuilder.Entity("backend.Entities.ContentTranslation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("LangCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityType", "LangCode");
+
+                    b.HasIndex("EntityType", "EntityId", "LangCode");
+
+                    b.HasIndex("EntityType", "EntityId", "Field", "LangCode")
+                        .IsUnique();
+
+                    b.ToTable("ContentTranslations", (string)null);
+                });
+
             modelBuilder.Entity("backend.Entities.File", b =>
                 {
                     b.Property<string>("Id")
@@ -757,7 +799,8 @@ namespace backend.Data.Migrations
 
                     b.HasOne("backend.Entities.Comment", "Parent")
                         .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Article");
 

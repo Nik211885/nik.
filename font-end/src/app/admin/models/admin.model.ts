@@ -26,6 +26,8 @@ export interface AlbumItem {
   albumId?: string;
   orderIndex: number;
   countImageRef: number;
+  fileDescriptionId?: string;
+  coverUrl?: string;
   children?: AlbumItem[];
 }
 
@@ -182,4 +184,22 @@ export interface ContactItem {
   message: string;
   createdDate: string;
   isRead: boolean;
+}
+
+export interface TranslationStatusItem {
+  entityId: string;
+  entityType: string;
+  sourceTitle: string;
+  isTranslated: boolean;
+}
+
+export interface EntityTranslationResponse {
+  fields: Record<string, string>;
+}
+
+export interface UpsertTranslationRequest {
+  entityType: string;
+  entityId: string;
+  langCode: string;
+  fields: Record<string, string>;
 }

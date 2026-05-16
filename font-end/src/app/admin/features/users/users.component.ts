@@ -6,6 +6,7 @@ import { AdminTableComponent } from '../../shared/admin-table.component';
 import { TableColumn, UserItem } from '../../models/admin.model';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-users-admin',
@@ -35,7 +36,7 @@ export class UsersAdminComponent implements OnInit {
     { key: 'createdDate', label: AdminMessage.LABEL_CREATED_DATE, type: 'date' },
   ];
 
-  constructor(private svc: UserAdminService) {}
+  constructor(private svc: UserAdminService, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -53,9 +54,9 @@ export class UsersAdminComponent implements OnInit {
 
   save(): void {
     this.saving = true;
-    this.svc.update(this.form).subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+    this.svc.update(this.selected!.id, this.form).subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 }

@@ -21,8 +21,12 @@ export class AlbumAdminService {
     return this.http.post<AlbumItem>(`${this.base}/create`, body);
   }
 
-  update(body: { id: string; name: string; title: string; description: string; albumId?: string; orderIndex?: number }): Observable<AlbumItem> {
+  update(body: { id: string; name: string; title: string; description: string; albumId?: string; orderIndex?: number; fileDescriptionId?: string }): Observable<AlbumItem> {
     return this.http.put<AlbumItem>(`${this.base}/update`, body);
+  }
+
+  setCover(albumId: string, fileId: string | null): Observable<AlbumItem> {
+    return this.http.put<AlbumItem>(`${this.base}/set-cover`, { albumId, fileId });
   }
 
   delete(ids: string[]): Observable<void> {

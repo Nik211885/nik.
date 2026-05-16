@@ -22,6 +22,7 @@ public static class AddServicesInternalExtensions
             services.AddScoped<ContactServices>();
             services.AddScoped<PageViewServices>();
             services.AddScoped<HeroSlideServices>();
+            services.AddScoped<ContentTranslationService>();
             return services;
         }
     }

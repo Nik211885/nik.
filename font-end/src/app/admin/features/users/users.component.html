@@ -6,7 +6,7 @@
 </div>
 <div class="admin-card">
   <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
-    (editClick)="openEdit($event)" (deleteClick)="$event">
+    [hideDelete]="true" (editClick)="openEdit($event)">
   </app-admin-table>
 </div>
 

@@ -11,6 +11,9 @@ public class ArticleTagItem
     /// <summary>Lowercase unique tag name.</summary>
     public string Name { get; set; }
 
+    /// <summary>Localised display title.</summary>
+    public string Title { get; set; }
+
     /// <summary>URL-friendly slug for the tag page.</summary>
     public string Slug { get; set; }
 
@@ -26,6 +29,9 @@ public class ArticleCategoryItem
 
     /// <summary>Lowercase unique category name.</summary>
     public string Name { get; set; }
+
+    /// <summary>Localised display title.</summary>
+    public string Title { get; set; }
 
     /// <summary>URL-friendly slug for the category page.</summary>
     public string Slug { get; set; }
@@ -142,6 +148,7 @@ public static class ArticleResponseExtensions
                 {
                     Id = at.TagId,
                     Name = at.Tag.Name,
+                    Title = at.Tag.Title,
                     Slug = at.Tag.Slug,
                     Image = at.Tag.Image
                 }).ToList(),
@@ -149,6 +156,7 @@ public static class ArticleResponseExtensions
                 {
                     Id = ac.CategoryId,
                     Name = ac.Category.Name,
+                    Title = ac.Category.Title,
                     Slug = ac.Category.Slug,
                     Image = ac.Category.Image
                 }).ToList()

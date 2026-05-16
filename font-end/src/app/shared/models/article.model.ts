@@ -9,6 +9,7 @@ export interface ArticleAuthorModel {
 export interface ArticleTagModel {
   id: string;
   name: string;
+  title: string;
   slug: string;
   image: string;
 }
@@ -16,6 +17,7 @@ export interface ArticleTagModel {
 export interface ArticleCategoryModel {
   id: string;
   name: string;
+  title: string;
   slug: string;
   image: string;
 }

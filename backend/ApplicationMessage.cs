@@ -53,3 +53,22 @@ public static class ApplicationMessage
     /// <summary>Key returned when a refresh token is invalid or expired.</summary>
     public static readonly string InvalidToken = "exception.invalid_token";
 }
+
+/// <summary>String constants identifying translatable entity types in <c>ContentTranslations</c>.</summary>
+public static class EntityType
+{
+    /// <summary>Blog/portfolio article.</summary>
+    public const string Article = "article";
+
+    /// <summary>Content category.</summary>
+    public const string Category = "category";
+
+    /// <summary>Content tag.</summary>
+    public const string Tag = "tag";
+
+    /// <summary>Photo album.</summary>
+    public const string Album = "album";
+
+    /// <summary>Homepage hero carousel slide.</summary>
+    public const string HeroSlide = "heroSlide";
+}

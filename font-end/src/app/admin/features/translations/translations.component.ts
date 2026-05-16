@@ -8,6 +8,7 @@ import { CodeLanguageItem, LanguageItem, TableColumn, TranslateItem } from '../.
 import { forkJoin } from 'rxjs';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-translations-admin',
@@ -43,7 +44,7 @@ export class TranslationsAdminComponent implements OnInit {
     { key: 'value',    label: AdminMessage.LABEL_VALUE,    type: 'truncate' },
   ];
 
-  constructor(private svc: LanguageAdminService) {}
+  constructor(private svc: LanguageAdminService, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -99,23 +100,23 @@ export class TranslationsAdminComponent implements OnInit {
       : this.svc.createTranslation(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   saveKey(): void {
     this.saving = true;
     this.svc.createCodeKey(this.keyForm).subscribe({
-      next: () => { this.showKeyModal = false; this.saving = false; this.load(); },
-      error: () => { this.saving = false; }
+      next: () => { this.showKeyModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     this.svc.deleteTranslation(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.load(); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 }

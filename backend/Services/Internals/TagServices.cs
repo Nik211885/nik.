@@ -12,12 +12,20 @@ public class TagServices
 {
     private readonly ILogger<ArticleServices> _logger;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IHttpContextAccessor _httpContext;
+    private readonly ContentTranslationService _translationService;
 
     /// <summary>Initialises the service with required dependencies.</summary>
-    public TagServices(ILogger<ArticleServices> logger, ApplicationDbContext dbContext)
+    public TagServices(
+        ILogger<ArticleServices> logger,
+        ApplicationDbContext dbContext,
+        IHttpContextAccessor httpContext,
+        ContentTranslationService translationService)
     {
         _logger = logger;
         _dbContext = dbContext;
+        _httpContext = httpContext;
+        _translationService = translationService;
     }
 
     /// <summary>
@@ -66,39 +74,79 @@ public class TagServices
         return tagByUpdate.ToTagResponse();
     }
 
-    /// <summary>Deletes one or more tags by ID.</summary>
+    /// <summary>
+    /// Deletes one or more tags by ID and removes their translations.
+    /// </summary>
     /// <param name="ids">IDs of tags to delete.</param>
     public async Task DeleteTagAsync(List<string> ids)
     {
-        _ = await _dbContext.Tags.Where(x => ids.Contains(x.Id))
-            .ExecuteDeleteAsync();
+        _ = await _dbContext.Tags.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
+        await _translationService.DeleteByEntityAsync(EntityType.Tag, ids);
     }
 
-    /// <summary>Returns all tags.</summary>
+    /// <summary>
+    /// Returns all tags.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
+    /// </summary>
     public async Task<IReadOnlyCollection<TagResponse>> GetTagAsync()
     {
-        var tags = await _dbContext.Tags.Select(x => x.ToTagResponse())
-            .ToListAsync();
+        var tags = await _dbContext.Tags.Select(x => x.ToTagResponse()).ToListAsync();
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (!ctx.IsAdmin() && lang != "vi" && tags.Count > 0)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.Tag, tags.Select(t => t.Id), lang);
+            foreach (var tag in tags)
+                if (batch.TryGetValue(tag.Id, out var t)) ApplyTranslations(tag, t);
+        }
+
         return tags;
     }
 
-    /// <summary>Returns a single tag by ID, or <see langword="null"/> if not found.</summary>
+    /// <summary>
+    /// Returns a single tag by ID, or <see langword="null"/> if not found.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
+    /// </summary>
     /// <param name="id">Tag ID.</param>
     public async Task<TagResponse?> GetTagByIdAsync(string id)
     {
         var tag = await _dbContext.Tags.Where(x => x.Id == id)
             .Select(x => x.ToTagResponse())
             .FirstOrDefaultAsync();
+        if (tag is not null) await OverlayTranslationsAsync(tag);
         return tag;
     }
 
-    /// <summary>Returns a single tag by slug, or <see langword="null"/> if not found.</summary>
+    /// <summary>
+    /// Returns a single tag by slug, or <see langword="null"/> if not found.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
+    /// </summary>
     /// <param name="slug">URL slug of the tag.</param>
     public async Task<TagResponse?> GetTagBySlugAsync(string slug)
     {
         var tag = await _dbContext.Tags.Where(x => x.Slug == slug)
             .Select(x => x.ToTagResponse())
             .FirstOrDefaultAsync();
+        if (tag is not null) await OverlayTranslationsAsync(tag);
         return tag;
+    }
+
+    // ── Private helpers ───────────────────────────────────────────────────
+
+    private async Task OverlayTranslationsAsync(TagResponse r)
+    {
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (ctx.IsAdmin() || lang == "vi") return;
+        var t = await _translationService.GetAsync(EntityType.Tag, r.Id, lang);
+        ApplyTranslations(r, t);
+    }
+
+    private static void ApplyTranslations(TagResponse r, Dictionary<string, string> t)
+    {
+        if (t.TryGetValue("title", out var v)) r.Title = v;
+        if (t.TryGetValue("description", out v)) r.Description = v;
     }
 }

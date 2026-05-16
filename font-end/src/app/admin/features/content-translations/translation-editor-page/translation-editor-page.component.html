@@ -1,0 +1,96 @@
+<div class="page-header d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn btn-outline-secondary btn-sm" (click)="back()">
+      <i class="bi bi-arrow-left me-1"></i>{{ AdminMessage.CONTENT_TRANS_BACK | language }}
+    </button>
+    <div>
+      <h4 class="fw-bold mb-0">{{ AdminMessage.CONTENT_TRANS_MODAL_TITLE | language }}</h4>
+      @if (sourceTitle) {
+        <p class="text-muted small mb-0">
+          {{ sourceTitle }}
+          <span class="badge bg-secondary ms-1 text-uppercase">{{ langCode }}</span>
+        </p>
+      }
+    </div>
+  </div>
+  <button class="btn btn-primary" (click)="save()" [disabled]="saving || loading">
+    @if (saving) {
+      {{ AdminMessage.CONTENT_TRANS_SAVING | language }}
+    } @else {
+      {{ AdminMessage.CONTENT_TRANS_SAVE | language }}
+    }
+  </button>
+</div>
+
+@if (saved) {
+  <div class="alert alert-success d-flex align-items-center py-2 mb-3">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ AdminMessage.CONTENT_TRANS_SAVE | language }}
+  </div>
+}
+
+@if (loading) {
+  <div class="text-center py-5">{{ AdminMessage.LOADING | language }}</div>
+} @else {
+  @for (field of fields; track field.key) {
+    <div class="row g-2 mb-3">
+
+      <!-- Original (VI) -->
+      <div class="col-md-6">
+        <div class="admin-card">
+          <p class="small text-muted mb-2">
+            {{ AdminMessage.CONTENT_TRANS_ORIGINAL | language }}
+            — <strong>{{ field.label }}</strong>
+          </p>
+          @if (field.rich) {
+            <div class="border rounded p-2 bg-light"
+                 style="max-height:500px;overflow-y:auto;word-break:break-word;overflow-wrap:break-word"
+                 [innerHTML]="sourceValues[field.key]"></div>
+          } @else if (field.multiline) {
+            <textarea class="form-control bg-light" rows="5" readonly>{{ sourceValues[field.key] }}</textarea>
+          } @else {
+            <input class="form-control bg-light" type="text" readonly [value]="sourceValues[field.key]">
+          }
+        </div>
+      </div>
+
+      <!-- Translation -->
+      <div class="col-md-6">
+        <div class="admin-card">
+          <p class="small text-muted mb-2">
+            {{ AdminMessage.CONTENT_TRANS_TRANSLATION | language }}
+            — <strong>{{ field.label }}</strong>
+            <span class="badge bg-secondary ms-1 text-uppercase">{{ langCode }}</span>
+          </p>
+          @if (field.rich) {
+            <quill-editor
+              [(ngModel)]="translationValues[field.key]"
+              [name]="field.key"
+              [modules]="editorModules"
+              [styles]="{'min-height': '280px'}"
+              class="w-100">
+            </quill-editor>
+          } @else if (field.multiline) {
+            <textarea class="form-control" rows="5"
+              [(ngModel)]="translationValues[field.key]"
+              [placeholder]="field.label"></textarea>
+          } @else {
+            <input class="form-control" type="text"
+              [(ngModel)]="translationValues[field.key]"
+              [placeholder]="field.label">
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <div class="d-flex justify-content-end mt-2">
+    <button class="btn btn-primary px-4" (click)="save()" [disabled]="saving || loading">
+      @if (saving) {
+        {{ AdminMessage.CONTENT_TRANS_SAVING | language }}
+      } @else {
+        {{ AdminMessage.CONTENT_TRANS_SAVE | language }}
+      }
+    </button>
+  </div>
+}

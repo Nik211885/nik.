@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Exceptions;
+using backend.Extensions;
 using backend.ViewModels.HeroSlides.Requests;
 using backend.ViewModels.HeroSlides.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,20 @@ public class HeroSlideServices
 {
     private readonly ILogger<HeroSlideServices> _logger;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IHttpContextAccessor _httpContext;
+    private readonly ContentTranslationService _translationService;
 
     /// <summary>Initialises the service with required dependencies.</summary>
-    public HeroSlideServices(ILogger<HeroSlideServices> logger, ApplicationDbContext dbContext)
+    public HeroSlideServices(
+        ILogger<HeroSlideServices> logger,
+        ApplicationDbContext dbContext,
+        IHttpContextAccessor httpContext,
+        ContentTranslationService translationService)
     {
         _logger = logger;
         _dbContext = dbContext;
+        _httpContext = httpContext;
+        _translationService = translationService;
     }
 
     /// <summary>Returns all slides ordered by <c>OrderIndex</c> ascending.</summary>
@@ -29,15 +38,29 @@ public class HeroSlideServices
             .ToListAsync();
     }
 
-    /// <summary>Returns only active slides ordered by <c>OrderIndex</c> for the public carousel.</summary>
+    /// <summary>
+    /// Returns only active slides ordered by <c>OrderIndex</c> for the public carousel.
+    /// Translates text fields when the language is not <c>vi</c>.
+    /// </summary>
     public async Task<List<HeroSlideResponse>> GetPublicAsync()
     {
-        return await _dbContext.HeroSlides
+        var slides = await _dbContext.HeroSlides
             .AsNoTracking()
             .Where(x => x.IsActive)
             .OrderBy(x => x.OrderIndex)
             .Select(x => Map(x))
             .ToListAsync();
+
+        var lang = _httpContext.HttpContext!.GetLanguage();
+        if (lang != "vi" && slides.Count > 0)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.HeroSlide, slides.Select(s => s.Id), lang);
+            foreach (var slide in slides)
+                if (batch.TryGetValue(slide.Id, out var t)) ApplyTranslations(slide, t);
+        }
+
+        return slides;
     }
 
     /// <summary>Creates a new hero slide.</summary>
@@ -78,12 +101,17 @@ public class HeroSlideServices
         return Map(entity);
     }
 
-    /// <summary>Deletes one or more slides by ID.</summary>
+    /// <summary>
+    /// Deletes one or more slides by ID and removes their translations.
+    /// </summary>
     /// <param name="ids">IDs of slides to delete.</param>
     public async Task DeleteAsync(List<string> ids)
     {
         await _dbContext.HeroSlides.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
+        await _translationService.DeleteByEntityAsync(EntityType.HeroSlide, ids);
     }
+
+    // ── Private helpers ───────────────────────────────────────────────────
 
     private static HeroSlideResponse Map(Entities.HeroSlide x) => new()
     {
@@ -94,4 +122,10 @@ public class HeroSlideServices
         OrderIndex = x.OrderIndex,
         IsActive = x.IsActive
     };
+
+    private static void ApplyTranslations(HeroSlideResponse r, Dictionary<string, string> t)
+    {
+        if (t.TryGetValue("title", out var v)) r.Title = v;
+        if (t.TryGetValue("description", out v)) r.Description = v;
+    }
 }

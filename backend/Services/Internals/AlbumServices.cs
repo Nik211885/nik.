@@ -16,12 +16,20 @@ public class AlbumServices
 {
     private readonly ILogger<AlbumServices> _logger;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IHttpContextAccessor _httpContext;
+    private readonly ContentTranslationService _translationService;
 
     /// <summary>Initialises the service with required dependencies.</summary>
-    public AlbumServices(ILogger<AlbumServices> logger, ApplicationDbContext dbContext)
+    public AlbumServices(
+        ILogger<AlbumServices> logger,
+        ApplicationDbContext dbContext,
+        IHttpContextAccessor httpContext,
+        ContentTranslationService translationService)
     {
         _logger = logger;
         _dbContext = dbContext;
+        _httpContext = httpContext;
+        _translationService = translationService;
     }
 
     /// <summary>
@@ -87,15 +95,52 @@ public class AlbumServices
     }
 
     /// <summary>
-    /// Deletes one or more albums by ID. Cascades to child albums and album-file records
-    /// as configured in the database.
+    /// Sets or clears the cover image for an album.
+    /// </summary>
+    /// <param name="request">Album ID and optional file ID to use as cover.</param>
+    /// <returns>The updated album response.</returns>
+    /// <exception cref="NotFoundException">Thrown when the album ID does not exist.</exception>
+    public async Task<AlbumResponse> SetCoverAsync(SetCoverRequest request)
+    {
+        var album = await _dbContext.Albums
+            .FirstOrDefaultAsync(a => a.Id == request.AlbumId)
+            ?? throw new NotFoundException();
+
+        album.FileDescriptionId = request.FileId;
+        album.UpdatedDate = DateTimeOffset.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return await _dbContext.Albums
+            .AsNoTracking()
+            .Where(a => a.Id == album.Id)
+            .Select(a => new AlbumResponse
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Title = a.Title,
+                Description = a.Description,
+                Slug = a.Slug,
+                CountImageRef = a.CountImageRef,
+                FileDescriptionId = a.FileDescriptionId,
+                CoverUrl = a.File != null ? a.File.Url : null,
+                OrderIndex = a.OrderIndex,
+                AlbumId = a.AlbumId,
+                CreatedDate = a.CreatedDate,
+                UpdatedDate = a.UpdatedDate
+            })
+            .FirstAsync();
+    }
+
+    /// <summary>
+    /// Deletes one or more albums by ID and removes their translations.
+    /// Cascades to child albums and album-file records as configured in the database.
     /// </summary>
     /// <param name="ids">IDs of albums to delete.</param>
     public async Task DeleteAlbumAsync(List<string> ids)
     {
-        await _dbContext.Albums
-            .Where(a => ids.Contains(a.Id))
-            .ExecuteDeleteAsync();
+        await _dbContext.Albums.Where(a => ids.Contains(a.Id)).ExecuteDeleteAsync();
+        await _translationService.DeleteByEntityAsync(EntityType.Album, ids);
     }
 
     /// <summary>
@@ -185,6 +230,7 @@ public class AlbumServices
     /// <summary>
     /// Returns a single album by ID. When <paramref name="tree"/> is <see langword="true"/>,
     /// the <c>Children</c> hierarchy is populated recursively.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<AlbumResponse?> GetAlbumByIdAsync(string id, bool tree = false)
     {
@@ -193,9 +239,21 @@ public class AlbumServices
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == id);
 
-        if (album is not null && tree)
+        if (album is null) return null;
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        bool translate = !ctx.IsAdmin() && lang != "vi";
+
+        if (translate)
         {
-            var lookup = await BuildLookupAsync();
+            var t = await _translationService.GetAsync(EntityType.Album, id, lang);
+            ApplyTranslations(album, t);
+        }
+
+        if (tree)
+        {
+            var lookup = await BuildLookupAsync(translate ? lang : null);
             PopulateChildren(album, lookup);
         }
 
@@ -205,6 +263,7 @@ public class AlbumServices
     /// <summary>
     /// Returns a single album by slug. When <paramref name="tree"/> is <see langword="true"/>,
     /// the <c>Children</c> hierarchy is populated recursively.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<AlbumResponse?> GetAlbumBySlugAsync(string slug, bool tree = false)
     {
@@ -213,9 +272,21 @@ public class AlbumServices
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Slug == slug);
 
-        if (album is not null && tree)
+        if (album is null) return null;
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        bool translate = !ctx.IsAdmin() && lang != "vi";
+
+        if (translate)
         {
-            var lookup = await BuildLookupAsync();
+            var t = await _translationService.GetAsync(EntityType.Album, album.Id, lang);
+            ApplyTranslations(album, t);
+        }
+
+        if (tree)
+        {
+            var lookup = await BuildLookupAsync(translate ? lang : null);
             PopulateChildren(album, lookup);
         }
 
@@ -225,19 +296,34 @@ public class AlbumServices
     /// <summary>
     /// Returns all root-level albums (those with no parent).
     /// When <paramref name="tree"/> is <see langword="true"/>, children are populated recursively.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<IReadOnlyCollection<AlbumResponse>> GetAlbumParentAsync(bool tree = false)
     {
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        bool translate = !ctx.IsAdmin() && lang != "vi";
+
         if (!tree)
         {
-            return await _dbContext.Albums
+            var list = await _dbContext.Albums
                 .Where(a => a.AlbumId == null)
                 .ToAlbumResponses()
                 .AsNoTracking()
                 .ToListAsync();
+
+            if (translate && list.Count > 0)
+            {
+                var batch = await _translationService.GetBatchAsync(
+                    EntityType.Album, list.Select(a => a.Id), lang);
+                foreach (var a in list)
+                    if (batch.TryGetValue(a.Id, out var t)) ApplyTranslations(a, t);
+            }
+
+            return list;
         }
 
-        var lookup = await BuildLookupAsync();
+        var lookup = await BuildLookupAsync(translate ? lang : null);
         var parents = lookup[null].ToList();
 
         foreach (var parent in parents)
@@ -249,20 +335,35 @@ public class AlbumServices
     /// <summary>
     /// Returns direct children of the specified parent album.
     /// When <paramref name="tree"/> is <see langword="true"/>, their descendants are also populated.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<IReadOnlyCollection<AlbumResponse>> GetAlbumChildrenAsync(
         string parentId, bool tree = false)
     {
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        bool translate = !ctx.IsAdmin() && lang != "vi";
+
         if (!tree)
         {
-            return await _dbContext.Albums
+            var list = await _dbContext.Albums
                 .Where(a => a.AlbumId == parentId)
                 .ToAlbumResponses()
                 .AsNoTracking()
                 .ToListAsync();
+
+            if (translate && list.Count > 0)
+            {
+                var batch = await _translationService.GetBatchAsync(
+                    EntityType.Album, list.Select(a => a.Id), lang);
+                foreach (var a in list)
+                    if (batch.TryGetValue(a.Id, out var t)) ApplyTranslations(a, t);
+            }
+
+            return list;
         }
 
-        var lookup = await BuildLookupAsync();
+        var lookup = await BuildLookupAsync(translate ? lang : null);
         var children = lookup[parentId].ToList();
 
         foreach (var child in children)
@@ -273,21 +374,40 @@ public class AlbumServices
 
     /// <summary>
     /// Returns all albums as a flat list, ordered by creation date descending.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<IReadOnlyCollection<AlbumResponse>> GetAllAsync()
     {
-        return await _dbContext.Albums
+        var list = await _dbContext.Albums
             .OrderByDescending(a => a.CreatedDate)
             .ToAlbumResponses()
             .AsNoTracking()
             .ToListAsync();
+
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        if (!ctx.IsAdmin() && lang != "vi" && list.Count > 0)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.Album, list.Select(a => a.Id), lang);
+            foreach (var album in list)
+                if (batch.TryGetValue(album.Id, out var t)) ApplyTranslations(album, t);
+        }
+
+        return list;
     }
 
+    /// <summary>
     /// Returns the full album hierarchy as a list of root albums with all descendants nested.
+    /// Translates text fields when the request is unauthenticated and the language is not <c>vi</c>.
     /// </summary>
     public async Task<IReadOnlyCollection<AlbumResponse>> BuildAlbumTreeAsync()
     {
-        var lookup = await BuildLookupAsync();
+        var ctx = _httpContext.HttpContext!;
+        var lang = ctx.GetLanguage();
+        bool translate = !ctx.IsAdmin() && lang != "vi";
+
+        var lookup = await BuildLookupAsync(translate ? lang : null);
         var roots = lookup[null].ToList();
 
         foreach (var root in roots)
@@ -300,14 +420,23 @@ public class AlbumServices
 
     /// <summary>
     /// Loads all albums in a single query and groups them by parent ID.
+    /// Applies translations when <paramref name="langToTranslate"/> is provided.
     /// The <see langword="null"/> key contains root-level albums.
     /// </summary>
-    private async Task<ILookup<string?, AlbumResponse>> BuildLookupAsync()
+    private async Task<ILookup<string?, AlbumResponse>> BuildLookupAsync(string? langToTranslate = null)
     {
         var all = await _dbContext.Albums
             .ToAlbumResponses()
             .AsNoTracking()
             .ToListAsync();
+
+        if (langToTranslate is not null)
+        {
+            var batch = await _translationService.GetBatchAsync(
+                EntityType.Album, all.Select(a => a.Id), langToTranslate);
+            foreach (var album in all)
+                if (batch.TryGetValue(album.Id, out var t)) ApplyTranslations(album, t);
+        }
 
         return all.ToLookup<AlbumResponse, string?>(a => a.AlbumId);
     }
@@ -327,5 +456,11 @@ public class AlbumServices
 
         foreach (var child in children)
             PopulateChildren(child, lookup);
+    }
+
+    private static void ApplyTranslations(AlbumResponse r, Dictionary<string, string> t)
+    {
+        if (t.TryGetValue("title", out var v)) r.Title = v;
+        if (t.TryGetValue("description", out v)) r.Description = v;
     }
 }

@@ -64,6 +64,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Hero carousel slides shown on the homepage.</summary>
     public DbSet<HeroSlide> HeroSlides { get; set; }
 
+    /// <summary>Translated field values for all translatable content entities.</summary>
+    public DbSet<ContentTranslation> ContentTranslations { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

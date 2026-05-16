@@ -7,6 +7,7 @@ import { CloudinaryUploadComponent } from '../../shared/cloudinary-upload/cloudi
 import { HeroSlideItem } from '../../models/admin.model';
 import { AdminMessage } from '../../../app.message';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-hero-slides-admin',
@@ -29,7 +30,7 @@ export class HeroSlidesAdminComponent implements OnInit {
 
   form: Omit<HeroSlideItem, 'id'> = this.emptyForm();
 
-  constructor(private svc: HeroSlideAdminService) {}
+  constructor(private svc: HeroSlideAdminService, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -68,16 +69,16 @@ export class HeroSlidesAdminComponent implements OnInit {
       : this.svc.create(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     if (!this.selected) return;
     this.svc.delete([this.selected.id]).subscribe({
-      next: () => { this.showConfirm = false; this.load(); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 

@@ -46,6 +46,15 @@ public class AlbumController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Sets or clears the cover image for an album.</summary>
+    [HttpPut("set-cover")]
+    [ValidationFilter(typeof(SetCoverRequest))]
+    public async Task<ActionResult> SetCover([FromBody] SetCoverRequest request)
+    {
+        var result = await _albumServices.SetCoverAsync(request);
+        return Ok(result);
+    }
+
     /// <summary>Adds files to an album, skipping duplicates.</summary>
     [HttpPost("files/add")]
     [ValidationFilter(typeof(AddFilesToAlbumRequest))]

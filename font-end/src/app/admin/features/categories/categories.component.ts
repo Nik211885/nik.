@@ -8,6 +8,7 @@ import { CloudinaryUploadComponent } from '../../shared/cloudinary-upload/cloudi
 import { CategoryItem, TableColumn } from '../../models/admin.model';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-categories-admin',
@@ -39,7 +40,7 @@ export class CategoriesAdminComponent implements OnInit {
     { key: 'countRef', label: AdminMessage.LABEL_ARTICLE_COUNT, type: 'number' },
   ];
 
-  constructor(private svc: CategoryAdminService) {}
+  constructor(private svc: CategoryAdminService, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -72,15 +73,15 @@ export class CategoriesAdminComponent implements OnInit {
       : this.svc.create(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.load(); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 }

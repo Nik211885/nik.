@@ -3,27 +3,34 @@
     <h4 class="fw-bold mb-1">{{ AdminMessage.SYSCONFIG_PAGE_TITLE | language }}</h4>
     <p class="text-muted mb-0 small">{{ AdminMessage.SYSCONFIG_SUBTITLE | language }}</p>
   </div>
-  <button class="btn btn-dark" (click)="openCreate()"><i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_CREATE_BTN | language }}</button>
-</div>
-<div class="admin-card">
-  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
-    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)"></app-admin-table>
+  <button class="btn btn-dark" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.SYSCONFIG_CREATE_BTN | language }}
+  </button>
 </div>
 
+<div class="admin-card">
+  <app-admin-table [columns]="columns" [data]="items" [loading]="loading"
+    (editClick)="openEdit($event)" (deleteClick)="openDelete($event)">
+  </app-admin-table>
+</div>
+
+<!-- Create modal (JSON textarea — for new entries only) -->
 @if (showModal) {
 <div class="admin-overlay" (click)="showModal=false">
   <div class="admin-modal" (click)="$event.stopPropagation()">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="fw-semibold mb-0">{{ (isEditing ? AdminMessage.SYSCONFIG_MODAL_EDIT : AdminMessage.SYSCONFIG_MODAL_CREATE) | language }}</h5>
-      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+      <h5 class="fw-semibold mb-0">{{ AdminMessage.SYSCONFIG_MODAL_CREATE | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showModal=false">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
     @if (error) {
-    <div class="alert alert-danger small">{{ error | language }}</div>
+      <div class="alert alert-danger small">{{ error | language }}</div>
     }
     <form (ngSubmit)="save()">
       <div class="mb-3">
         <label class="form-label fw-semibold">{{ AdminMessage.LABEL_KEY | language }} <span class="text-danger">*</span></label>
-        <input class="form-control" [(ngModel)]="form.key" name="key" required placeholder="site_title, logo_url...">
+        <input class="form-control" [(ngModel)]="form.key" name="key" required placeholder="config.mykey">
       </div>
       <div class="mb-3">
         <div class="d-flex align-items-center justify-content-between mb-1">
@@ -54,22 +61,14 @@
         @if (!jsonError) {
           <small class="text-muted">{{ AdminMessage.SYSCONFIG_FORM_HINT | language }}</small>
         }
-
-        <!-- JSON preview table -->
         @if (jsonRows.length > 0) {
           <div class="mt-2" style="border:1px solid #dee2e6;border-radius:6px;overflow:hidden">
-            <div class="px-2 py-1 bg-light border-bottom" style="font-size:.72rem;color:#6c757d;font-weight:600;letter-spacing:.03em">
-              PREVIEW
-            </div>
+            <div class="px-2 py-1 bg-light border-bottom" style="font-size:.72rem;color:#6c757d;font-weight:600;letter-spacing:.03em">PREVIEW</div>
             <table style="width:100%;border-collapse:collapse;font-size:.8rem">
               @for (row of jsonRows; track row.key) {
                 <tr style="border-bottom:1px solid #f0f0f0">
-                  <td style="padding:.3rem .6rem;width:38%;font-weight:600;color:#495057;background:#fafafa;white-space:nowrap;border-right:1px solid #f0f0f0">
-                    {{ row.key }}
-                  </td>
-                  <td style="padding:.3rem .6rem;color:#212529;font-family:monospace;word-break:break-all">
-                    {{ row.value }}
-                  </td>
+                  <td style="padding:.3rem .6rem;width:38%;font-weight:600;color:#495057;background:#fafafa;white-space:nowrap;border-right:1px solid #f0f0f0">{{ row.key }}</td>
+                  <td style="padding:.3rem .6rem;color:#212529;font-family:monospace;word-break:break-all">{{ row.value }}</td>
                 </tr>
               }
             </table>
@@ -89,4 +88,5 @@
 }
 
 <app-admin-confirm-modal [show]="showConfirm" [itemName]="selected?.key ?? ''"
-  (confirmed)="delete()" (cancelled)="showConfirm=false"></app-admin-confirm-modal>
+  (confirmed)="delete()" (cancelled)="showConfirm=false">
+</app-admin-confirm-modal>

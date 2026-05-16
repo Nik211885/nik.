@@ -151,7 +151,11 @@
     @for (album of currentLevelAlbums; track album.id) {
     <div class="album-folder-card" (click)="drillInto(album)">
       <div class="album-folder-icon">
-        <i class="bi bi-folder-fill"></i>
+        @if (album.coverUrl) {
+          <img [src]="album.coverUrl" class="album-folder-cover" [alt]="album.name">
+        } @else {
+          <i class="bi bi-folder-fill"></i>
+        }
         <span class="album-folder-badge">{{ album.countImageRef }}</span>
       </div>
       <div class="album-folder-meta">
@@ -199,6 +203,16 @@
       </div>
     </div>
 
+    <!-- Cover target selector -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <small class="text-muted text-nowrap"><i class="bi bi-star me-1"></i>{{ AdminMessage.ALBUMS_COVER_FOR | language }}</small>
+      <select class="form-select form-select-sm" [(ngModel)]="coverTargetAlbumId" style="max-width:260px">
+        @for (album of drillStack; track album.id) {
+        <option [value]="album.id">{{ album.name }}</option>
+        }
+      </select>
+    </div>
+
     @if (filesLoading) {
     <div class="text-center py-4 text-muted">
       <span class="spinner-border spinner-border-sm me-2"></span>{{ AdminMessage.LOADING | language }}
@@ -216,11 +230,20 @@
     @if (!filesLoading && albumFiles.length > 0) {
     <div class="file-grid">
       @for (file of albumFiles; track file.id) {
-      <div class="file-card">
+      <div class="file-card" [class.file-card--cover]="file.id === coverTargetAlbum?.fileDescriptionId">
         <div class="file-thumb-wrap">
           <img [src]="file.url" [alt]="file.title || file.name" class="file-thumb"
                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23e9ecef\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' fill=\'%23adb5bd\' font-size=\'10\'%3ENo img%3C/text%3E%3C/svg%3E'">
+          @if (file.id === coverTargetAlbum?.fileDescriptionId) {
+          <span class="cover-badge"><i class="bi bi-star-fill"></i></span>
+          }
           <div class="file-actions">
+            <button class="file-action-btn"
+              [class.file-action-btn--cover]="file.id === coverTargetAlbum?.fileDescriptionId"
+              (click)="setCover(file)"
+              [title]="(file.id === coverTargetAlbum?.fileDescriptionId ? AdminMessage.ALBUMS_IS_COVER : AdminMessage.ALBUMS_SET_COVER) | language">
+              <i class="bi" [class.bi-star-fill]="file.id === coverTargetAlbum?.fileDescriptionId" [class.bi-star]="file.id !== coverTargetAlbum?.fileDescriptionId"></i>
+            </button>
             <button class="file-action-btn" (click)="copyUrl(file.url)"
               [title]="AdminMessage.ALBUMS_COPY_URL | language"><i class="bi bi-clipboard"></i></button>
             <button class="file-action-btn file-action-btn--danger" (click)="confirmRemoveFile(file)"

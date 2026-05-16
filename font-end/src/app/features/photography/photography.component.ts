@@ -1,6 +1,8 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlbumFileModel, AlbumModel } from '../../shared/models/album.model';
 import { AlbumService } from '../../core/services/album.service';
+import { LanguageService } from '../../core/services/language.service';
 import { LanguagePipe } from '../../shared/pipes/language.pipe';
 import { ApplicationTitle } from '../../app.message';
 
@@ -26,23 +28,26 @@ export class PhotographyComponent implements OnInit {
 
   protected readonly ApplicationTitle = ApplicationTitle;
 
-  constructor(private albumService: AlbumService) {}
+  private destroyRef = inject(DestroyRef);
+
+  constructor(private albumService: AlbumService, private langService: LanguageService) {}
 
   ngOnInit(): void {
-    this.loading = true;
-    this.albumService.getParents().subscribe({
-      next: albums => {
-        // leaf albums (no children) first, then albums with children, each group by orderIndex
-        this.rootAlbums = [...albums].sort((a, b) => {
-          const aLeaf = !a.children?.length ? 0 : 1;
-          const bLeaf = !b.children?.length ? 0 : 1;
-          if (aLeaf !== bLeaf) return aLeaf - bLeaf;
-          return a.orderIndex - b.orderIndex;
-        });
-        this.loading = false;
-      },
-      error: () => { this.loading = false; }
-    });
+    this.langService.withLanguage(() => this.albumService.getParents())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: albums => {
+          // leaf albums (no children) first, then albums with children, each group by orderIndex
+          this.rootAlbums = [...albums].sort((a, b) => {
+            const aLeaf = !a.children?.length ? 0 : 1;
+            const bLeaf = !b.children?.length ? 0 : 1;
+            if (aLeaf !== bLeaf) return aLeaf - bLeaf;
+            return a.orderIndex - b.orderIndex;
+          });
+          this.loading = false;
+        },
+        error: () => { this.loading = false; }
+      });
   }
 
   openAlbum(album: AlbumModel): void {

@@ -1,21 +1,15 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {shareReplay} from 'rxjs/operators';
 import {ArticleModel} from '../../shared/models/article.model';
 import {PaginationResponse} from '../../admin/models/admin.model';
 
 @Injectable({ providedIn: 'root' })
 export class ArticleService {
-  private topArticles$: Observable<ArticleModel[]> | null = null;
-
   constructor(private http: HttpClient) {}
 
   getTopArticles(): Observable<ArticleModel[]> {
-    if (!this.topArticles$) {
-      this.topArticles$ = this.http.get<ArticleModel[]>('api/articles/top').pipe(shareReplay(1));
-    }
-    return this.topArticles$;
+    return this.http.get<ArticleModel[]>('api/articles/top');
   }
 
   getArticles(pageNumber: number = 1, pageSize: number = 6, categorySlug?: string): Observable<PaginationResponse<ArticleModel>> {

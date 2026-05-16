@@ -52,4 +52,16 @@ public class UserController : ControllerBase
         var result = await _userServices.UpdateUserAsync(request);
         return Ok(result);
     }
+
+    /// <summary>Updates a specific user's profile by ID (admin use).</summary>
+    /// <param name="id">The target user ID.</param>
+    /// <param name="request">Updated profile data.</param>
+    /// <returns>The updated <see cref="UserResponse"/>.</returns>
+    [HttpPut("update/{id}")]
+    [ValidationFilter(typeof(UpdateUserRequest))]
+    public async Task<ActionResult<UserResponse>> UpdateUserById(string id, [FromBody] UpdateUserRequest request)
+    {
+        var result = await _userServices.UpdateUserByIdAsync(id, request);
+        return Ok(result);
+    }
 }

@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SysConfigAdminService } from '../../services/sys-config.admin.service';
 import { AdminTableComponent } from '../../shared/admin-table.component';
 import { AdminConfirmModalComponent } from '../../shared/admin-confirm-modal.component';
 import { SysConfigItem, TableColumn } from '../../models/admin.model';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-sys-config-admin',
@@ -20,7 +22,6 @@ export class SysConfigAdminComponent implements OnInit {
   loading = false;
   showModal = false;
   showConfirm = false;
-  isEditing = false;
   selected: SysConfigItem | null = null;
   deleteItems: SysConfigItem[] = [];
   saving = false;
@@ -36,7 +37,7 @@ export class SysConfigAdminComponent implements OnInit {
     { key: 'value', label: AdminMessage.LABEL_VALUE, type: 'truncate' },
   ];
 
-  constructor(private svc: SysConfigAdminService) {}
+  constructor(private svc: SysConfigAdminService, private router: Router, private toast: ToastService) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -46,20 +47,14 @@ export class SysConfigAdminComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.isEditing = false;
     this.form = { key: '', value: '' };
     this.error = '';
+    this.jsonError = '';
     this.showModal = true;
   }
 
   openEdit(item: SysConfigItem): void {
-    this.isEditing = true;
-    this.selected = item;
-    const raw = typeof item.value === 'object' ? JSON.stringify(item.value, null, 2) : String(item.value ?? '');
-    this.form = { key: item.key, value: raw };
-    this.jsonError = '';
-    this.error = '';
-    this.showModal = true;
+    this.router.navigate(['/admin/sys-config/editor', item.id]);
   }
 
   get isJsonLike(): boolean {
@@ -73,12 +68,8 @@ export class SysConfigAdminComponent implements OnInit {
   }
 
   formatJson(): void {
-    try {
-      this.form.value = JSON.stringify(JSON.parse(this.form.value), null, 2);
-      this.jsonError = '';
-    } catch (e: any) {
-      this.jsonError = e.message;
-    }
+    try { this.form.value = JSON.stringify(JSON.parse(this.form.value), null, 2); this.jsonError = ''; }
+    catch (e: any) { this.jsonError = e.message; }
   }
 
   get jsonRows(): { key: string; value: string }[] {
@@ -100,20 +91,16 @@ export class SysConfigAdminComponent implements OnInit {
     let parsedValue: any;
     try { parsedValue = JSON.parse(this.form.value); } catch { parsedValue = this.form.value; }
 
-    const obs = this.isEditing
-      ? this.svc.update({ id: this.selected!.id, key: this.form.key, value: parsedValue })
-      : this.svc.create({ key: this.form.key, value: parsedValue });
-
-    obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.load(); },
-      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; }
+    this.svc.create({ key: this.form.key, value: parsedValue }).subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS); },
+      error: () => { this.error = AdminMessage.ERROR_GENERIC; this.saving = false; this.toast.error(AdminMessage.TOAST_SAVE_ERROR); }
     });
   }
 
   delete(): void {
     this.svc.delete(this.deleteItems.map(i => i.id)).subscribe({
-      next: () => { this.showConfirm = false; this.load(); },
-      error: () => { this.showConfirm = false; }
+      next: () => { this.showConfirm = false; this.load(); this.toast.success(AdminMessage.TOAST_DELETE_SUCCESS); },
+      error: () => { this.showConfirm = false; this.toast.error(AdminMessage.TOAST_DELETE_ERROR); }
     });
   }
 }

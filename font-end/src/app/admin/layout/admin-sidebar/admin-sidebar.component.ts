@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -7,7 +7,8 @@ import { LanguageService, AvailableLanguage } from '../../../core/services/langu
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
 
-interface NavItem { label: string; icon: string; route: string; }
+interface NavItem  { label: string; icon: string; route: string; }
+interface NavGroup { label: string; items: NavItem[]; }
 
 @Component({
   selector: 'app-admin-sidebar',
@@ -17,20 +18,48 @@ interface NavItem { label: string; icon: string; route: string; }
   styleUrl: './admin-sidebar.component.css'
 })
 export class AdminSidebarComponent implements OnInit, OnDestroy {
-  readonly navItems: NavItem[] = [
-    { label: AdminMessage.SIDEBAR_NAV_DASHBOARD,    icon: 'bi-speedometer2',      route: '/admin/dashboard' },
-    { label: AdminMessage.SIDEBAR_NAV_ARTICLES,     icon: 'bi-file-earmark-text', route: '/admin/articles' },
-    { label: AdminMessage.SIDEBAR_NAV_ALBUMS,       icon: 'bi-images',            route: '/admin/albums' },
-    { label: AdminMessage.SIDEBAR_NAV_CATEGORIES,   icon: 'bi-folder2',           route: '/admin/categories' },
-    { label: AdminMessage.SIDEBAR_NAV_TAGS,         icon: 'bi-tags',              route: '/admin/tags' },
-    { label: AdminMessage.SIDEBAR_NAV_COMMENTS,     icon: 'bi-chat-dots',         route: '/admin/comments' },
-    { label: AdminMessage.SIDEBAR_NAV_USERS,        icon: 'bi-people',            route: '/admin/users' },
-    { label: AdminMessage.SIDEBAR_NAV_LANGUAGES,    icon: 'bi-translate',         route: '/admin/languages' },
-    { label: AdminMessage.SIDEBAR_NAV_TRANSLATIONS, icon: 'bi-card-text',         route: '/admin/translations' },
-    { label: AdminMessage.SIDEBAR_NAV_SETTINGS,     icon: 'bi-gear',              route: '/admin/sys-config' },
-    { label: AdminMessage.SIDEBAR_NAV_CONTACTS,    icon: 'bi-envelope',          route: '/admin/contacts' },
-    { label: AdminMessage.SIDEBAR_NAV_PAGE_VIEWS, icon: 'bi-bar-chart-line',    route: '/admin/page-views' },
-    { label: AdminMessage.SIDEBAR_NAV_HERO_SLIDES,icon: 'bi-collection-play',  route: '/admin/hero-slides' },
+  @Input() collapsed = false;
+
+  readonly navGroups: NavGroup[] = [
+    {
+      label: AdminMessage.SIDEBAR_GROUP_OVERVIEW,
+      items: [
+        { label: AdminMessage.SIDEBAR_NAV_DASHBOARD,  icon: 'bi-speedometer2',      route: '/admin/dashboard' },
+      ],
+    },
+    {
+      label: AdminMessage.SIDEBAR_GROUP_CONTENT,
+      items: [
+        { label: AdminMessage.SIDEBAR_NAV_ARTICLES,   icon: 'bi-file-earmark-text', route: '/admin/articles' },
+        { label: AdminMessage.SIDEBAR_NAV_ALBUMS,     icon: 'bi-images',            route: '/admin/albums' },
+        { label: AdminMessage.SIDEBAR_NAV_CATEGORIES, icon: 'bi-folder2',           route: '/admin/categories' },
+        { label: AdminMessage.SIDEBAR_NAV_TAGS,       icon: 'bi-tags',              route: '/admin/tags' },
+        { label: AdminMessage.SIDEBAR_NAV_HERO_SLIDES,icon: 'bi-collection-play',   route: '/admin/hero-slides' },
+      ],
+    },
+    {
+      label: AdminMessage.SIDEBAR_GROUP_COMMUNITY,
+      items: [
+        { label: AdminMessage.SIDEBAR_NAV_COMMENTS,   icon: 'bi-chat-dots',         route: '/admin/comments' },
+        { label: AdminMessage.SIDEBAR_NAV_CONTACTS,   icon: 'bi-envelope',          route: '/admin/contacts' },
+        { label: AdminMessage.SIDEBAR_NAV_USERS,      icon: 'bi-people',            route: '/admin/users' },
+      ],
+    },
+    {
+      label: AdminMessage.SIDEBAR_GROUP_I18N,
+      items: [
+        { label: AdminMessage.SIDEBAR_NAV_LANGUAGES,    icon: 'bi-translate',   route: '/admin/languages' },
+        { label: AdminMessage.SIDEBAR_NAV_TRANSLATIONS, icon: 'bi-card-text',   route: '/admin/translations' },
+        { label: AdminMessage.SIDEBAR_NAV_CONTENT_TRANS,icon: 'bi-globe',       route: '/admin/content-translations' },
+      ],
+    },
+    {
+      label: AdminMessage.SIDEBAR_GROUP_SYSTEM,
+      items: [
+        { label: AdminMessage.SIDEBAR_NAV_SETTINGS,   icon: 'bi-gear',              route: '/admin/sys-config' },
+        { label: AdminMessage.SIDEBAR_NAV_PAGE_VIEWS, icon: 'bi-bar-chart-line',    route: '/admin/page-views' },
+      ],
+    },
   ];
 
   protected readonly AdminMessage = AdminMessage;

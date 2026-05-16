@@ -72,4 +72,28 @@ public class UserServices
 
         return user.ToUserResponse();
     }
+
+    /// <summary>
+    /// Updates a specific user's profile fields by ID (admin use).
+    /// </summary>
+    /// <param name="id">The target user ID.</param>
+    /// <param name="request">Updated profile data.</param>
+    /// <returns>The updated <see cref="UserResponse"/>.</returns>
+    /// <exception cref="NotFoundException">Thrown when no user with the given ID exists.</exception>
+    public async Task<UserResponse> UpdateUserByIdAsync(string id, UpdateUserRequest request)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new NotFoundException();
+
+        user.UserName = request.UserName;
+        user.Email = request.Email ?? user.Email;
+        user.Phone = request.Phone ?? user.Phone;
+        user.Bio = request.Bio;
+        user.Slug = request.UserName.ToSlug();
+        user.UpdatedDate = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return user.ToUserResponse();
+    }
 }

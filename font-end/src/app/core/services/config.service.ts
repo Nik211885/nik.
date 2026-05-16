@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, tap} from 'rxjs';
+import {BehaviorSubject, Observable, of, skip, switchMap, tap} from 'rxjs';
 import {AuthService} from '../auth/auth.service';
+import {LanguageService} from './language.service';
 
 
 const ApiConfig = {
@@ -20,8 +21,16 @@ export class ConfigService {
   public config: Observable<Config | null> = this.config$.asObservable();
   public configAuth: Observable<ConfigAuth | null> = this.configAuth$.asObservable();
 
-  constructor(private readonly httpClient: HttpClient,
-              private readonly authService: AuthService) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly authService: AuthService,
+    private readonly langService: LanguageService,
+  ) {
+    langService.currentLanguage$.pipe(
+      skip(1),
+      switchMap(() => this.httpClient.get<Config>(ApiConfig.GET_CONFIG))
+    ).subscribe(res => this.config$.next(res));
+  }
 
   readConfig(): Observable<Config | null> {
     return this.httpClient.get<Config>(ApiConfig.GET_CONFIG).pipe(

@@ -28,6 +28,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .IsRequired(false);
         builder.HasOne(c => c.Parent)
             .WithMany(c => c.Children)
-            .HasForeignKey(c => c.ParentId);
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

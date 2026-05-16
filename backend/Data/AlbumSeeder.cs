@@ -4,146 +4,138 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data;
 
-/// <summary>
-/// Seeds sample album hierarchy and demo files idempotently on startup.
-/// </summary>
+/// <summary>Seeds Vietnamese album tree and demo files.</summary>
 public static class AlbumSeeder
 {
-    /// <summary>
-    /// Ensures a sample album tree and demo files exist in the database.
-    /// </summary>
-    /// <param name="db">The application database context.</param>
+    /// <summary>Seeds album hierarchy. Skips if any album already exists.</summary>
     public static async Task SeedAsync(ApplicationDbContext db)
     {
         if (await db.Albums.AnyAsync()) return;
 
         var now = DateTimeOffset.UtcNow;
 
-        // ── Root albums ──────────────────────────────────────────────────────
-        var photography = MakeAlbum("photography", "Photography", "A collection of photographic work.", null, 1, now);
-        var blog        = MakeAlbum("blog",        "Blog",        "Visual assets used in blog posts.",  null, 2, now);
-        var projects    = MakeAlbum("projects",    "Projects",    "Screenshots and assets for projects.", null, 3, now);
+        // ── Albums gốc ───────────────────────────────────────────────────────
+        var nhiepAnh = MakeAlbum("nhiep-anh", "Nhiếp ảnh",  "Bộ sưu tập các tác phẩm nhiếp ảnh.",        null, 1, now);
+        var blog     = MakeAlbum("blog",      "Blog",        "Hình ảnh và tài sản dùng trong blog.",       null, 2, now);
+        var duAn     = MakeAlbum("du-an",     "Dự án",       "Ảnh chụp màn hình và tài sản dự án.",        null, 3, now);
 
-        // ── Photography children ─────────────────────────────────────────────
-        var travel  = MakeAlbum("travel",   "Travel",   "Photos captured while travelling.",  photography.Id, 1, now);
-        var nature  = MakeAlbum("nature",   "Nature",   "Landscapes, flora and fauna.",        photography.Id, 2, now);
-        var fashion = MakeAlbum("fashion",  "Fashion",  "Fashion and portrait photography.",   photography.Id, 3, now);
-        var street  = MakeAlbum("street",   "Street",   "Urban street photography.",           photography.Id, 4, now);
+        // ── Con của Nhiếp ảnh ────────────────────────────────────────────────
+        var duLich   = MakeAlbum("du-lich",    "Du lịch",    "Ảnh chụp trong những chuyến đi.",            nhiepAnh.Id, 1, now);
+        var thienNhien = MakeAlbum("thien-nhien","Thiên nhiên","Phong cảnh, thực vật và động vật hoang dã.", nhiepAnh.Id, 2, now);
+        var thoiTrang  = MakeAlbum("thoi-trang","Thời trang", "Nhiếp ảnh thời trang và chân dung.",         nhiepAnh.Id, 3, now);
+        var duongPho   = MakeAlbum("duong-pho", "Đường phố", "Nhiếp ảnh đường phố đô thị.",                nhiepAnh.Id, 4, now);
 
-        // ── Travel children ──────────────────────────────────────────────────
-        var japan   = MakeAlbum("japan",    "Japan",    "Land of the rising sun.",   travel.Id, 1, now);
-        var vietnam = MakeAlbum("vietnam",  "Vietnam",  "Beautiful Vietnam.",        travel.Id, 2, now);
-        var europe  = MakeAlbum("europe",   "Europe",   "European adventures.",      travel.Id, 3, now);
+        // ── Con của Du lịch ──────────────────────────────────────────────────
+        var nhatBan  = MakeAlbum("nhat-ban",   "Nhật Bản",   "Đất nước mặt trời mọc.",                    duLich.Id, 1, now);
+        var vietNam  = MakeAlbum("viet-nam",   "Việt Nam",   "Vẻ đẹp dải đất hình chữ S.",                duLich.Id, 2, now);
+        var chauAu   = MakeAlbum("chau-au",    "Châu Âu",    "Những chuyến phiêu lưu châu Âu.",           duLich.Id, 3, now);
 
-        // ── Nature children ──────────────────────────────────────────────────
-        var forest  = MakeAlbum("forest",   "Forest",    "Deep inside the forest.",  nature.Id, 1, now);
-        var ocean   = MakeAlbum("ocean",    "Ocean",     "Beneath and beside the sea.", nature.Id, 2, now);
+        // ── Con của Thiên nhiên ──────────────────────────────────────────────
+        var rung  = MakeAlbum("rung",  "Rừng", "Sâu trong lòng đại ngàn.",                                thienNhien.Id, 1, now);
+        var bien  = MakeAlbum("bien",  "Biển", "Dưới và bên cạnh đại dương.",                             thienNhien.Id, 2, now);
 
-        // ── Blog children ────────────────────────────────────────────────────
-        var covers  = MakeAlbum("covers",   "Covers",   "Article cover images.",     blog.Id, 1, now);
-        var banners = MakeAlbum("banners",  "Banners",  "Hero banners.",             blog.Id, 2, now);
+        // ── Con của Blog ─────────────────────────────────────────────────────
+        var anhBia   = MakeAlbum("anh-bia",  "Ảnh bìa",  "Ảnh bìa cho các bài viết.",                    blog.Id, 1, now);
+        var banner   = MakeAlbum("banner",   "Banner",   "Banner cho trang chủ.",                         blog.Id, 2, now);
 
         db.Albums.AddRange(
-            photography, blog, projects,
-            travel, nature, fashion, street,
-            japan, vietnam, europe,
-            forest, ocean,
-            covers, banners
+            nhiepAnh, blog, duAn,
+            duLich, thienNhien, thoiTrang, duongPho,
+            nhatBan, vietNam, chauAu,
+            rung, bien,
+            anhBia, banner
         );
 
-        // ── Demo files for leaf albums ────────────────────────────────────────
-        var demoImages = new[]
+        // ── Tệp demo ─────────────────────────────────────────────────────────
+        var files = new[]
         {
-            // Japan
-            MakeFile("tokyo-tower",       "Tokyo Tower",        "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800"),
-            MakeFile("shibuya-crossing",  "Shibuya Crossing",   "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800"),
-            MakeFile("mount-fuji",        "Mount Fuji",         "https://images.unsplash.com/photo-1578637387939-43c525550085?w=800"),
+            // Nhật Bản
+            MakeFile("thap-tokyo",        "Tháp Tokyo",          "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800"),
+            MakeFile("giao-lo-shibuya",   "Giao lộ Shibuya",    "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800"),
+            MakeFile("nui-fuji",          "Núi Phú Sĩ",         "https://images.unsplash.com/photo-1578637387939-43c525550085?w=800"),
 
-            // Vietnam
-            MakeFile("ha-long-bay",       "Ha Long Bay",        "https://images.unsplash.com/photo-1528127269322-539801943592?w=800"),
-            MakeFile("hoi-an-lanterns",   "Hoi An Lanterns",    "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800"),
+            // Việt Nam
+            MakeFile("vinh-ha-long",      "Vịnh Hạ Long",       "https://images.unsplash.com/photo-1528127269322-539801943592?w=800"),
+            MakeFile("den-long-hoi-an",   "Đèn lồng Hội An",    "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800"),
 
-            // Europe
-            MakeFile("paris-eiffel",      "Eiffel Tower",       "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800"),
-            MakeFile("santorini",         "Santorini",          "https://images.unsplash.com/photo-1469796466635-455ede028aca?w=800"),
+            // Châu Âu
+            MakeFile("thap-eiffel",       "Tháp Eiffel",         "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800"),
+            MakeFile("santorini",         "Santorini",           "https://images.unsplash.com/photo-1469796466635-455ede028aca?w=800"),
 
-            // Forest
-            MakeFile("misty-forest",      "Misty Forest",       "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800"),
-            MakeFile("sunlit-trees",      "Sunlit Trees",       "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800"),
+            // Rừng
+            MakeFile("rung-suong-mu",     "Rừng sương mù",      "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800"),
+            MakeFile("cay-nang-chieu",    "Cây nắng chiều",      "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800"),
 
-            // Ocean
-            MakeFile("ocean-sunset",      "Ocean Sunset",       "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800"),
-            MakeFile("coral-reef",        "Coral Reef",         "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800"),
+            // Biển
+            MakeFile("bien-hoang-hon",    "Biển hoàng hôn",      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800"),
+            MakeFile("ran-san-ho",        "Rạn san hô",          "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800"),
 
-            // Fashion
-            MakeFile("fashion-portrait",  "Fashion Portrait",   "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800"),
-            MakeFile("street-style",      "Street Style",       "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800"),
+            // Thời trang
+            MakeFile("chan-dung-thoi-trang","Chân dung thời trang","https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800"),
+            MakeFile("phong-cach-duong-pho","Phong cách đường phố","https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800"),
 
-            // Street
-            MakeFile("city-lights",       "City Lights",        "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800"),
-            MakeFile("urban-geometry",    "Urban Geometry",     "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800"),
+            // Đường phố
+            MakeFile("anh-sang-do-thi",   "Ánh sáng đô thị",    "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800"),
+            MakeFile("hinh-hoc-do-thi",   "Hình học đô thị",    "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800"),
 
-            // Covers
-            MakeFile("blog-cover-1",      "Cover 1",            "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800"),
-            MakeFile("blog-cover-2",      "Cover 2",            "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800"),
+            // Ảnh bìa
+            MakeFile("anh-bia-1",         "Ảnh bìa 1",           "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800"),
+            MakeFile("anh-bia-2",         "Ảnh bìa 2",           "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800"),
 
-            // Banners
-            MakeFile("hero-banner-1",     "Hero Banner 1",      "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=800"),
-            MakeFile("hero-banner-2",     "Hero Banner 2",      "https://images.unsplash.com/photo-1518655048521-f130df041f66?w=800"),
+            // Banner
+            MakeFile("banner-1",          "Banner 1",             "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=800"),
+            MakeFile("banner-2",          "Banner 2",             "https://images.unsplash.com/photo-1518655048521-f130df041f66?w=800"),
         };
 
-        db.files.AddRange(demoImages);
+        db.files.AddRange(files);
 
-        // ── AlbumFile junction records ────────────────────────────────────────
+        // ── AlbumFile junctions ───────────────────────────────────────────────
         var map = new Dictionary<Album, backend.Entities.File[]>
         {
-            [japan]   = [demoImages[0],  demoImages[1],  demoImages[2]],
-            [vietnam] = [demoImages[3],  demoImages[4]],
-            [europe]  = [demoImages[5],  demoImages[6]],
-            [forest]  = [demoImages[7],  demoImages[8]],
-            [ocean]   = [demoImages[9],  demoImages[10]],
-            [fashion] = [demoImages[11], demoImages[12]],
-            [street]  = [demoImages[13], demoImages[14]],
-            [covers]  = [demoImages[15], demoImages[16]],
-            [banners] = [demoImages[17], demoImages[18]],
+            [nhatBan]   = [files[0],  files[1],  files[2]],
+            [vietNam]   = [files[3],  files[4]],
+            [chauAu]    = [files[5],  files[6]],
+            [rung]      = [files[7],  files[8]],
+            [bien]      = [files[9],  files[10]],
+            [thoiTrang] = [files[11], files[12]],
+            [duongPho]  = [files[13], files[14]],
+            [anhBia]    = [files[15], files[16]],
+            [banner]    = [files[17], files[18]],
         };
 
-        foreach (var (album, files) in map)
+        foreach (var (album, albumFiles) in map)
         {
-            foreach (var file in files)
+            foreach (var file in albumFiles)
                 db.AlbumFiles.Add(new AlbumFile { AlbumId = album.Id, FileId = file.Id });
-            album.CountImageRef = files.Length;
-            album.FileDescriptionId = files[0].Id;
+            album.CountImageRef     = albumFiles.Length;
+            album.FileDescriptionId = albumFiles[0].Id;
         }
 
-        // cover for parent albums — pick first file from a representative child
-        travel.FileDescriptionId      = demoImages[0].Id;   // Tokyo Tower
-        nature.FileDescriptionId      = demoImages[7].Id;   // Misty Forest
-        photography.FileDescriptionId = demoImages[0].Id;   // Tokyo Tower
-        blog.FileDescriptionId        = demoImages[15].Id;  // Cover 1
+        duLich.FileDescriptionId      = files[0].Id;
+        thienNhien.FileDescriptionId  = files[7].Id;
+        nhiepAnh.FileDescriptionId    = files[0].Id;
+        blog.FileDescriptionId        = files[15].Id;
 
         await db.SaveChangesAsync();
     }
 
-    private static Album MakeAlbum(string name, string title, string description, string? parentId, int order, DateTimeOffset now) =>
-        new()
-        {
-            Name = name,
-            Title = title,
-            Description = description,
-            Slug = name.ToSlug(),
-            AlbumId = parentId,
-            OrderIndex = order,
-            CreatedDate = now,
-            UpdatedDate = now,
-        };
+    private static Album MakeAlbum(string name, string title, string description, string? parentId, int order, DateTimeOffset now) => new()
+    {
+        Name        = name,
+        Title       = title,
+        Description = description,
+        Slug        = name.ToSlug(),
+        AlbumId     = parentId,
+        OrderIndex  = order,
+        CreatedDate = now,
+        UpdatedDate = now,
+    };
 
-    private static backend.Entities.File MakeFile(string name, string title, string url) =>
-        new()
-        {
-            Name = name,
-            Title = title,
-            Url = url,
-            Description = string.Empty,
-        };
+    private static backend.Entities.File MakeFile(string name, string title, string url) => new()
+    {
+        Name        = name,
+        Title       = title,
+        Url         = url,
+        Description = string.Empty,
+    };
 }
