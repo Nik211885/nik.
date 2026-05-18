@@ -11,7 +11,7 @@ public class SysConfigEntityConfiguration : IEntityTypeConfiguration<SysConfig>
         builder.ToTable("SysConfigs");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
-            .HasMaxLength(20);
+            .HasMaxLength(36);
         builder.Property(x => x.Key)
             .HasMaxLength(50);
         builder.Property(x => x.Value)

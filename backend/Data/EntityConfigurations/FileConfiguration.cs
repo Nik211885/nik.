@@ -10,7 +10,7 @@ public class FileConfiguration : IEntityTypeConfiguration<backend.Entities.File>
     {
         builder.ToTable("Files");
         builder.HasKey(f => f.Id);
-        builder.Property(f => f.Id).HasMaxLength(20);
+        builder.Property(f => f.Id).HasMaxLength(36);
         builder.Property(f => f.Name).IsRequired().HasMaxLength(255);
         builder.Property(f => f.Title).IsRequired().HasMaxLength(255);
         builder.Property(f => f.Url).IsRequired().HasMaxLength(2048);

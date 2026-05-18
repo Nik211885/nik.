@@ -10,9 +10,9 @@ public class TranslateConfiguration : IEntityTypeConfiguration<Translate>
     {
         builder.ToTable("Translates");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasMaxLength(20);
-        builder.Property(x => x.CodeId).HasMaxLength(20);
-        builder.Property(x => x.LanguageId).HasMaxLength(20);
+        builder.Property(x => x.Id).HasMaxLength(36);
+        builder.Property(x => x.CodeId).HasMaxLength(36);
+        builder.Property(x => x.LanguageId).HasMaxLength(36);
         builder.Property(x => x.Value).HasMaxLength(300).IsRequired();
         builder.HasOne(x => x.CodeLanguage)
             .WithMany(x => x.Translates)

@@ -11,7 +11,7 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
         builder.ToTable("Articles");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
-            .HasMaxLength(20);
+            .HasMaxLength(36);
         builder.Property(x=>x.Title)
             .IsRequired()
             .HasMaxLength(255);

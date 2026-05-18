@@ -11,7 +11,7 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
         builder.ToTable("Tags");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
-            .HasMaxLength(20);
+            .HasMaxLength(36);
         builder.Property(x=>x.Name)
             .IsRequired()
             .HasMaxLength(100);

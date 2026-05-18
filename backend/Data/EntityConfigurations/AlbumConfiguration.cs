@@ -10,7 +10,7 @@ public class AlbumConfiguration : IEntityTypeConfiguration<Album>
     {
         builder.ToTable("Albums");
         builder.HasKey(a=> a.Id);
-        builder.Property(a=>a.Id).HasMaxLength(20);
+        builder.Property(a=>a.Id).HasMaxLength(36);
         builder.Property(a => a.Name).HasMaxLength(255).IsRequired();
         builder.Property(a => a.Title).HasMaxLength(255).IsRequired();
         builder.Property(a => a.Description).HasMaxLength(1000);
