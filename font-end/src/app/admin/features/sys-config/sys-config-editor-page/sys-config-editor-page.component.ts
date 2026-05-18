@@ -6,6 +6,7 @@ import { SysConfigAdminService } from '../../../services/sys-config.admin.servic
 import { LanguagePipe } from '../../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../../app.message';
 import { ToastService } from '../../../../core/services/toast.service';
+import { CONTENT_LANG, DEFAULT_LANG } from '../../../../core/services/language.service';
 
 type EditorType = 'info' | 'social' | 'sidebar' | 'json';
 type ViewMode   = 'form' | 'json';
@@ -30,15 +31,20 @@ function emptyInfoLang(): InfoLang {
 })
 export class SysConfigEditorPageComponent implements OnInit {
   readonly AdminMessage = AdminMessage;
+  readonly CONTENT_LANG = CONTENT_LANG;
+  readonly DEFAULT_LANG  = DEFAULT_LANG;
 
   configId  = '';
   configKey = '';
   editorType: EditorType = 'json';
   viewMode: ViewMode = 'form';
-  activeLang: 'vi' | 'en' = 'vi';
+  activeLang = CONTENT_LANG;
 
-  // structured forms
-  infoForm: { vi: InfoLang; en: InfoLang } = { vi: emptyInfoLang(), en: emptyInfoLang() };
+  // structured forms — keyed by CONTENT_LANG and DEFAULT_LANG
+  infoForm: Record<string, InfoLang> = {
+    [CONTENT_LANG]: emptyInfoLang(),
+    [DEFAULT_LANG]:  emptyInfoLang(),
+  };
   socialItems:  SocialItem[]  = [];
   sidebarItems: SidebarItem[] = [];
   genericProps: GenericProp[] = [];
@@ -89,8 +95,8 @@ export class SysConfigEditorPageComponent implements OnInit {
     switch (this.editorType) {
       case 'info':
         this.infoForm = {
-          vi: { ...emptyInfoLang(), ...(raw?.vi ?? {}) },
-          en: { ...emptyInfoLang(), ...(raw?.en ?? {}) },
+          [CONTENT_LANG]: { ...emptyInfoLang(), ...(raw?.[CONTENT_LANG] ?? {}) },
+          [DEFAULT_LANG]:  { ...emptyInfoLang(), ...(raw?.[DEFAULT_LANG] ?? {}) },
         };
         break;
       case 'social':
@@ -155,7 +161,7 @@ export class SysConfigEditorPageComponent implements OnInit {
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   get infoLang(): InfoLang {
-    return this.activeLang === 'vi' ? this.infoForm.vi : this.infoForm.en;
+    return this.infoForm[this.activeLang] ?? emptyInfoLang();
   }
 
   get jsonValid(): boolean {

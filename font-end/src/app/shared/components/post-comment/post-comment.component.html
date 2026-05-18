@@ -4,7 +4,12 @@
 <div class="comment-body">
   <h3>{{ comment.authorName }}</h3>
   <div class="meta">{{ comment.createdDate | appDate: 'detail' }}</div>
-  <p>{{ comment.text }}</p>
+  <p>{{ translatedText || comment.text }}</p>
+  @if (isTranslated) {
+    <small class="text-muted d-block mb-1" style="font-size:0.75rem">
+      <i class="bi bi-translate me-1"></i>{{ ApplicationTitle.AUTO_TRANSLATED | language }}
+    </small>
+  }
   <p><a (click)="replyClicked.emit(comment)" class="reply" style="cursor:pointer">{{ ApplicationTitle.REPLY | language }}</a></p>
 </div>
 

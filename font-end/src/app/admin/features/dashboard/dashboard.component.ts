@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Subscription, forkJoin, interval } from 'rxjs';
+import { Subscription, forkJoin, interval, timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ArticleAdminService } from '../../services/article.admin.service';
 import { AlbumAdminService } from '../../services/album.admin.service';
 import { CategoryAdminService } from '../../services/category.admin.service';
@@ -90,27 +91,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.recentContacts = list.slice(0, 6);
     }));
 
-    forkJoin({
-      articles:   this.articleSvc.getAll(1, 1),
-      albums:     this.albumSvc.getAll(),
-      categories: this.categorySvc.getAll(),
-      tags:       this.tagSvc.getAll(),
-      files:      this.fileSvc.getAll(1, 1),
-      users:      this.userSvc.getAll(),
-      contacts:   this.contactSvc.getPage(1, 1),
-    }).subscribe({
-      next: (res) => {
-        this.stats[0].value = res.articles.totalItems;
-        this.stats[1].value = res.albums.length;
-        this.stats[2].value = res.categories.length;
-        this.stats[3].value = res.tags.length;
-        this.stats[4].value = res.files.totalItems;
-        this.stats[5].value = res.users.length;
-        this.stats[6].value = res.contacts.totalItems;
-        this.loading = false;
-      },
-      error: () => { this.loading = false; }
-    });
+    this.subs.add(
+      timer(0, 30_000).pipe(
+        switchMap(() => forkJoin({
+          articles:   this.articleSvc.getAll(1, 1),
+          albums:     this.albumSvc.getAll(),
+          categories: this.categorySvc.getAll(),
+          tags:       this.tagSvc.getAll(),
+          files:      this.fileSvc.getAll(1, 1),
+          users:      this.userSvc.getAll(),
+          contacts:   this.contactSvc.getPage(1, 1),
+        }))
+      ).subscribe({
+        next: (res) => {
+          this.stats[0].value = res.articles.totalItems;
+          this.stats[1].value = res.albums.length;
+          this.stats[2].value = res.categories.length;
+          this.stats[3].value = res.tags.length;
+          this.stats[4].value = res.files.totalItems;
+          this.stats[5].value = res.users.length;
+          this.stats[6].value = res.contacts.totalItems;
+          this.loading = false;
+        },
+        error: () => { this.loading = false; }
+      })
+    );
   }
 
   ngOnDestroy(): void { this.subs.unsubscribe(); }

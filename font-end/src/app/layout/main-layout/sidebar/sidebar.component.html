@@ -51,7 +51,7 @@
       @if(configService.config | async; as config){
         @for(item of config.social; track item.id)
         {
-          <li><a [routerLink]="item.ref" [innerHTML]="sanitizeIcon(item.icon)"></a></li>
+          <li><a [href]="item.ref" target="_blank" rel="noopener noreferrer" [innerHTML]="sanitizeIcon(item.icon)"></a></li>
         }
       }
     </ul>

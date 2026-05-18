@@ -9,6 +9,8 @@ import { InputCommentComponent } from '../../shared/components/input-comment/inp
 import { ArticleService } from '../../core/services/article.service';
 import { CommentService } from '../../core/services/comment.service';
 import { LanguageService } from '../../core/services/language.service';
+import { AutoTranslateService } from '../../core/services/auto-translate.service';
+import { CONTENT_LANG, DEFAULT_LANG } from '../../core/services/language.service';
 import { ArticleModel } from '../../shared/models/article.model';
 import { PostCommentModel } from '../../shared/models/post-comment.model';
 
@@ -22,14 +24,17 @@ export class PostDetailComponent implements OnInit {
   article: ArticleModel | null = null;
   comments: PostCommentModel[] = [];
   replyTo: PostCommentModel | null = null;
+  translatedBio: string | null = null;
 
   private destroyRef = inject(DestroyRef);
+  private currentLang = DEFAULT_LANG;
 
   constructor(
     private route: ActivatedRoute,
     private articleService: ArticleService,
     private commentService: CommentService,
     private langService: LanguageService,
+    private autoTranslate: AutoTranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -37,13 +42,25 @@ export class PostDetailComponent implements OnInit {
     const name = this.route.snapshot.paramMap.get('slug') ?? '';
     const slug = `${prefix}/${name}`;
 
+    this.langService.currentLanguage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(lang => { this.currentLang = lang; });
+
     let firstLoad = true;
     this.langService.withLanguage(() => this.articleService.getArticleBySlug(slug))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
         this.article = res;
+        this.translateBio(res.author.bio);
         if (firstLoad) { firstLoad = false; this.loadComments(); }
       });
+  }
+
+  private translateBio(bio: string | null | undefined): void {
+    if (!bio) { this.translatedBio = null; return; }
+    this.autoTranslate.translate(bio, this.currentLang, CONTENT_LANG).subscribe(t => {
+      this.translatedBio = t !== bio ? t : null;
+    });
   }
 
   loadComments(): void {

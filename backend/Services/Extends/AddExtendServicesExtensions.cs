@@ -9,6 +9,7 @@ public static class AddExtendServicesExtensions
         public IServiceCollection AddExtendServices()
         {
             services.AddSingleton<CachingServices>();
+            services.AddSingleton<CloudinaryService>();
             return services;
         }
     }

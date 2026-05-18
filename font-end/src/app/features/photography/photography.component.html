@@ -92,13 +92,19 @@
           @for (file of files; track file.id; let i = $index) {
             <div class="col-md-3">
               <a class="photography-entry img d-flex justify-content-center align-items-center photo-entry-img"
-                 [style.background-image]="'url(' + file.url + ')'"
+                 [style.background-image]="'url(' + (isVideoUrl(file.url) ? videoThumbnailUrl(file.url) : file.url) + ')'"
                  (click)="openLightbox(i)"
                  style="cursor:pointer">
                 <div class="overlay"></div>
+                @if (isVideoUrl(file.url)) {
+                  <div class="video-play-badge"><i class="bi bi-play-circle-fill"></i></div>
+                }
                 <div class="text text-center">
                   @if (file.title) {
                     <h3>{{ file.title }}</h3>
+                  }
+                  @if (file.description) {
+                    <p>{{ file.description }}</p>
                   }
                 </div>
               </a>
@@ -118,9 +124,20 @@
     <button class="lb-prev" (click)="$event.stopPropagation(); prevPhoto()"><i class="bi bi-chevron-left"></i></button>
     <button class="lb-next" (click)="$event.stopPropagation(); nextPhoto()"><i class="bi bi-chevron-right"></i></button>
     <div class="lb-content" (click)="$event.stopPropagation()">
-      <img [src]="files[lightboxIndex].url" [alt]="files[lightboxIndex].title || files[lightboxIndex].name" />
-      @if (files[lightboxIndex].title) {
-        <p class="lb-caption">{{ files[lightboxIndex].title }}</p>
+      @if (isVideoUrl(files[lightboxIndex].url)) {
+        <video #lightboxVideo [src]="files[lightboxIndex].url" class="lb-video" controls autoplay></video>
+      } @else {
+        <img [src]="files[lightboxIndex].url" [alt]="files[lightboxIndex].title || files[lightboxIndex].name" />
+      }
+      @if (files[lightboxIndex].title || files[lightboxIndex].description) {
+        <div class="lb-caption">
+          @if (files[lightboxIndex].title) {
+            <strong>{{ files[lightboxIndex].title }}</strong>
+          }
+          @if (files[lightboxIndex].description) {
+            <p>{{ files[lightboxIndex].description }}</p>
+          }
+        </div>
       }
     </div>
     <span class="lb-counter">{{ lightboxIndex + 1 }} / {{ files.length }}</span>

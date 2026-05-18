@@ -161,6 +161,16 @@
 .file-action-btn--cover { background: rgba(255,193,7,.9); color: #000; }
 .file-action-btn--cover:hover { background: #ffc107; color: #000; }
 
+/* Video play badge overlay */
+.video-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: .85rem; border-radius: 999px;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
 /* Cover badge overlay */
 .cover-badge {
   position: absolute; top: 6px; left: 6px;
@@ -173,6 +183,21 @@
 
 /* File card highlight when it's the cover */
 .file-card--cover { border-color: #ffc107; box-shadow: 0 0 0 2px rgba(255,193,7,.35); }
+
+/* File edit modal preview */
+.file-edit-preview {
+  display: flex;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 200px;
+}
+.file-edit-thumb {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+}
 
 /* Album folder cover image */
 .album-folder-cover {

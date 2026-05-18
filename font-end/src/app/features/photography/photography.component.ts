@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlbumFileModel, AlbumModel } from '../../shared/models/album.model';
 import { AlbumService } from '../../core/services/album.service';
@@ -26,9 +26,19 @@ export class PhotographyComponent implements OnInit {
 
   lightboxIndex: number | null = null;
 
+  @ViewChild('lightboxVideo') lightboxVideo?: ElementRef<HTMLVideoElement>;
+
   protected readonly ApplicationTitle = ApplicationTitle;
 
   private destroyRef = inject(DestroyRef);
+
+  isVideoUrl(url: string): boolean {
+    return url.includes('/video/upload/') || /\.(mp4|webm|mov)(\?|$)/i.test(url);
+  }
+
+  videoThumbnailUrl(url: string): string {
+    return url.replace(/\.(mp4|webm|mov)(\?.*)?$/i, '.jpg');
+  }
 
   constructor(private albumService: AlbumService, private langService: LanguageService) {}
 
@@ -110,16 +120,19 @@ export class PhotographyComponent implements OnInit {
   }
 
   closeLightbox(): void {
+    this.lightboxVideo?.nativeElement.pause();
     this.lightboxIndex = null;
   }
 
   prevPhoto(): void {
     if (this.lightboxIndex === null) return;
+    this.lightboxVideo?.nativeElement.pause();
     this.lightboxIndex = (this.lightboxIndex - 1 + this.files.length) % this.files.length;
   }
 
   nextPhoto(): void {
     if (this.lightboxIndex === null) return;
+    this.lightboxVideo?.nativeElement.pause();
     this.lightboxIndex = (this.lightboxIndex + 1) % this.files.length;
   }
 

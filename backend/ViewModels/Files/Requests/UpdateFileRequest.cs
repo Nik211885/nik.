@@ -30,8 +30,6 @@ public class UpdateFileRequestValidator : AbstractValidator<UpdateFileRequest>
     {
         RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.Name).NotEmpty().WithMessage(ApplicationMessage.NameIsRequired);
-        RuleFor(x => x.Title).NotEmpty().WithMessage(ApplicationMessage.TitleIsRequired);
-        RuleFor(x => x.Description).NotEmpty().WithMessage(ApplicationMessage.DescriptionIsRequired);
     }
 }
 

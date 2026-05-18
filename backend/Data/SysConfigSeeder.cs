@@ -88,7 +88,7 @@ public static class SysConfigSeeder
                 phone        = "+84 388 080 661",
                 address      = "311-313 Truong Chinh, Khuong Thuong, Phuong Liet, Hanoi 100000, Vietnam",
                 website      = "https://nik.com",
-                avatar       = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                avatar       = "https://res.cloudinary.com/djvpvcj9g/image/upload/v1778947411/593829710_707055712480882_4581758384697286757_n_jyqgwu.jpg",
                 bio          = "Developer, photographer, and travel enthusiast. I share stories from the road and lessons from the code editor.",
                 introduction = "Welcome to my personal space — where stories about travel, photography, fashion, and technology come together. Each post is a perspective, an experience, a moment I want to preserve and share with you.",
             },

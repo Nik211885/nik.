@@ -16,42 +16,25 @@ import {LanguageService} from './language.service';
 /**
  * Cloudinary upload response model
  */
+/**
+ * Cloudinary upload response — field names match the raw API response (snake_case).
+ * Docs: https://cloudinary.com/documentation/upload_images#upload_response
+ */
 export interface CloudinaryUploadResponse {
-
-  /**
-   * Public URL of uploaded file
-   */
+  /** HTTPS URL — always use this, not `url` (which is HTTP) */
+  secure_url: string;
+  /** HTTP URL — use secure_url instead */
   url: string;
-
-  /**
-   * Unique identifier in Cloudinary
-   */
-  publicId: string;
-
-  /**
-   * File format (e.g., jpg, png, mp4)
-   */
+  /** Cloudinary public ID, e.g. "static/my-photo" */
+  public_id: string;
+  /** File format: "jpg", "png", "mp4", etc. */
   format: string;
-
-  /**
-   * File width (for images/videos)
-   */
+  /** Resource type: "image" or "video" */
+  resource_type: string;
   width: number;
-
-  /**
-   * File height (for images/videos)
-   */
   height: number;
-
-  /**
-   * File size in bytes
-   */
   bytes: number;
-
-  /**
-   * Upload timestamp
-   */
-  createdAt: string;
+  created_at: string;
 }
 
 /**
@@ -70,11 +53,20 @@ export interface UploadProgress {
   response?: CloudinaryUploadResponse;
 }
 
-/**
- * File validation rules
- */
-const MAX_FILE_SIZE_MB = 10;
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
+/** Signed upload payload returned by the backend — all fields required by Cloudinary's authenticated upload. */
+export interface CloudinarySignedParams {
+  uploadUrl: string;
+  apiKey: string;
+  timestamp: string;
+  signature: string;
+  folder: string;
+}
+
+const MAX_IMAGE_SIZE_MB = 10;
+const MAX_VIDEO_SIZE_MB = 200;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
 
 /**
  * API endpoints for Cloudinary upload
@@ -119,9 +111,11 @@ export class FileCloudinaryService {
       return throwError(() => new Error(validationError));
     }
 
-    return this.getSignedUploadUrl().pipe(
-      switchMap((uploadUrl) =>
-        this.uploadToCloudinary(file, uploadUrl)
+    const resourceType = ALLOWED_VIDEO_TYPES.includes(file.type) ? 'video' : 'image';
+
+    return this.getSignedUploadUrl(resourceType).pipe(
+      switchMap((params) =>
+        this.uploadToCloudinary(file, params)
       ),
       catchError((err) => {
         return throwError(() => err);
@@ -181,27 +175,31 @@ export class FileCloudinaryService {
    * @private
    * @returns Observable<string>
    */
-  private getSignedUploadUrl(): Observable<string> {
-    return this.http.get<string>(ApiUpload.GET_SIGNED_URL);
+  private getSignedUploadUrl(type: 'image' | 'video' = 'image'): Observable<CloudinarySignedParams> {
+    return this.http.get<CloudinarySignedParams>(`${ApiUpload.GET_SIGNED_URL}?type=${type}`);
   }
 
   /**
-   * Upload file to Cloudinary using signed URL
+   * Upload file to Cloudinary using signed params
    *
    * @private
    * @param file - File to upload
-   * @param uploadUrl - Signed URL
+   * @param params - Signed upload payload from backend
    * @returns Observable emitting upload progress and response
    */
   private uploadToCloudinary(
     file: File,
-    uploadUrl: string
+    params: CloudinarySignedParams
   ): Observable<UploadProgress> {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('api_key', params.apiKey);
+    formData.append('timestamp', params.timestamp);
+    formData.append('signature', params.signature);
+    formData.append('folder', params.folder);
 
-    const request = new HttpRequest('POST', uploadUrl, formData, {
+    const request = new HttpRequest('POST', params.uploadUrl, formData, {
       reportProgress: true,
     });
 
@@ -266,8 +264,9 @@ export class FileCloudinaryService {
     }
 
     const sizeMB = file.size / (1024 * 1024);
-    if (sizeMB > MAX_FILE_SIZE_MB) {
-      return `${this.languageService.translate(ApplicationMessage.FILE_MAX_SIZE)} ${MAX_FILE_SIZE_MB} MB`;
+    const maxMB  = ALLOWED_VIDEO_TYPES.includes(file.type) ? MAX_VIDEO_SIZE_MB : MAX_IMAGE_SIZE_MB;
+    if (sizeMB > maxMB) {
+      return `${this.languageService.translate(ApplicationMessage.FILE_MAX_SIZE)} ${maxMB} MB`;
     }
 
     return null;

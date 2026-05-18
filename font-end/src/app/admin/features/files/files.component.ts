@@ -151,9 +151,9 @@ export class FilesAdminComponent implements OnInit, OnDestroy {
       const sub = this.cloudinary.uploadFile(file).subscribe({
         next: ({ progress, response }) => {
           item.progress = progress;
-          if (response?.url) {
+          if (response?.secure_url) {
             const name = file.name.replace(/\.[^/.]+$/, '');
-            this.svc.create({ name, title: '', url: response.url, description: '' }).subscribe({
+            this.svc.create({ name, title: '', url: response.secure_url, description: '' }).subscribe({
               next: () => {
                 item.done = true;
                 this.load(1);

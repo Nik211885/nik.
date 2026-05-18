@@ -29,9 +29,7 @@ public class CreateFileRequestValidator : AbstractValidator<CreateFileRequest>
     public CreateFileRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty().WithMessage(ApplicationMessage.NameIsRequired);
-        RuleFor(x => x.Title).NotEmpty().WithMessage(ApplicationMessage.TitleIsRequired);
         RuleFor(x => x.Url).NotEmpty();
-        RuleFor(x => x.Description).NotEmpty().WithMessage(ApplicationMessage.DescriptionIsRequired);
     }
 }
 

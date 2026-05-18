@@ -8,8 +8,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
+using Serilog;
+using Serilog.Formatting.Compact;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, cfg) => cfg
+    .ReadFrom.Configuration(ctx.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(new RenderedCompactJsonFormatter()));
 
 // CORS_ORIGINS env var (semicolon-separated) takes priority over appsettings
 var envOrigins = (Environment.GetEnvironmentVariable("CORS_ORIGINS") ?? "")
@@ -45,6 +57,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(sp =>
 {
     sp.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
+
+builder.Services.AddHttpClient("mymemory", c =>
+{
+    c.BaseAddress = new Uri("https://api.mymemory.translated.net");
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Postgres")!, name: "postgres");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -89,11 +110,15 @@ if (app.Environment.IsDevelopment())
 
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true")
     app.UseHttpsRedirection();
+
+app.UseHttpMetrics();
 app.UseCors();
 app.UseMiddleware<ExeceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
+app.MapMetrics("/metrics");
 
 app.Run();

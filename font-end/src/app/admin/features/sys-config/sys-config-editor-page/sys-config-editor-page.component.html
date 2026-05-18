@@ -82,12 +82,12 @@
       <div class="admin-card">
         <ul class="nav nav-tabs mb-4">
           <li class="nav-item">
-            <button class="nav-link" [class.active]="activeLang==='vi'" (click)="activeLang='vi'">
+            <button class="nav-link" [class.active]="activeLang===CONTENT_LANG" (click)="activeLang=CONTENT_LANG">
               🇻🇳 {{ AdminMessage.SYSCONFIG_FORM_VI | language }}
             </button>
           </li>
           <li class="nav-item">
-            <button class="nav-link" [class.active]="activeLang==='en'" (click)="activeLang='en'">
+            <button class="nav-link" [class.active]="activeLang===DEFAULT_LANG" (click)="activeLang=DEFAULT_LANG">
               🇬🇧 {{ AdminMessage.SYSCONFIG_FORM_EN | language }}
             </button>
           </li>

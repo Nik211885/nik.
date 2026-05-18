@@ -29,6 +29,13 @@ export class CloudinaryUploadComponent implements OnDestroy {
 
   protected readonly AdminMessage = AdminMessage;
 
+  get isVideo(): boolean {
+    return !!this.value && (
+      this.value.includes('/video/upload/') ||
+      /\.(mp4|webm|mov)(\?|$)/i.test(this.value)
+    );
+  }
+
   private cloudinary = inject(FileCloudinaryService);
   private sub?: Subscription;
 
@@ -96,9 +103,9 @@ export class CloudinaryUploadComponent implements OnDestroy {
     this.sub = this.cloudinary.uploadFile(file).subscribe({
       next: ({ progress, response }: UploadProgress) => {
         this.progress = progress;
-        if (response?.url) {
-          this.value = response.url;
-          this.valueChange.emit(response.url);
+        if (response?.secure_url) {
+          this.value = response.secure_url;
+          this.valueChange.emit(response.secure_url);
           this.uploading = false;
         }
       },

@@ -8,6 +8,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { LanguageItem, TranslationStatusItem } from '../../models/admin.model';
 import { AdminMessage } from '../../../app.message';
+import { CONTENT_LANG, DEFAULT_LANG } from '../../../core/services/language.service';
 
 interface EntityTypeOption { value: string; label: string; }
 export interface FieldDef { key: string; label: string; multiline: boolean; rich?: boolean; }
@@ -53,7 +54,7 @@ export class ContentTranslationsAdminComponent implements OnInit {
 
   languages: LanguageItem[] = [];
   selectedEntityType = 'article';
-  selectedLang = 'en';
+  selectedLang = DEFAULT_LANG;
   selectedTranslated: boolean | null = null;
 
   items: TranslationStatusItem[] = [];
@@ -72,7 +73,7 @@ export class ContentTranslationsAdminComponent implements OnInit {
   ngOnInit(): void {
     this.langSvc.getLanguages().subscribe({
       next: langs => {
-        this.languages = langs.filter(l => l.code !== 'vi');
+        this.languages = langs.filter(l => l.code !== CONTENT_LANG);
         if (this.languages.length > 0) this.selectedLang = this.languages[0].code;
       },
       error: () => {}

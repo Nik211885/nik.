@@ -447,5 +447,6 @@ public static class LanguageSeeder
         ("post-comment",             "Post Comment",                      "Đăng bình luận"),
         ("contact.send-success",     "Your message has been sent successfully. We will get back to you soon!", "Tin nhắn của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm!"),
         ("contact.send-error",       "Failed to send message. Please try again.", "Gửi tin nhắn thất bại. Vui lòng thử lại."),
+        ("auto.translated",          "Translated",                                "Đã dịch"),
     ];
 }

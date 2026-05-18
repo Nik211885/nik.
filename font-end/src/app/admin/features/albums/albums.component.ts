@@ -61,6 +61,13 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   fileToRemove: FileItem | null = null;
   showFileConfirm = false;
 
+  // File edit (name / title / description)
+  showFileEditModal = false;
+  editingFile: FileItem | null = null;
+  fileForm = { name: '', title: '', description: '' };
+  fileSaving = false;
+  fileError = '';
+
   // Cover target — which album in the drillStack gets the cover assignment
   coverTargetAlbumId = '';
 
@@ -219,6 +226,35 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
     navigator.clipboard.writeText(url).catch(() => {});
   }
 
+  isVideoUrl(url: string): boolean {
+    return url.includes('/video/upload/') || /\.(mp4|webm|mov)(\?|$)/i.test(url);
+  }
+
+  openEditFile(file: FileItem): void {
+    this.editingFile = file;
+    this.fileForm = { name: file.name, title: file.title ?? '', description: file.description ?? '' };
+    this.fileError = '';
+    this.showFileEditModal = true;
+  }
+
+  saveFileEdit(): void {
+    if (!this.editingFile) return;
+    this.fileSaving = true;
+    this.fileSvc.update({ id: this.editingFile.id, url: this.editingFile.url, ...this.fileForm }).subscribe({
+      next: updated => {
+        this.albumFiles = this.albumFiles.map(f => f.id === updated.id ? updated : f);
+        this.showFileEditModal = false;
+        this.fileSaving = false;
+        this.toast.success(AdminMessage.TOAST_SAVE_SUCCESS);
+      },
+      error: () => {
+        this.fileError = AdminMessage.ERROR_GENERIC;
+        this.fileSaving = false;
+        this.toast.error(AdminMessage.TOAST_SAVE_ERROR);
+      }
+    });
+  }
+
   setCover(file: FileItem): void {
     const album = this.coverTargetAlbum;
     if (!album) return;
@@ -331,7 +367,7 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
     if (!this.isAtFileLevel || this.showModal) return;
 
     const files = Array.from(e.dataTransfer?.files ?? []).filter(
-      f => f.type.startsWith('image/') || f.type === 'video/mp4'
+      f => f.type.startsWith('image/') || f.type.startsWith('video/')
     );
     if (files.length) this.batchUpload(files);
   }
@@ -339,7 +375,7 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
   onFileInputChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []).filter(
-      f => f.type.startsWith('image/') || f.type === 'video/mp4'
+      f => f.type.startsWith('image/') || f.type.startsWith('video/')
     );
     input.value = '';
     if (files.length) this.batchUpload(files);
@@ -355,9 +391,9 @@ export class AlbumsAdminComponent implements OnInit, OnDestroy {
       const sub = this.cloudinary.uploadFile(file).subscribe({
         next: ({ progress, response }) => {
           item.progress = progress;
-          if (response?.url) {
+          if (response?.secure_url) {
             const name = file.name.replace(/\.[^/.]+$/, '');
-            this.fileSvc.create({ name, title: '', url: response.url, description: '' }).subscribe({
+            this.fileSvc.create({ name, title: '', url: response.secure_url, description: '' }).subscribe({
               next: created => {
                 this.svc.addFiles(albumId, [created.id]).subscribe({
                   next: () => {

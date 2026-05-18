@@ -2,7 +2,11 @@
 
   @if (value && !uploading) {
   <div class="cu-preview">
-    <img [src]="value" alt="preview" class="cu-preview-img" onerror="this.style.display='none'">
+    @if (isVideo) {
+      <video [src]="value" class="cu-preview-img" controls muted preload="metadata"></video>
+    } @else {
+      <img [src]="value" alt="preview" class="cu-preview-img" onerror="this.style.display='none'">
+    }
     <div class="cu-preview-info">
       <p class="cu-preview-url small text-muted text-truncate mb-2">{{ value }}</p>
       <div class="d-flex gap-2">
@@ -76,6 +80,6 @@
 </div>
 
 <input #fileInput type="file"
-       accept="image/jpeg,image/png,image/webp,video/mp4"
+       accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
        hidden
        (change)="onFileSelect($event)">

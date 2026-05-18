@@ -185,7 +185,7 @@
 
   <!-- ── Files section (shown when at leaf album) ──────────────────────── -->
   @if (isAtFileLevel) {
-  <input type="file" #fileInput accept="image/*,video/mp4" multiple style="display:none"
+  <input type="file" #fileInput accept="image/*,video/mp4,video/webm,video/quicktime" multiple style="display:none"
          (change)="onFileInputChange($event)">
   <div class="files-section">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -232,8 +232,13 @@
       @for (file of albumFiles; track file.id) {
       <div class="file-card" [class.file-card--cover]="file.id === coverTargetAlbum?.fileDescriptionId">
         <div class="file-thumb-wrap">
-          <img [src]="file.url" [alt]="file.title || file.name" class="file-thumb"
-               onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23e9ecef\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' fill=\'%23adb5bd\' font-size=\'10\'%3ENo img%3C/text%3E%3C/svg%3E'">
+          @if (isVideoUrl(file.url)) {
+            <video [src]="file.url" class="file-thumb" preload="metadata" muted></video>
+            <span class="video-badge"><i class="bi bi-play-circle-fill"></i></span>
+          } @else {
+            <img [src]="file.url" [alt]="file.title || file.name" class="file-thumb"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23e9ecef\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' fill=\'%23adb5bd\' font-size=\'10\'%3ENo img%3C/text%3E%3C/svg%3E'">
+          }
           @if (file.id === coverTargetAlbum?.fileDescriptionId) {
           <span class="cover-badge"><i class="bi bi-star-fill"></i></span>
           }
@@ -244,6 +249,8 @@
               [title]="(file.id === coverTargetAlbum?.fileDescriptionId ? AdminMessage.ALBUMS_IS_COVER : AdminMessage.ALBUMS_SET_COVER) | language">
               <i class="bi" [class.bi-star-fill]="file.id === coverTargetAlbum?.fileDescriptionId" [class.bi-star]="file.id !== coverTargetAlbum?.fileDescriptionId"></i>
             </button>
+            <button class="file-action-btn" (click)="openEditFile(file)"
+              [title]="AdminMessage.TABLE_ACTION_EDIT | language"><i class="bi bi-pencil-square"></i></button>
             <button class="file-action-btn" (click)="copyUrl(file.url)"
               [title]="AdminMessage.ALBUMS_COPY_URL | language"><i class="bi bi-clipboard"></i></button>
             <button class="file-action-btn file-action-btn--danger" (click)="confirmRemoveFile(file)"
@@ -314,6 +321,55 @@
         <button type="submit" class="btn btn-dark flex-fill" [disabled]="saving">
           @if (saving) {<span class="spinner-border spinner-border-sm me-2"></span>}
           {{ (saving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- File edit modal -->
+@if (showFileEditModal) {
+<div class="admin-overlay" (click)="showFileEditModal=false">
+  <div class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">{{ AdminMessage.FILES_MODAL_EDIT | language }}</h5>
+      <button type="button" class="btn btn-sm btn-light rounded-circle p-1 lh-1" (click)="showFileEditModal=false">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    @if (editingFile) {
+    <div class="file-edit-preview mb-3">
+      @if (isVideoUrl(editingFile.url)) {
+        <video [src]="editingFile.url" class="file-edit-thumb" preload="metadata" muted></video>
+      } @else {
+        <img [src]="editingFile.url" class="file-edit-thumb" [alt]="editingFile.name">
+      }
+    </div>
+    }
+    @if (fileError) {
+    <div class="alert alert-danger small">{{ fileError | language }}</div>
+    }
+    <form (ngSubmit)="saveFileEdit()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_NAME | language }} <span class="text-danger">*</span></label>
+        <input class="form-control" [(ngModel)]="fileForm.name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_TITLE | language }}</label>
+        <input class="form-control" [(ngModel)]="fileForm.title" name="title">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ AdminMessage.LABEL_DESCRIPTION | language }}</label>
+        <textarea class="form-control" [(ngModel)]="fileForm.description" name="description" rows="2"></textarea>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary flex-fill" (click)="showFileEditModal=false">
+          {{ AdminMessage.CANCEL | language }}
+        </button>
+        <button type="submit" class="btn btn-dark flex-fill" [disabled]="fileSaving">
+          @if (fileSaving) {<span class="spinner-border spinner-border-sm me-2"></span>}
+          {{ (fileSaving ? AdminMessage.SAVING : AdminMessage.SAVE) | language }}
         </button>
       </div>
     </form>

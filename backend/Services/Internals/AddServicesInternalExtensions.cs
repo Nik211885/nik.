@@ -23,6 +23,7 @@ public static class AddServicesInternalExtensions
             services.AddScoped<PageViewServices>();
             services.AddScoped<HeroSlideServices>();
             services.AddScoped<ContentTranslationService>();
+            services.AddScoped<AutoTranslateService>();
             return services;
         }
     }

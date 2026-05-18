@@ -45,6 +45,7 @@ export enum ApplicationTitle {
   POST_COMMENT          = "post-comment",
   CONTACT_SEND_SUCCESS  = "contact.send-success",
   CONTACT_SEND_ERROR    = "contact.send-error",
+  AUTO_TRANSLATED       = "auto.translated",
 }
 
 export enum AdminMessage {

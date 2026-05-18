@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, of, tap, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export interface AvailableLanguage { id: string; code: string; name: string; icon?: string; }
-import { HttpClient } from '@angular/common/http';
+
+/** Default UI/fallback language shown when no preference is saved. */
+export const DEFAULT_LANG = 'en';
+
+/** Primary language that content (articles, bio, etc.) is authored in. */
+export const CONTENT_LANG = 'vi';
 
 /**
  * Language API endpoints
@@ -45,19 +51,14 @@ export class LanguageService {
   private readonly STORAGE_KEY = 'app_language';
 
   /**
-   * Default fallback language
-   */
-  private readonly DEFAULT_LANG = 'en';
-
-  /**
    * Current language value (sync access)
    */
-  private currentLang = this.DEFAULT_LANG;
+  private currentLang = DEFAULT_LANG;
 
   /**
    * Reactive stream for current language
    */
-  private currentLanguageSubject = new BehaviorSubject<string>(this.DEFAULT_LANG);
+  private currentLanguageSubject = new BehaviorSubject<string>(DEFAULT_LANG);
 
   /**
    * Public observable for language changes
@@ -93,7 +94,7 @@ export class LanguageService {
   init(): Observable<Record<string, string>> {
 
     const savedLang =
-      localStorage.getItem(this.STORAGE_KEY) ?? this.DEFAULT_LANG;
+      localStorage.getItem(this.STORAGE_KEY) ?? DEFAULT_LANG;
 
     this.currentLang = savedLang;
     this.currentLanguageSubject.next(savedLang);

@@ -24,8 +24,10 @@ services:
       dockerfile: Dockerfile
     container_name: nik_backend
     restart: unless-stopped
+    ports:
+      - "5055:5055"
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS:        http://+:5055
       ConnectionStrings__Postgres: >-
         Server=postgres;Port=5432;Database=${POSTGRES_DB};
@@ -37,6 +39,11 @@ services:
       Jwt__AccessTokenExpirationMinutes: ${JWT_ACCESS_EXPIRY_MINUTES}
       Jwt__RefreshTokenExpirationDays:   ${JWT_REFRESH_EXPIRY_DAYS}
       CORS_ORIGINS:                      ${CORS_ORIGINS}
+      Cloudinary__UrlUpload:             ${CLOUDINARY_URL_UPLOAD}
+      Cloudinary__CloudName:             ${CLOUDINARY_CLOUD_NAME}
+      Cloudinary__ApiKey:                ${CLOUDINARY_API_KEY}
+      Cloudinary__ApiSecret:             ${CLOUDINARY_API_SECRET}
+      Cloudinary__UploadFolder:          ${CLOUDINARY_UPLOAD_FOLDER}
     depends_on:
       postgres:
         condition: service_healthy
@@ -46,7 +53,7 @@ services:
   frontend:
     build:
       context: ./font-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: nik_frontend
     restart: unless-stopped
     ports:
@@ -56,8 +63,72 @@ services:
     networks:
       - nik_net
 
+  # ── Monitoring (disabled to conserve disk space) ─────────────────────────────
+  # Uncomment all services below + the volumes section to re-enable.
+  #
+  # prometheus:
+  #   image: prom/prometheus:v2.53.0
+  #   container_name: nik_prometheus
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #     - --storage.tsdb.path=/prometheus
+  #     - --storage.tsdb.retention.time=15d
+  #   ports:
+  #     - "9090:9090"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - nik_net
+  #
+  # grafana:
+  #   image: grafana/grafana:11.1.0
+  #   container_name: nik_grafana
+  #   restart: unless-stopped
+  #   environment:
+  #     GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+  #     GF_USERS_ALLOW_SIGN_UP: "false"
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - prometheus
+  #     - loki
+  #   networks:
+  #     - nik_net
+  #
+  # loki:
+  #   image: grafana/loki:3.1.0
+  #   container_name: nik_loki
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./monitoring/loki.yml:/etc/loki/local-config.yaml:ro
+  #     - loki_data:/loki
+  #   networks:
+  #     - nik_net
+  #
+  # promtail:
+  #   image: grafana/promtail:3.1.0
+  #   container_name: nik_promtail
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   depends_on:
+  #     - loki
+  #   networks:
+  #     - nik_net
+
 volumes:
   postgres_data:
+  # prometheus_data:
+  # grafana_data:
+  # loki_data:
 
 networks:
   nik_net:
