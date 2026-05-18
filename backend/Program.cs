@@ -79,7 +79,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true")
+    app.UseHttpsRedirection();
 app.UseCors();
 app.UseMiddleware<ExeceptionHandlingMiddleware>();
 app.UseAuthentication();
