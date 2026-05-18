@@ -36,6 +36,7 @@ services:
       Jwt__Audience:                     ${JWT_AUDIENCE}
       Jwt__AccessTokenExpirationMinutes: ${JWT_ACCESS_EXPIRY_MINUTES}
       Jwt__RefreshTokenExpirationDays:   ${JWT_REFRESH_EXPIRY_DAYS}
+      CORS_ORIGINS:                      ${CORS_ORIGINS}
     depends_on:
       postgres:
         condition: service_healthy

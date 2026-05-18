@@ -11,12 +11,20 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS_ORIGINS env var (semicolon-separated) takes priority over appsettings
+var envOrigins = (Environment.GetEnvironmentVariable("CORS_ORIGINS") ?? "")
+    .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+var allowedOrigins = envOrigins.Length > 0
+    ? envOrigins
+    : builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
