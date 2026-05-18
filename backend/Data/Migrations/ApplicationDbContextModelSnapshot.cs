@@ -27,10 +27,10 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("AlbumId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<int>("CountImageRef")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,7 @@ namespace backend.Data.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<string>("FileDescriptionId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -81,10 +81,10 @@ namespace backend.Data.Migrations
             modelBuilder.Entity("backend.Entities.AlbumFile", b =>
                 {
                     b.Property<string>("FileId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("AlbumId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("FileId", "AlbumId");
 
@@ -97,7 +97,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
@@ -163,10 +163,10 @@ namespace backend.Data.Migrations
             modelBuilder.Entity("backend.Entities.ArticleCategory", b =>
                 {
                     b.Property<string>("ArticleId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("CategoryId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("ArticleId", "CategoryId");
 
@@ -178,10 +178,10 @@ namespace backend.Data.Migrations
             modelBuilder.Entity("backend.Entities.ArticleTag", b =>
                 {
                     b.Property<string>("ArticleId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("TagId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("ArticleId", "TagId");
 
@@ -194,7 +194,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<int>("CountRef")
                         .ValueGeneratedOnAdd()
@@ -241,7 +241,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -257,11 +257,11 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("ArticleId")
                         .IsRequired()
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("AuthorId")
                         .HasColumnType("text");
@@ -282,7 +282,7 @@ namespace backend.Data.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<string>("ParentId")
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -385,7 +385,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -452,7 +452,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -527,7 +527,7 @@ namespace backend.Data.Migrations
 
                     b.Property<string>("ArticleId")
                         .IsRequired()
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("CreatedByUserId")
                         .IsRequired()
@@ -554,7 +554,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -574,7 +574,7 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<int>("CountRef")
                         .ValueGeneratedOnAdd()
@@ -621,17 +621,17 @@ namespace backend.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("CodeId")
                         .IsRequired()
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("LanguageId")
                         .IsRequired()
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Value")
                         .IsRequired()
