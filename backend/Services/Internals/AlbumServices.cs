@@ -243,7 +243,7 @@ public class AlbumServices
 
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        bool translate = !ctx.IsAdmin() && lang != "vi";
+        bool translate = lang != "vi";
 
         if (translate)
         {
@@ -276,7 +276,7 @@ public class AlbumServices
 
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        bool translate = !ctx.IsAdmin() && lang != "vi";
+        bool translate = lang != "vi";
 
         if (translate)
         {
@@ -302,7 +302,7 @@ public class AlbumServices
     {
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        bool translate = !ctx.IsAdmin() && lang != "vi";
+        bool translate = lang != "vi";
 
         if (!tree)
         {
@@ -342,7 +342,7 @@ public class AlbumServices
     {
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        bool translate = !ctx.IsAdmin() && lang != "vi";
+        bool translate = lang != "vi";
 
         if (!tree)
         {
@@ -386,7 +386,7 @@ public class AlbumServices
 
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        if (!ctx.IsAdmin() && lang != "vi" && list.Count > 0)
+        if (lang != "vi" && list.Count > 0)
         {
             var batch = await _translationService.GetBatchAsync(
                 EntityType.Album, list.Select(a => a.Id), lang);
@@ -405,7 +405,7 @@ public class AlbumServices
     {
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        bool translate = !ctx.IsAdmin() && lang != "vi";
+        bool translate = lang != "vi";
 
         var lookup = await BuildLookupAsync(translate ? lang : null);
         var roots = lookup[null].ToList();

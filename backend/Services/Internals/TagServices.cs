@@ -94,7 +94,7 @@ public class TagServices
 
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        if (!ctx.IsAdmin() && lang != "vi" && tags.Count > 0)
+        if (lang != "vi" && tags.Count > 0)
         {
             var batch = await _translationService.GetBatchAsync(
                 EntityType.Tag, tags.Select(t => t.Id), lang);
@@ -139,7 +139,7 @@ public class TagServices
     {
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        if (ctx.IsAdmin() || lang == "vi") return;
+        if (lang == "vi") return;
         var t = await _translationService.GetAsync(EntityType.Tag, r.Id, lang);
         ApplyTranslations(r, t);
     }

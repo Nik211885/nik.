@@ -84,7 +84,7 @@ public class CategoryServices
 
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        if (!ctx.IsAdmin() && lang != "vi" && categories.Count > 0)
+        if (lang != "vi" && categories.Count > 0)
         {
             var batch = await _translationService.GetBatchAsync(
                 EntityType.Category, categories.Select(c => c.Id), lang);
@@ -139,7 +139,7 @@ public class CategoryServices
     {
         var ctx = _httpContext.HttpContext!;
         var lang = ctx.GetLanguage();
-        if (ctx.IsAdmin() || lang == "vi") return;
+        if (lang == "vi") return;
         var t = await _translationService.GetAsync(EntityType.Category, r.Id, lang);
         ApplyTranslations(r, t);
     }
