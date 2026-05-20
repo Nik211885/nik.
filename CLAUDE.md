@@ -48,12 +48,34 @@ dotnet ef database update                     # Apply migrations without running
 ### Frontend (run from `/font-end`)
 
 ```bash
-npm start                                     # Dev server (ng serve)
+npm start                                     # Dev server (ng serve) — http://localhost:4200
 npm run build                                 # Production build
-npx wrangler deploy                           # Deploy to Cloudflare Workers
+npm run deploy                                # Build + deploy to Cloudflare Workers
+npm run preview                               # Build + local Wrangler preview
 ```
 
 Swagger UI is served at `http://localhost:5055` in development mode. Backend auto-migrates and runs seeders on startup via `dotnet run`.
+
+Backend also exposes `/health` (PostgreSQL health check) and `/metrics` (Prometheus) in all environments.
+
+### Docker
+
+```bash
+docker compose up --build                     # Full stack (backend + frontend + postgres)
+docker compose -f docker-compose.prod.yml up  # Production compose
+```
+
+Copy `.env.example` to `.env` and fill in values before running Docker. Required variables:
+
+| Variable | Purpose |
+|---|---|
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | PostgreSQL credentials |
+| `JWT_SECURITY_KEY`, `JWT_ISSUER`, `JWT_AUDIENCE` | JWT config (access 15 min, refresh 7 days) |
+| `CORS_ORIGINS` | Semicolon-separated allowed origins (overrides `appsettings.json`) |
+| `CLOUDINARY_URL_UPLOAD`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_UPLOAD_FOLDER` | Cloudinary credentials |
+| `FRONTEND_PORT` | Host port for frontend container (default 80) |
+
+HTTPS redirect is suppressed inside Docker (`DOTNET_RUNNING_IN_CONTAINER=true`).
 
 ### Tests
 
@@ -108,9 +130,9 @@ On startup the frontend runs two `provideAppInitializer` calls (in `app.config.t
 
 ### Startup Seeders
 
-Every `dotnet run` runs two idempotent seeders after migrations:
+Every `dotnet run` runs idempotent seeders after migrations:
 - `LanguageSeeder` — seeds translation keys and their EN/VI values
-- `AlbumSeeder` — seeds default album data
+- `AlbumSeeder`, `ArticleSeeder`, `HeroSlideSeeder`, `SysConfigSeeder`, `ContentTranslationSeeder` — seed default content
 
 When adding new translation keys, add them to `LanguageSeeder.GetEntries()` so they are present on the next startup.
 

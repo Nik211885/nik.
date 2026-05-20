@@ -236,7 +236,7 @@ Base URL is configured per environment:
 ```typescript
 // environment.ts
 export const environment = {
-  baseApiUrl: 'http://localhost:5173'
+  baseApiUrl: 'http://localhost:5055'
 };
 ```
 
@@ -400,3 +400,28 @@ tap({
 | `appRef.tick()` | No-op in zoneless: `if (!this.zonelessEnabled) { this.dirtyFlags \|= 1; }` guard skips setup |
 | `NgZone.run()` | `NgZone` is `NoopNgZone` — just calls the function directly, no CD |
 | `tap(detectChanges)` synchronously | Runs before component sets data — detects nothing new |
+
+## Production Environment
+
+```typescript
+// environment.prod.ts
+export const environment = {
+  baseApiUrl: ''  // empty string = relative URLs, works behind a reverse proxy
+};
+```
+
+## Prettier Config
+
+Prettier is configured (`.prettierrc`): 100-char line width, single quotes, Angular parser for `.html` files. Run `npx prettier --write .` to format.
+
+## Notable Third-party Packages
+
+| Package | Purpose |
+|---|---|
+| `ngx-quill` + `quill` | Rich-text editor (articles) |
+| `leaflet` | Interactive maps |
+| `chart.js` | Dashboard charts in admin |
+| `franc-min` | Language detection |
+| `aos` | Animate-on-scroll library |
+| `xlsx` | Excel export |
+| `wrangler` | Cloudflare Workers CLI |
