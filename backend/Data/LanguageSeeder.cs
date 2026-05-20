@@ -407,6 +407,24 @@ public static class LanguageSeeder
         ("nav.fashion",     "Fashion",     "Thời trang"),
         ("nav.about",       "About",       "Giới thiệu"),
         ("nav.contact",     "Contact",     "Liên hệ"),
+        ("nav.sponsor",     "Sponsor",     "Ủng hộ"),
+
+        // ─── Sponsor page ─────────────────────────────────────────────────────
+        ("sponsor.title",          "Support My Work",                                                           "Ủng hộ tôi"),
+        ("sponsor.subtitle",       "If you enjoy my content, consider buying me a coffee!",                     "Nếu bạn thích nội dung của tôi, hãy mời tôi một ly cà phê!"),
+        ("sponsor.page-title",     "Buy me a coffee",                                                           "Mua cho tôi một ly cà phê"),
+        ("sponsor.page-desc",      "If my content has ever made you smile, learn something new, or simply kill some time — consider buying me a coffee. It means more than you know.",  "Nếu nội dung của tôi từng khiến bạn mỉm cười, học được điều gì mới, hay chỉ đơn giản là giết thời gian — hãy mua cho tôi một ly cà phê nhé. Điều đó có ý nghĩa hơn bạn nghĩ đấy."),
+        ("sponsor.bank",           "Bank",                                                                      "Ngân hàng"),
+        ("sponsor.account-name",   "Account Name",                                                              "Tên tài khoản"),
+        ("sponsor.account-number", "Account Number",                                                            "Số tài khoản"),
+        ("sponsor.copy",           "Copy",                                                                      "Sao chép"),
+        ("sponsor.copied",         "Copied!",                                                                   "Đã sao chép!"),
+        ("sponsor.scan",           "Scan QR code to transfer",                                                  "Quét mã QR để chuyển khoản"),
+        ("sponsor.thank-you",      "Thank you for your support!",                                               "Cảm ơn bạn đã ủng hộ!"),
+        ("sponsor.note",           "Every contribution, big or small, means the world to me.",                  "Mọi đóng góp, dù lớn hay nhỏ, đều có ý nghĩa với tôi."),
+        ("sponsor.personal-message", "Your support motivates me to keep creating and sharing. Thank you for being here!", "Sự ủng hộ của bạn là động lực để tôi tiếp tục sáng tạo và chia sẻ. Cảm ơn bạn đã ở đây!"),
+        ("sponsor.open-app",       "Open payment app",                                                          "Mở app thanh toán"),
+        ("sponsor.or-scan",        "or scan QR code above",                                                     "hoặc quét mã QR phía trên"),
 
         // ─── Public site strings ──────────────────────────────────────────────
         ("category",                 "Category",                          "Danh mục"),

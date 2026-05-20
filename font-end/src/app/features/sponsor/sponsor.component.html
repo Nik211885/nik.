@@ -1,0 +1,97 @@
+<section class="sponsor-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center sponsor-header ftco-animate">
+        <div class="coffee-img">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="110" height="110">
+            <defs>
+              <radialGradient id="cupGrad" cx="40%" cy="35%">
+                <stop offset="0%" stop-color="#ffb347"/>
+                <stop offset="100%" stop-color="#f86f2d"/>
+              </radialGradient>
+            </defs>
+            <!-- background circle -->
+            <circle cx="60" cy="60" r="58" fill="url(#cupGrad)"/>
+            <!-- steam -->
+            <path d="M44 46 Q41 38 44 30" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.75"/>
+            <path d="M56 44 Q53 36 56 28" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.75"/>
+            <path d="M68 46 Q65 38 68 30" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.75"/>
+            <!-- cup body -->
+            <path d="M33 53 L39 88 Q56 93 79 88 L85 53 Z" fill="white"/>
+            <!-- coffee surface -->
+            <ellipse cx="59" cy="53" rx="26" ry="6" fill="#c07840"/>
+            <!-- latte heart -->
+            <path d="M53 52 Q56 48 59 52 Q62 48 65 52 Q65 57 59 61 Q53 57 53 52Z" fill="white" opacity="0.35"/>
+            <!-- handle -->
+            <path d="M85 62 Q100 62 100 71 Q100 82 85 82" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <!-- saucer -->
+            <ellipse cx="59" cy="90" rx="32" ry="5" fill="white" opacity="0.35"/>
+          </svg>
+        </div>
+        <h2>{{ ApplicationTitle.SPONSOR_PAGE_TITLE | language }}</h2>
+        <p>{{ ApplicationTitle.SPONSOR_PAGE_DESC | language }}</p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-5">
+        <div class="sponsor-card ftco-animate">
+
+          <!-- QR Code -->
+          <div class="qr-wrap">
+            <p class="qr-label">{{ ApplicationTitle.SPONSOR_SCAN | language }}</p>
+            <img [src]="qrUrl" alt="VietQR" class="qr-img" loading="lazy" />
+          </div>
+
+          <!-- Bank details -->
+          <div class="bank-info">
+            <div class="bank-row">
+              <span class="bank-label">{{ ApplicationTitle.SPONSOR_BANK | language }}</span>
+              <span class="bank-value">{{ bankName }}</span>
+            </div>
+            <div class="bank-row">
+              <span class="bank-label">{{ ApplicationTitle.SPONSOR_ACCT_NAME | language }}</span>
+              <span class="bank-value">{{ accountName }}</span>
+            </div>
+            <div class="bank-row">
+              <span class="bank-label">{{ ApplicationTitle.SPONSOR_ACCT_NO | language }}</span>
+              <span class="bank-value account-number">
+                <strong>{{ accountNumber }}</strong>
+                <button class="copy-btn" (click)="copyAccount()">
+                  @if (copied) {
+                    {{ ApplicationTitle.SPONSOR_COPIED | language }}
+                  } @else {
+                    {{ ApplicationTitle.SPONSOR_COPY | language }}
+                  }
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Mobile pay app buttons -->
+          @if (isMobile) {
+            <div class="pay-apps">
+              <p class="pay-apps-label">{{ ApplicationTitle.SPONSOR_OPEN_APP | language }}</p>
+              <div class="pay-btns">
+                @for (app of payApps; track app.name) {
+                  <button class="pay-app-btn"
+                          [style.background]="app.color"
+                          (click)="openApp(app.deepLink, app.web)">
+                    {{ app.name }}
+                  </button>
+                }
+              </div>
+              <p class="pay-apps-sub">{{ ApplicationTitle.SPONSOR_OR_SCAN | language }}</p>
+            </div>
+          }
+
+          <!-- Thank you -->
+          <div class="thank-you-wrap">
+            <p class="thank-you">{{ ApplicationTitle.SPONSOR_THANK_YOU | language }}</p>
+            <p class="sponsor-note">{{ ApplicationTitle.SPONSOR_NOTE | language }}</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

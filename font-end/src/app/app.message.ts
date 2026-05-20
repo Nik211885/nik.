@@ -46,6 +46,18 @@ export enum ApplicationTitle {
   CONTACT_SEND_SUCCESS  = "contact.send-success",
   CONTACT_SEND_ERROR    = "contact.send-error",
   AUTO_TRANSLATED       = "auto.translated",
+  SPONSOR_PAGE_TITLE    = "sponsor.page-title",
+  SPONSOR_PAGE_DESC     = "sponsor.page-desc",
+  SPONSOR_BANK          = "sponsor.bank",
+  SPONSOR_ACCT_NAME     = "sponsor.account-name",
+  SPONSOR_ACCT_NO       = "sponsor.account-number",
+  SPONSOR_COPY          = "sponsor.copy",
+  SPONSOR_COPIED        = "sponsor.copied",
+  SPONSOR_SCAN          = "sponsor.scan",
+  SPONSOR_THANK_YOU     = "sponsor.thank-you",
+  SPONSOR_NOTE          = "sponsor.note",
+  SPONSOR_OPEN_APP      = "sponsor.open-app",
+  SPONSOR_OR_SCAN       = "sponsor.or-scan",
 }
 
 export enum AdminMessage {

@@ -40,6 +40,7 @@ public static class SysConfigSeeder
             new { nameKey = "nav.fashion",     @ref = "/fashion" },
             new { nameKey = "nav.about",       @ref = "/about" },
             new { nameKey = "nav.contact",     @ref = "/contact" },
+            new { nameKey = "nav.sponsor",     @ref = "/sponsor" },
         }));
 
         // ── Social links ───────────────────────────────────────────────────

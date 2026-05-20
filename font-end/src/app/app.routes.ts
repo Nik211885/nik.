@@ -56,6 +56,7 @@ export const routes: Routes = [
       { path: 'about',       component: AboutComponent },
       { path: 'contact',     component: ContactComponent },
       { path: 'post/:prefix/:slug', component: PostDetailComponent },
+      { path: 'sponsor', loadComponent: () => import('./features/sponsor/sponsor.component').then(m => m.SponsorComponent) },
     ]
   },
 
