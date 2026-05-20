@@ -394,6 +394,7 @@ public static class LanguageSeeder
         ("admin.sidebar.group.system",          "System",               "Hệ thống"),
 
         // ─── Backend error keys ───────────────────────────────────────────────
+        ("exception.unauthorized", "Session expired. Please log in again.", "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."),
         ("file.not.exists",  "File does not exist.",           "Tệp không tồn tại."),
         ("file.type.apply",  "File type is not allowed.",      "Loại tệp không được phép."),
         ("file.max.size",    "File exceeds the maximum size.", "Tệp vượt quá kích thước cho phép."),

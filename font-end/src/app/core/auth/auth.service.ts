@@ -11,6 +11,7 @@ import {
   take,
   tap
 } from 'rxjs';
+import { HEADER_SKIP_REQUEST } from '../interceptors/auth.interceptor';
 import {
   LoginRequest,
   RegisterRequest,
@@ -92,11 +93,10 @@ export class AuthService {
    * @returns Observable<void>
    */
   public logout(): Observable<void> {
+    this.clearSession();
     return this.http
-      .post<void>(ApiAuth.LOGOUT, {})
-      .pipe(
-        tap(() => this.clearSession())
-      );
+      .post<void>(ApiAuth.LOGOUT, {}, { headers: { [HEADER_SKIP_REQUEST]: '1' } })
+      .pipe(catchError(() => of(undefined as void)));
   }
 
   /**
@@ -247,10 +247,8 @@ export class AuthService {
    * Clear authentication session
    * - Remove tokens
    * - Reset state
-   *
-   * @private
    */
-  private clearSession(): void {
+  public clearSession(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.token$.next(null);

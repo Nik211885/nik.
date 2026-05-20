@@ -52,6 +52,9 @@ public static class ApplicationMessage
 
     /// <summary>Key returned when a refresh token is invalid or expired.</summary>
     public static readonly string InvalidToken = "exception.invalid_token";
+
+    /// <summary>Key for 401 Unauthorized responses (token present but invalid/expired).</summary>
+    public static readonly string Unauthorized = "exception.unauthorized";
 }
 
 /// <summary>String constants identifying translatable entity types in <c>ContentTranslations</c>.</summary>

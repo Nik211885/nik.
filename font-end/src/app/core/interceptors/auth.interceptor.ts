@@ -119,11 +119,11 @@ function handle401(
         isRefreshing = false;
 
         /**
-         * If refresh fails → logout user
+         * If refresh fails → clear session only (no HTTP call to avoid loop)
          */
         if (!token) {
-          refreshTokenSubject$.next(null); // unblock queued requests
-          authService.logout().subscribe();
+          refreshTokenSubject$.next(null);
+          authService.clearSession();
           return throwError(() => new Error('Session expired'));
         }
 
@@ -135,8 +135,8 @@ function handle401(
       }),
       catchError((err) => {
         isRefreshing = false;
-        refreshTokenSubject$.next(null); // unblock any queued requests so they fail fast
-        authService.logout().subscribe();
+        refreshTokenSubject$.next(null);
+        authService.clearSession();
         return throwError(() => err);
       })
     );

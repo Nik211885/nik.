@@ -220,6 +220,13 @@ public class ArticleServices
                 EntityType.Article, page.Data.Select(a => a.Id), lang);
             foreach (var item in page.Data)
                 if (batch.TryGetValue(item.Id, out var t)) ApplyTranslations(item, t);
+
+            var tagBatch = await _translationService.GetBatchAsync(
+                EntityType.Tag, page.Data.SelectMany(a => a.Tags.Select(x => x.Id)).Distinct(), lang);
+            var catBatch = await _translationService.GetBatchAsync(
+                EntityType.Category, page.Data.SelectMany(a => a.Categories.Select(x => x.Id)).Distinct(), lang);
+            foreach (var item in page.Data)
+                ApplyNestedTranslations(item, tagBatch, catBatch);
         }
 
         return page;
@@ -249,6 +256,13 @@ public class ArticleServices
                 EntityType.Article, list.Select(a => a.Id), lang);
             foreach (var item in list)
                 if (batch.TryGetValue(item.Id, out var t)) ApplyTranslations(item, t);
+
+            var tagBatch = await _translationService.GetBatchAsync(
+                EntityType.Tag, list.SelectMany(a => a.Tags.Select(x => x.Id)).Distinct(), lang);
+            var catBatch = await _translationService.GetBatchAsync(
+                EntityType.Category, list.SelectMany(a => a.Categories.Select(x => x.Id)).Distinct(), lang);
+            foreach (var item in list)
+                ApplyNestedTranslations(item, tagBatch, catBatch);
         }
 
         return list;
@@ -273,6 +287,12 @@ public class ArticleServices
         if (ctx.IsAdmin() || lang == "vi") return;
         var t = await _translationService.GetAsync(EntityType.Article, r.Id, lang);
         ApplyTranslations(r, t);
+
+        var tagBatch = await _translationService.GetBatchAsync(
+            EntityType.Tag, r.Tags.Select(x => x.Id), lang);
+        var catBatch = await _translationService.GetBatchAsync(
+            EntityType.Category, r.Categories.Select(x => x.Id), lang);
+        ApplyNestedTranslations(r, tagBatch, catBatch);
     }
 
     private static void ApplyTranslations(ArticleResponse r, Dictionary<string, string> t)
@@ -280,6 +300,19 @@ public class ArticleServices
         if (t.TryGetValue("title", out var v)) r.Title = v;
         if (t.TryGetValue("description", out v)) r.Description = v;
         if (t.TryGetValue("content", out v)) r.Content = v;
+    }
+
+    private static void ApplyNestedTranslations(
+        ArticleResponse r,
+        Dictionary<string, Dictionary<string, string>> tagBatch,
+        Dictionary<string, Dictionary<string, string>> catBatch)
+    {
+        foreach (var tag in r.Tags)
+            if (tagBatch.TryGetValue(tag.Id, out var t) && t.TryGetValue("title", out var v))
+                tag.Title = v;
+        foreach (var cat in r.Categories)
+            if (catBatch.TryGetValue(cat.Id, out var t) && t.TryGetValue("title", out var v))
+                cat.Title = v;
     }
 
     /// <summary>

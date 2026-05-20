@@ -56,7 +56,12 @@ public class CommentServices
     /// <exception cref="BadRequestException">Thrown when a guest omits required name or email fields.</exception>
     public async Task<CommentResponse> CreateCommentAsync(CreateCommentRequest model)
     {
-        var isAuthenticated = _httpContext.HttpContext!.User.Identity?.IsAuthenticated ?? false;
+        var ctx = _httpContext.HttpContext!;
+        var isAuthenticated = ctx.User.Identity?.IsAuthenticated ?? false;
+        var hasAuthHeader = ctx.Request.Headers.ContainsKey("Authorization");
+
+        if (!isAuthenticated && hasAuthHeader)
+            throw new UnauthorizedException();
 
         var comment = new Entities.Comment
         {
@@ -68,7 +73,7 @@ public class CommentServices
 
         if (isAuthenticated)
         {
-            comment.AuthorId = _httpContext.HttpContext!.GetUserId();
+            comment.AuthorId = ctx.GetUserId();
         }
         else
         {
