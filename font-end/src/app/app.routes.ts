@@ -40,6 +40,7 @@ export const routes: Routes = [
       { path: 'hero-slides',         loadComponent: () => import('./admin/features/hero-slides/hero-slides.component').then(m => m.HeroSlidesAdminComponent) },
       { path: 'content-translations', loadComponent: () => import('./admin/features/content-translations/content-translations.component').then(m => m.ContentTranslationsAdminComponent) },
       { path: 'wall-messages', loadComponent: () => import('./admin/features/wall-messages/wall-messages.component').then(m => m.WallMessagesAdminComponent) },
+      { path: 'careers', loadComponent: () => import('./admin/features/careers/careers.component').then(m => m.CareersAdminComponent) },
       { path: 'content-translations/editor/:entityType/:entityId/:lang', loadComponent: () => import('./admin/features/content-translations/translation-editor-page/translation-editor-page.component').then(m => m.TranslationEditorPageComponent) },
     ]
   },

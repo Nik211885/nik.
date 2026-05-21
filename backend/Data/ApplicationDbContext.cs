@@ -70,6 +70,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Short visitor messages displayed on the public wall page.</summary>
     public DbSet<WallMessage> WallMessages { get; set; }
 
+    /// <summary>Work experience entries for the CV/Careers section.</summary>
+    public DbSet<WorkExperience> WorkExperiences { get; set; }
+
+    /// <summary>Skill tags grouped by category for the Skills section.</summary>
+    public DbSet<Skill> Skills { get; set; }
+
+    /// <summary>Project entries for the CV/Careers section.</summary>
+    public DbSet<Project> Projects { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

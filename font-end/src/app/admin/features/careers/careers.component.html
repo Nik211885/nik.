@@ -1,0 +1,369 @@
+<div class="careers-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ AdminMessage.CAREERS_TITLE | language }}</h1>
+      <p class="page-subtitle">{{ AdminMessage.CAREERS_SUBTITLE | language }}</p>
+    </div>
+    @if (activeTab === 'experience') {
+      <button class="btn-add" (click)="openExpCreate()">
+        <i class="bi bi-plus-lg"></i>
+        {{ AdminMessage.CAREERS_ADD_EXP | language }}
+      </button>
+    } @else if (activeTab === 'skills') {
+      <button class="btn-add" (click)="openSkillCreate()">
+        <i class="bi bi-plus-lg"></i>
+        {{ AdminMessage.CAREERS_ADD_SKILL | language }}
+      </button>
+    } @else {
+      <button class="btn-add" (click)="openProjectCreate()">
+        <i class="bi bi-plus-lg"></i>
+        {{ AdminMessage.CAREERS_ADD_PROJECT | language }}
+      </button>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'experience'" (click)="activeTab = 'experience'">
+      <i class="bi bi-briefcase me-2"></i>{{ AdminMessage.CAREERS_TAB_EXP | language }}
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'skills'" (click)="activeTab = 'skills'">
+      <i class="bi bi-stars me-2"></i>{{ AdminMessage.CAREERS_TAB_SKILLS | language }}
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'projects'" (click)="activeTab = 'projects'">
+      <i class="bi bi-kanban me-2"></i>{{ AdminMessage.CAREERS_TAB_PROJECTS | language }}
+    </button>
+  </div>
+
+  <!-- ── Experience Tab ───────────────────────────────────────────────────── -->
+  @if (activeTab === 'experience') {
+    @if (expLoading) {
+      <div class="loading-row"><i class="bi bi-arrow-repeat spin"></i></div>
+    } @else if (experiences.length === 0) {
+      <div class="empty-row">{{ AdminMessage.TABLE_EMPTY_DATA | language }}</div>
+    } @else {
+      <div class="timeline-list">
+        @for (exp of experiences; track exp.id) {
+          <div class="exp-card" [class.unpublished]="!exp.isPublished">
+            <div class="exp-card-left">
+              <div class="exp-dot"></div>
+            </div>
+            <div class="exp-card-body">
+              <div class="exp-meta">
+                <span class="exp-period">
+                  {{ exp.startDate | date:'yyyy' }} — {{ exp.endDate ? (exp.endDate | date:'yyyy') : (AdminMessage.CAREERS_PRESENT | language) }}
+                </span>
+                @if (!exp.endDate) {
+                  <span class="badge-current">{{ AdminMessage.CAREERS_CURRENT | language }}</span>
+                }
+                @if (!exp.isPublished) {
+                  <span class="badge-hidden">{{ AdminMessage.CAREERS_HIDDEN | language }}</span>
+                }
+              </div>
+              <h3 class="exp-role">{{ exp.role }}</h3>
+              <div class="exp-company"><i class="bi bi-building me-1"></i>{{ exp.company }}</div>
+              @if (exp.description) {
+                <p class="exp-desc">{{ exp.description }}</p>
+              }
+              @if (exp.techTags.length > 0) {
+                <div class="exp-tags">
+                  @for (tag of exp.techTags; track tag) {
+                    <span class="tech-tag">{{ tag }}</span>
+                  }
+                </div>
+              }
+            </div>
+            <div class="exp-actions">
+              <button class="icon-btn" (click)="openExpEdit(exp)" [title]="AdminMessage.TABLE_ACTION_EDIT | language">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="icon-btn danger" (click)="confirmDeleteExp(exp.id)" [title]="AdminMessage.TABLE_ACTION_DELETE | language">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ── Skills Tab ───────────────────────────────────────────────────────── -->
+  @if (activeTab === 'skills') {
+    @if (skillLoading) {
+      <div class="loading-row"><i class="bi bi-arrow-repeat spin"></i></div>
+    } @else if (skills.length === 0) {
+      <div class="empty-row">{{ AdminMessage.TABLE_EMPTY_DATA | language }}</div>
+    } @else {
+      @for (cat of skillCategories(); track cat) {
+        <div class="skill-group-block">
+          <div class="skill-cat-header">{{ cat }}</div>
+          <div class="skill-chips">
+            @for (skill of skillsByCategory[cat]; track skill.id) {
+              <div class="skill-chip" [class.unpublished]="!skill.isPublished">
+                <span class="skill-name">{{ skill.name }}</span>
+                <button class="chip-btn" (click)="openSkillEdit(skill)"><i class="bi bi-pencil"></i></button>
+                <button class="chip-btn danger" (click)="confirmDeleteSkill(skill.id)"><i class="bi bi-trash"></i></button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <!-- ── Projects Tab ────────────────────────────────────────────────────── -->
+  @if (activeTab === 'projects') {
+    @if (projectLoading) {
+      <div class="loading-row"><i class="bi bi-arrow-repeat spin"></i></div>
+    } @else if (projects.length === 0) {
+      <div class="empty-row">{{ AdminMessage.TABLE_EMPTY_DATA | language }}</div>
+    } @else {
+      <div class="projects-admin-grid">
+        @for (proj of projects; track proj.id) {
+          <div class="proj-card" [class.unpublished]="!proj.isPublished">
+            <div class="proj-card-body">
+              <div class="proj-meta">
+                @if (!proj.isPublished) {
+                  <span class="badge-hidden">{{ AdminMessage.CAREERS_HIDDEN | language }}</span>
+                }
+              </div>
+              <h3 class="proj-name">{{ proj.name }}</h3>
+              @if (proj.description) {
+                <p class="proj-desc">{{ proj.description }}</p>
+              }
+              @if (proj.techTags.length > 0) {
+                <div class="proj-tags">
+                  @for (tag of proj.techTags; track tag) {
+                    <span class="tech-tag">{{ tag }}</span>
+                  }
+                </div>
+              }
+              @if (proj.demoUrl || proj.repoUrl) {
+                <div class="proj-links">
+                  @if (proj.demoUrl) {
+                    <a class="proj-link" [href]="proj.demoUrl" target="_blank" rel="noopener noreferrer">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                  }
+                  @if (proj.repoUrl) {
+                    <a class="proj-link" [href]="proj.repoUrl" target="_blank" rel="noopener noreferrer">
+                      <i class="bi bi-github"></i>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+            <div class="exp-actions">
+              <button class="icon-btn" (click)="openProjectEdit(proj)" [title]="AdminMessage.TABLE_ACTION_EDIT | language">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="icon-btn danger" (click)="confirmDeleteProject(proj.id)" [title]="AdminMessage.TABLE_ACTION_DELETE | language">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>
+
+<!-- ── Experience Modal ───────────────────────────────────────────────────── -->
+@if (expModalOpen) {
+  <div class="modal-backdrop" (click)="expModalOpen = false"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <h5>{{ expEditing ? (AdminMessage.CAREERS_EDIT_EXP | language) : (AdminMessage.CAREERS_ADD_EXP | language) }}</h5>
+      <button class="modal-close" (click)="expModalOpen = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_COMPANY | language }}</label>
+        <input class="form-input" [(ngModel)]="expForm.company" [placeholder]="AdminMessage.CAREERS_LABEL_COMPANY | language" />
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_ROLE | language }}</label>
+        <input class="form-input" [(ngModel)]="expForm.role" [placeholder]="AdminMessage.CAREERS_LABEL_ROLE | language" />
+      </div>
+      <div class="form-grid2">
+        <div class="form-row">
+          <label>{{ AdminMessage.CAREERS_LABEL_START | language }}</label>
+          <input class="form-input" type="date" [(ngModel)]="expForm.startDate" />
+        </div>
+        <div class="form-row">
+          <label>{{ AdminMessage.CAREERS_LABEL_END | language }}</label>
+          <input class="form-input" type="date" [(ngModel)]="expForm.endDate" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.LABEL_DESCRIPTION | language }}</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="expForm.description"
+                  [placeholder]="AdminMessage.LABEL_DESCRIPTION | language"></textarea>
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_TAGS | language }}</label>
+        <input class="form-input" [(ngModel)]="expForm.techTags"
+               [placeholder]="AdminMessage.CAREERS_TAGS_HINT | language" />
+      </div>
+      <div class="form-grid2">
+        <div class="form-row">
+          <label>{{ AdminMessage.LABEL_ORDER | language }}</label>
+          <input class="form-input" type="number" [(ngModel)]="expForm.order" />
+        </div>
+        <div class="form-row form-check-row">
+          <label class="check-label">
+            <input type="checkbox" [(ngModel)]="expForm.isPublished" />
+            {{ AdminMessage.CAREERS_PUBLISHED | language }}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="expModalOpen = false">{{ AdminMessage.CANCEL | language }}</button>
+      <button class="btn-save" (click)="saveExp()">{{ AdminMessage.SAVE | language }}</button>
+    </div>
+  </div>
+}
+
+<!-- ── Skill Modal ────────────────────────────────────────────────────────── -->
+@if (skillModalOpen) {
+  <div class="modal-backdrop" (click)="skillModalOpen = false"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <h5>{{ skillEditing ? (AdminMessage.CAREERS_EDIT_SKILL | language) : (AdminMessage.CAREERS_ADD_SKILL | language) }}</h5>
+      <button class="modal-close" (click)="skillModalOpen = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>{{ AdminMessage.LABEL_NAME | language }}</label>
+        <input class="form-input" [(ngModel)]="skillForm.name" [placeholder]="AdminMessage.LABEL_NAME | language" />
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_CATEGORY | language }}</label>
+        <input class="form-input" [(ngModel)]="skillForm.category"
+               [placeholder]="AdminMessage.CAREERS_CATEGORY_HINT | language" />
+      </div>
+      <div class="form-grid2">
+        <div class="form-row">
+          <label>{{ AdminMessage.LABEL_ORDER | language }}</label>
+          <input class="form-input" type="number" [(ngModel)]="skillForm.order" />
+        </div>
+        <div class="form-row form-check-row">
+          <label class="check-label">
+            <input type="checkbox" [(ngModel)]="skillForm.isPublished" />
+            {{ AdminMessage.CAREERS_PUBLISHED | language }}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="skillModalOpen = false">{{ AdminMessage.CANCEL | language }}</button>
+      <button class="btn-save" (click)="saveSkill()">{{ AdminMessage.SAVE | language }}</button>
+    </div>
+  </div>
+}
+
+<!-- ── Confirm Delete ─────────────────────────────────────────────────────── -->
+@if (expConfirmOpen) {
+  <div class="modal-backdrop" (click)="expConfirmOpen = false"></div>
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <h5>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_TITLE | language }}</h5>
+    </div>
+    <div class="modal-body">
+      <p>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_MESSAGE | language }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="expConfirmOpen = false">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_CANCEL | language }}</button>
+      <button class="btn-danger" (click)="deleteExp()">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_DELETE | language }}</button>
+    </div>
+  </div>
+}
+
+@if (skillConfirmOpen) {
+  <div class="modal-backdrop" (click)="skillConfirmOpen = false"></div>
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <h5>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_TITLE | language }}</h5>
+    </div>
+    <div class="modal-body">
+      <p>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_MESSAGE | language }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="skillConfirmOpen = false">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_CANCEL | language }}</button>
+      <button class="btn-danger" (click)="deleteSkill()">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_DELETE | language }}</button>
+    </div>
+  </div>
+}
+
+<!-- ── Project Modal ──────────────────────────────────────────────────────── -->
+@if (projectModalOpen) {
+  <div class="modal-backdrop" (click)="projectModalOpen = false"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <h5>{{ projectEditing ? (AdminMessage.CAREERS_EDIT_PROJECT | language) : (AdminMessage.CAREERS_ADD_PROJECT | language) }}</h5>
+      <button class="modal-close" (click)="projectModalOpen = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>{{ AdminMessage.LABEL_NAME | language }}</label>
+        <input class="form-input" [(ngModel)]="projectForm.name" [placeholder]="AdminMessage.LABEL_NAME | language" />
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.LABEL_DESCRIPTION | language }}</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="projectForm.description"
+                  [placeholder]="AdminMessage.LABEL_DESCRIPTION | language"></textarea>
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_TAGS | language }}</label>
+        <input class="form-input" [(ngModel)]="projectForm.techTags"
+               [placeholder]="AdminMessage.CAREERS_TAGS_HINT | language" />
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_DEMO_URL | language }}</label>
+        <input class="form-input" [(ngModel)]="projectForm.demoUrl"
+               [placeholder]="AdminMessage.CAREERS_LABEL_DEMO_URL | language" />
+      </div>
+      <div class="form-row">
+        <label>{{ AdminMessage.CAREERS_LABEL_REPO_URL | language }}</label>
+        <input class="form-input" [(ngModel)]="projectForm.repoUrl"
+               [placeholder]="AdminMessage.CAREERS_LABEL_REPO_URL | language" />
+      </div>
+      <div class="form-grid2">
+        <div class="form-row">
+          <label>{{ AdminMessage.LABEL_ORDER | language }}</label>
+          <input class="form-input" type="number" [(ngModel)]="projectForm.order" />
+        </div>
+        <div class="form-row form-check-row">
+          <label class="check-label">
+            <input type="checkbox" [(ngModel)]="projectForm.isPublished" />
+            {{ AdminMessage.CAREERS_PUBLISHED | language }}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="projectModalOpen = false">{{ AdminMessage.CANCEL | language }}</button>
+      <button class="btn-save" (click)="saveProject()">{{ AdminMessage.SAVE | language }}</button>
+    </div>
+  </div>
+}
+
+@if (projectConfirmOpen) {
+  <div class="modal-backdrop" (click)="projectConfirmOpen = false"></div>
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <h5>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_TITLE | language }}</h5>
+    </div>
+    <div class="modal-body">
+      <p>{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_MESSAGE | language }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="projectConfirmOpen = false">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_CANCEL | language }}</button>
+      <button class="btn-danger" (click)="deleteProject()">{{ AdminMessage.DIAGLOG_CONFIRM_DELETE_ACTION_DELETE | language }}</button>
+    </div>
+  </div>
+}

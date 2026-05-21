@@ -89,6 +89,31 @@ public class ContentTranslationService
                     ["description"] = row.Description,
                 };
             }
+            case EntityType.WorkExperience:
+            {
+                var row = await _context.WorkExperiences
+                    .Where(w => w.Id == entityId)
+                    .Select(w => new { w.Role, w.Company, w.Description })
+                    .FirstOrDefaultAsync();
+                return row is null ? [] : new Dictionary<string, string>
+                {
+                    ["role"]        = row.Role,
+                    ["company"]     = row.Company,
+                    ["description"] = row.Description ?? string.Empty,
+                };
+            }
+            case EntityType.Project:
+            {
+                var row = await _context.Projects
+                    .Where(p => p.Id == entityId)
+                    .Select(p => new { p.Name, p.Description })
+                    .FirstOrDefaultAsync();
+                return row is null ? [] : new Dictionary<string, string>
+                {
+                    ["name"]        = row.Name,
+                    ["description"] = row.Description ?? string.Empty,
+                };
+            }
             default:
                 throw new BadRequestException(ApplicationMessage.BadRequest);
         }
@@ -285,6 +310,38 @@ public class ContentTranslationService
                     EntityId     = g.Key.Id,
                     EntityType   = EntityType.HeroSlide,
                     SourceTitle  = g.Key.Title,
+                    IsTranslated = g.Any(t => t != null)
+                }),
+
+            EntityType.WorkExperience => (
+                from w in _context.WorkExperiences.AsNoTracking()
+                join t in _context.ContentTranslations
+                    .Where(ct => ct.EntityType == EntityType.WorkExperience && ct.LangCode == langCode)
+                    on w.Id equals t.EntityId into ts
+                from t in ts.DefaultIfEmpty()
+                group t by new { w.Id, w.Role } into g
+                orderby g.Key.Role
+                select new TranslationStatusItem
+                {
+                    EntityId     = g.Key.Id,
+                    EntityType   = EntityType.WorkExperience,
+                    SourceTitle  = g.Key.Role,
+                    IsTranslated = g.Any(t => t != null)
+                }),
+
+            EntityType.Project => (
+                from p in _context.Projects.AsNoTracking()
+                join t in _context.ContentTranslations
+                    .Where(ct => ct.EntityType == EntityType.Project && ct.LangCode == langCode)
+                    on p.Id equals t.EntityId into ts
+                from t in ts.DefaultIfEmpty()
+                group t by new { p.Id, p.Name } into g
+                orderby g.Key.Name
+                select new TranslationStatusItem
+                {
+                    EntityId     = g.Key.Id,
+                    EntityType   = EntityType.Project,
+                    SourceTitle  = g.Key.Name,
                     IsTranslated = g.Any(t => t != null)
                 }),
 

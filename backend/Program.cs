@@ -104,6 +104,7 @@ using (var scope = app.Services.CreateScope())
     await HeroSlideSeeder.SeedAsync(dbContext);
     await SysConfigSeeder.SeedAsync(dbContext);
     await ContentTranslationSeeder.SeedAsync(dbContext);
+    await CareerSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())

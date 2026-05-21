@@ -86,6 +86,16 @@ export class TranslationEditorPageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/admin/content-translations']);
+    const qp = this.route.snapshot.queryParamMap;
+    const queryParams: Record<string, string> = {};
+    const et   = qp.get('_et');
+    const lang = qp.get('_lang');
+    const tr   = qp.get('_tr');
+    const p    = qp.get('_p');
+    if (et)          queryParams['_et']   = et;
+    if (lang)        queryParams['_lang'] = lang;
+    if (tr !== null) queryParams['_tr']   = tr;
+    if (p)           queryParams['_p']    = p;
+    this.router.navigate(['/admin/content-translations'], { queryParams });
   }
 }

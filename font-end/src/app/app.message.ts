@@ -69,6 +69,15 @@ export enum ApplicationTitle {
   WALL_EMPTY            = "wall.empty",
   WALL_CHAR_LEFT        = "wall.char-left",
   WALL_SOURCE           = "wall.source",
+
+  // ─── CV / Careers ─────────────────────────────────────────────────────────
+  CV_EXPERIENCE         = 'about.cv.experience',
+  CV_SKILLS             = 'about.cv.skills',
+  CV_PRESENT            = 'about.cv.present',
+  CV_CURRENT            = 'about.cv.current',
+  CV_PROJECTS           = 'about.cv.projects',
+  CV_DEMO               = 'about.cv.demo',
+  CV_REPO               = 'about.cv.repo',
 }
 
 export enum AdminMessage {
@@ -303,6 +312,7 @@ export enum AdminMessage {
   SIDEBAR_NAV_HERO_SLIDES   = 'admin.sidebar.nav.hero-slides',
   SIDEBAR_NAV_CONTENT_TRANS  = 'admin.sidebar.nav.content-trans',
   SIDEBAR_NAV_WALL_MESSAGES       = 'admin.sidebar.nav.wall-messages',
+  SIDEBAR_NAV_CAREERS             = 'admin.sidebar.nav.careers',
   WALL_MESSAGES_TITLE             = 'admin.wall-messages.title',
   WALL_MESSAGES_SUBTITLE          = 'admin.wall-messages.subtitle',
   WALL_MESSAGES_APPROVE           = 'admin.wall-messages.approve',
@@ -314,6 +324,33 @@ export enum AdminMessage {
   WALL_MESSAGES_SELECTED          = 'admin.wall-messages.selected',
   WALL_MESSAGES_SELECT_ALL        = 'admin.wall-messages.select-all',
   MESSAGE                         = 'message',
+
+  // ─── Careers ──────────────────────────────────────────────────────────────
+  CAREERS_TITLE          = 'admin.careers.title',
+  CAREERS_SUBTITLE       = 'admin.careers.subtitle',
+  CAREERS_TAB_EXP        = 'admin.careers.tab.experience',
+  CAREERS_TAB_SKILLS     = 'admin.careers.tab.skills',
+  CAREERS_ADD_EXP        = 'admin.careers.add-experience',
+  CAREERS_EDIT_EXP       = 'admin.careers.edit-experience',
+  CAREERS_ADD_SKILL      = 'admin.careers.add-skill',
+  CAREERS_EDIT_SKILL     = 'admin.careers.edit-skill',
+  CAREERS_LABEL_COMPANY  = 'admin.careers.label.company',
+  CAREERS_LABEL_ROLE     = 'admin.careers.label.role',
+  CAREERS_LABEL_START    = 'admin.careers.label.start-date',
+  CAREERS_LABEL_END      = 'admin.careers.label.end-date',
+  CAREERS_LABEL_TAGS     = 'admin.careers.label.tags',
+  CAREERS_LABEL_CATEGORY = 'admin.careers.label.category',
+  CAREERS_TAGS_HINT      = 'admin.careers.tags-hint',
+  CAREERS_CATEGORY_HINT  = 'admin.careers.category-hint',
+  CAREERS_PRESENT        = 'admin.careers.present',
+  CAREERS_CURRENT        = 'admin.careers.current',
+  CAREERS_HIDDEN         = 'admin.careers.hidden',
+  CAREERS_PUBLISHED      = 'admin.careers.published',
+  CAREERS_TAB_PROJECTS   = 'admin.careers.tab.projects',
+  CAREERS_ADD_PROJECT    = 'admin.careers.add-project',
+  CAREERS_EDIT_PROJECT   = 'admin.careers.edit-project',
+  CAREERS_LABEL_DEMO_URL = 'admin.careers.label.demo-url',
+  CAREERS_LABEL_REPO_URL = 'admin.careers.label.repo-url',
 
   // ─── Hero Slides ──────────────────────────────────────────────────────────
   HERO_SLIDES_TITLE         = 'admin.hero-slides.title',

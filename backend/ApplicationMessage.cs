@@ -74,4 +74,10 @@ public static class EntityType
 
     /// <summary>Homepage hero carousel slide.</summary>
     public const string HeroSlide = "heroSlide";
+
+    /// <summary>CV work experience entry.</summary>
+    public const string WorkExperience = "workExperience";
+
+    /// <summary>CV project entry.</summary>
+    public const string Project = "project";
 }

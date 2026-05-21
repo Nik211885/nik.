@@ -24,3 +24,103 @@
     </div>
   </div>
 }
+
+@if (workExperiences.length > 0 || hasSkills()) {
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center mb-5 pb-2">
+        <div class="col-md-7 heading-section text-center ftco-animate">
+          <h2>{{ ApplicationTitle.CV_EXPERIENCE | language }} &amp; {{ ApplicationTitle.CV_SKILLS | language }}</h2>
+        </div>
+      </div>
+      <div class="row">
+
+        <!-- Experience -->
+        <div class="col-md-6 mb-5 mb-md-0 ftco-animate">
+          @for (exp of workExperiences; track exp.id) {
+            <div class="cv-exp-item">
+              <span class="cv-period">
+                {{ formatYear(exp.startDate) }} — {{ exp.endDate ? formatYear(exp.endDate) : (ApplicationTitle.CV_PRESENT | language) }}
+                @if (!exp.endDate) {
+                  <span class="cv-now">{{ ApplicationTitle.CV_CURRENT | language }}</span>
+                }
+              </span>
+              <h5 class="cv-role">{{ exp.role }}</h5>
+              <p class="cv-company">{{ exp.company }}</p>
+              @if (exp.description) {
+                <p class="cv-desc">{{ exp.description }}</p>
+              }
+              @if (exp.techTags.length > 0) {
+                <div class="cv-tags">
+                  @for (tag of exp.techTags; track tag) {
+                    <span class="cv-tag">{{ tag }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Skills -->
+        <div class="col-md-6 ftco-animate">
+          @for (entry of skillGroups | keyvalue; track entry.key) {
+            <div class="cv-skill-group">
+              <p class="cv-skill-cat">{{ entry.key }}</p>
+              <div class="cv-skill-list">
+                @for (skill of entry.value; track skill.id) {
+                  <span class="cv-skill">{{ skill.name }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </section>
+}
+
+@if (projects.length > 0) {
+  <section class="ftco-section" style="background-color:#f8f9fa">
+    <div class="container">
+      <div class="row justify-content-center mb-5 pb-2">
+        <div class="col-md-7 heading-section text-center ftco-animate">
+          <h2>{{ ApplicationTitle.CV_PROJECTS | language }}</h2>
+        </div>
+      </div>
+      <div class="row">
+        @for (proj of projects; track proj.id) {
+          <div class="col-md-6 col-lg-4 mb-4 ftco-animate">
+            <div class="cv-proj-item">
+              <h4 class="cv-proj-name">{{ proj.name }}</h4>
+              @if (proj.description) {
+                <p class="cv-proj-desc">{{ proj.description }}</p>
+              }
+              @if (proj.techTags.length > 0) {
+                <div class="cv-tags">
+                  @for (tag of proj.techTags; track tag) {
+                    <span class="cv-tag">{{ tag }}</span>
+                  }
+                </div>
+              }
+              @if (proj.demoUrl || proj.repoUrl) {
+                <div class="cv-proj-links">
+                  @if (proj.demoUrl) {
+                    <a class="cv-proj-link" [href]="proj.demoUrl" target="_blank" rel="noopener noreferrer">
+                      <i class="bi bi-box-arrow-up-right me-1"></i>{{ ApplicationTitle.CV_DEMO | language }}
+                    </a>
+                  }
+                  @if (proj.repoUrl) {
+                    <a class="cv-proj-link" [href]="proj.repoUrl" target="_blank" rel="noopener noreferrer">
+                      <i class="bi bi-github me-1"></i>{{ ApplicationTitle.CV_REPO | language }}
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}

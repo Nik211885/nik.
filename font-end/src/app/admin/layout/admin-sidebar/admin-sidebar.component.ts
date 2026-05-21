@@ -44,6 +44,7 @@ export class AdminSidebarComponent implements OnInit, OnDestroy {
         { label: AdminMessage.SIDEBAR_NAV_COMMENTS,      icon: 'bi-chat-dots',         route: '/admin/comments' },
         { label: AdminMessage.SIDEBAR_NAV_WALL_MESSAGES, icon: 'bi-megaphone',       route: '/admin/wall-messages' },
         { label: AdminMessage.SIDEBAR_NAV_CONTACTS,   icon: 'bi-envelope',          route: '/admin/contacts' },
+        { label: AdminMessage.SIDEBAR_NAV_CAREERS,   icon: 'bi-person-badge',      route: '/admin/careers' },
         { label: AdminMessage.SIDEBAR_NAV_USERS,      icon: 'bi-people',            route: '/admin/users' },
       ],
     },

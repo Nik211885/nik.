@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContentTranslationAdminService } from '../../services/content-translation.admin.service';
 import { LanguageAdminService } from '../../services/language.admin.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
@@ -32,6 +32,15 @@ export const ENTITY_FIELDS: Record<string, FieldDef[]> = {
     { key: 'title',       label: 'Title',       multiline: false },
     { key: 'description', label: 'Description', multiline: true  },
   ],
+  workExperience: [
+    { key: 'role',        label: 'Role',        multiline: false },
+    { key: 'company',     label: 'Company',     multiline: false },
+    { key: 'description', label: 'Description', multiline: true  },
+  ],
+  project: [
+    { key: 'name',        label: 'Name',        multiline: false },
+    { key: 'description', label: 'Description', multiline: true  },
+  ],
 };
 
 @Component({
@@ -49,7 +58,9 @@ export class ContentTranslationsAdminComponent implements OnInit {
     { value: 'category',  label: 'Category' },
     { value: 'tag',       label: 'Tag' },
     { value: 'album',     label: 'Album' },
-    { value: 'heroSlide', label: 'Hero Slide' },
+    { value: 'heroSlide',      label: 'Hero Slide' },
+    { value: 'workExperience', label: 'Work Experience' },
+    { value: 'project',        label: 'Project' },
   ];
 
   languages: LanguageItem[] = [];
@@ -68,17 +79,32 @@ export class ContentTranslationsAdminComponent implements OnInit {
     private svc: ContentTranslationAdminService,
     private langSvc: LanguageAdminService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    const qp = this.route.snapshot.queryParamMap;
+    const restoredEt   = qp.get('_et');
+    const restoredLang = qp.get('_lang');
+    const restoredTr   = qp.get('_tr');
+    const restoredPage = qp.get('_p');
+
+    if (restoredEt)   this.selectedEntityType = restoredEt;
+    if (restoredLang) this.selectedLang       = restoredLang;
+    if (restoredTr !== null) {
+      this.selectedTranslated = restoredTr === 'true' ? true : restoredTr === 'false' ? false : null;
+    }
+    const initialPage = restoredPage ? +restoredPage : 1;
+
     this.langSvc.getLanguages().subscribe({
       next: langs => {
         this.languages = langs.filter(l => l.code !== CONTENT_LANG);
-        if (this.languages.length > 0) this.selectedLang = this.languages[0].code;
+        if (!restoredLang && this.languages.length > 0) this.selectedLang = this.languages[0].code;
       },
       error: () => {}
     });
-    this.load(1);
+
+    this.load(initialPage);
   }
 
   load(page: number): void {
@@ -104,7 +130,13 @@ export class ContentTranslationsAdminComponent implements OnInit {
   openEditor(item: TranslationStatusItem): void {
     this.router.navigate(
       ['/admin/content-translations/editor', item.entityType, item.entityId, this.selectedLang],
-      { queryParams: { title: item.sourceTitle } }
+      { queryParams: {
+          title: item.sourceTitle,
+          _et:   this.selectedEntityType,
+          _lang: this.selectedLang,
+          _tr:   this.selectedTranslated ?? '',
+          _p:    this.currentPage,
+      }}
     );
   }
 

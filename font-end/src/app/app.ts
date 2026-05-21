@@ -22,6 +22,7 @@ class App implements AfterViewInit, OnDestroy {
   private clickHandler!: (e: MouseEvent) => void;
   private routerSub!: Subscription;
   private called = false;
+  private burgerOpenTime = 0;
 
   constructor(private router: Router) {
     this.router.events
@@ -153,8 +154,14 @@ class App implements AfterViewInit, OnDestroy {
       fresh.addEventListener('click', e => {
         e.preventDefault();
         const isOpen = document.body.classList.contains('offcanvas');
+        if (!isOpen) this.burgerOpenTime = Date.now();
+        const savedY = window.scrollY;
         fresh.classList.toggle('active', !isOpen);
         document.body.classList.toggle('offcanvas', !isOpen);
+        if (isOpen) {
+          window.scrollTo(0, savedY);
+          requestAnimationFrame(() => window.scrollTo(0, savedY));
+        }
       });
     });
   }
@@ -179,6 +186,7 @@ class App implements AfterViewInit, OnDestroy {
     };
 
     const scrollClose = () => {
+      if (Date.now() - this.burgerOpenTime < 400) return;
       if (document.body.classList.contains('offcanvas')) closeMenu();
     };
 

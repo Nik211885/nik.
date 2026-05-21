@@ -1,0 +1,140 @@
+/* ── Experience timeline ─────────────────────────────────────────────────── */
+.cv-exp-item {
+  border-left: 3px solid #000;
+  padding: 0 0 0 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.cv-exp-item:last-child { margin-bottom: 0; }
+
+.cv-period {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #f05d23;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.cv-now {
+  display: inline-block;
+  background: #f05d23;
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 1px 7px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 0.35rem;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.cv-role {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 0.2rem;
+}
+
+.cv-company {
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.cv-desc {
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.75;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Shared tags (experience + projects) ─────────────────────────────────── */
+.cv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.cv-tag {
+  background: #e9ecef;
+  color: #555;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+.cv-skill-group { margin-bottom: 1.75rem; }
+.cv-skill-group:last-child { margin-bottom: 0; }
+
+.cv-skill-cat {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #aaa;
+  margin-bottom: 0.6rem;
+}
+
+.cv-skill-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.cv-skill {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  color: #444;
+  font-size: 0.82rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 2px;
+}
+
+/* ── Projects ────────────────────────────────────────────────────────────── */
+.cv-proj-item {
+  background: #fff;
+  border-top: 3px solid #000;
+  padding: 1.5rem 1.75rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cv-proj-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 0.5rem;
+}
+
+.cv-proj-desc {
+  font-size: 0.875rem;
+  color: #6c757d;
+  line-height: 1.75;
+  margin-bottom: 0.75rem;
+  flex: 1;
+}
+
+.cv-proj-links {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.cv-proj-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f05d23;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.cv-proj-link:hover {
+  color: #c0440a;
+  text-decoration: underline;
+}
