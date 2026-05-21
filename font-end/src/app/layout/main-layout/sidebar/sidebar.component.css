@@ -1,3 +1,15 @@
+/* ── Footer position fix ── */
+/* Global colorlib CSS uses position:absolute; bottom:40px which pins the
+   footer to the bottom of the scroll container instead of flowing after nav */
+#colorlib-aside .colorlib-footer {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  margin-top: 2rem;
+  padding: 0;
+}
+
 /* ── Language switcher ── */
 .lang-wrap {
   position: relative;

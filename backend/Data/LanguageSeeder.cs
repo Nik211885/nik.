@@ -407,11 +407,36 @@ public static class LanguageSeeder
         ("nav.fashion",     "Fashion",     "Thời trang"),
         ("nav.about",       "About",       "Giới thiệu"),
         ("nav.contact",     "Contact",     "Liên hệ"),
+        ("nav.wall",        "Wall",        "Nhắn gửi"),
         ("nav.sponsor",     "Sponsor",     "Ủng hộ"),
 
         // ─── Sponsor page ─────────────────────────────────────────────────────
         ("sponsor.title",          "Support My Work",                                                           "Ủng hộ tôi"),
         ("sponsor.subtitle",       "If you enjoy my content, consider buying me a coffee!",                     "Nếu bạn thích nội dung của tôi, hãy mời tôi một ly cà phê!"),
+        // ─── Wall page ───────────────────────────────────────────────────────────
+        ("wall.title",     "Wall",                                    "Nhắn Gửi"),
+        ("wall.subtitle",  "Leave a short note — I read every one.", "Để lại một vài dòng — tôi đọc hết đấy."),
+        ("wall.name",      "Your name",                               "Tên của bạn"),
+        ("wall.message",   "Say something...",                        "Nói gì đó..."),
+        ("wall.submit",    "Post",                                     "Gửi"),
+        ("wall.submitting","Posting...",                               "Đang gửi..."),
+        ("wall.pending",   "Your message is under review. It'll appear soon!", "Tin nhắn của bạn đang được xem xét. Sẽ hiện sớm thôi!"),
+        ("wall.approved",  "Message posted!",                         "Đã đăng tin nhắn!"),
+        ("wall.empty",     "Be the first to leave a message!",        "Hãy là người đầu tiên để lại tin nhắn!"),
+        ("wall.char-left", "characters left",                         "ký tự còn lại"),
+        ("wall.source",    "Source / Author (optional)",              "Nguồn / Tác giả (không bắt buộc)"),
+
+        // ─── Admin wall messages ──────────────────────────────────────────────
+        ("admin.wall-messages.title",             "Wall Messages",          "Tin nhắn tường"),
+        ("admin.wall-messages.subtitle",          "Manage visitor messages","Quản lý tin nhắn khách"),
+        ("admin.wall-messages.approve",           "Approve",                "Duyệt"),
+        ("admin.wall-messages.reject",            "Reject",                 "Từ chối"),
+        ("admin.wall-messages.status.all",        "All",                    "Tất cả"),
+        ("admin.wall-messages.status.pending",    "Pending",                "Chờ duyệt"),
+        ("admin.wall-messages.status.approved",   "Approved",               "Đã duyệt"),
+        ("admin.wall-messages.status.rejected",   "Rejected",               "Từ chối"),
+        ("admin.sidebar.nav.wall-messages",       "Wall Messages",          "Tin nhắn tường"),
+
         ("sponsor.page-title",     "Buy me a coffee",                                                           "Mua cho tôi một ly cà phê"),
         ("sponsor.page-desc",      "If my content has ever made you smile, learn something new, or simply kill some time — consider buying me a coffee. It means more than you know.",  "Nếu nội dung của tôi từng khiến bạn mỉm cười, học được điều gì mới, hay chỉ đơn giản là giết thời gian — hãy mua cho tôi một ly cà phê nhé. Điều đó có ý nghĩa hơn bạn nghĩ đấy."),
         ("sponsor.bank",           "Bank",                                                                      "Ngân hàng"),

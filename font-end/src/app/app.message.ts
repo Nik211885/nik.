@@ -58,6 +58,17 @@ export enum ApplicationTitle {
   SPONSOR_NOTE          = "sponsor.note",
   SPONSOR_OPEN_APP      = "sponsor.open-app",
   SPONSOR_OR_SCAN       = "sponsor.or-scan",
+  WALL_TITLE            = "wall.title",
+  WALL_SUBTITLE         = "wall.subtitle",
+  WALL_NAME             = "wall.name",
+  WALL_MESSAGE          = "wall.message",
+  WALL_SUBMIT           = "wall.submit",
+  WALL_SUBMITTING       = "wall.submitting",
+  WALL_PENDING          = "wall.pending",
+  WALL_APPROVED         = "wall.approved",
+  WALL_EMPTY            = "wall.empty",
+  WALL_CHAR_LEFT        = "wall.char-left",
+  WALL_SOURCE           = "wall.source",
 }
 
 export enum AdminMessage {
@@ -290,7 +301,17 @@ export enum AdminMessage {
   SIDEBAR_NAV_CONTACTS      = 'admin.sidebar.nav.contacts',
   SIDEBAR_NAV_PAGE_VIEWS    = 'admin.sidebar.nav.page-views',
   SIDEBAR_NAV_HERO_SLIDES   = 'admin.sidebar.nav.hero-slides',
-  SIDEBAR_NAV_CONTENT_TRANS = 'admin.sidebar.nav.content-trans',
+  SIDEBAR_NAV_CONTENT_TRANS  = 'admin.sidebar.nav.content-trans',
+  SIDEBAR_NAV_WALL_MESSAGES       = 'admin.sidebar.nav.wall-messages',
+  WALL_MESSAGES_TITLE             = 'admin.wall-messages.title',
+  WALL_MESSAGES_SUBTITLE          = 'admin.wall-messages.subtitle',
+  WALL_MESSAGES_APPROVE           = 'admin.wall-messages.approve',
+  WALL_MESSAGES_REJECT            = 'admin.wall-messages.reject',
+  WALL_MESSAGES_STATUS_ALL        = 'admin.wall-messages.status.all',
+  WALL_MESSAGES_STATUS_PENDING    = 'admin.wall-messages.status.pending',
+  WALL_MESSAGES_STATUS_APPROVED   = 'admin.wall-messages.status.approved',
+  WALL_MESSAGES_STATUS_REJECTED   = 'admin.wall-messages.status.rejected',
+  MESSAGE                         = 'message',
 
   // ─── Hero Slides ──────────────────────────────────────────────────────────
   HERO_SLIDES_TITLE         = 'admin.hero-slides.title',

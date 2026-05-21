@@ -64,6 +64,14 @@ builder.Services.AddHttpClient("mymemory", c =>
     c.Timeout = TimeSpan.FromSeconds(10);
 });
 
+builder.Services.AddHttpClient("claude", c =>
+{
+    c.BaseAddress = new Uri("https://api.anthropic.com");
+    c.Timeout = TimeSpan.FromSeconds(15);
+});
+
+builder.Services.AddScoped<backend.Services.Extends.ClaudeModeration>();
+
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Postgres")!, name: "postgres");
 

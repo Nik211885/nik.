@@ -1,0 +1,69 @@
+<div class="admin-page">
+  <div class="page-header mb-4">
+    <div>
+      <h2>{{ AdminMessage.WALL_MESSAGES_TITLE | language }}</h2>
+      <p class="text-muted mb-0">{{ AdminMessage.WALL_MESSAGES_SUBTITLE | language }}</p>
+    </div>
+  </div>
+
+  <!-- Status filter -->
+  <div class="filter-tabs mb-4">
+    @for (tab of tabs; track tab.value) {
+      <button class="filter-btn" [class.active]="statusFilter === tab.value" (click)="setFilter(tab.value)">
+        {{ tab.label | language }}
+        @if (tab.value === 'Pending' && pendingCount > 0) {
+          <span class="badge-count">{{ pendingCount }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Cards -->
+  @if (loading) {
+    <p class="text-muted">{{ AdminMessage.LOADING | language }}</p>
+  } @else if (messages.length === 0) {
+    <p class="text-muted">{{ AdminMessage.TABLE_EMPTY_DATA | language }}</p>
+  } @else {
+    <div class="msg-cards">
+      @for (msg of messages; track msg.id) {
+        <div class="msg-card" [class]="'msg-card--' + msg.status.toLowerCase()">
+          <div class="msg-card-top">
+            <div class="msg-card-author">
+              <div class="msg-avatar" [style.background]="avatarColor(msg.name)">{{ initial(msg.name) }}</div>
+              <div>
+                <div class="msg-name">{{ msg.name }}</div>
+                <div class="msg-date">{{ msg.createdDate | appDate }}</div>
+              </div>
+            </div>
+            <span class="status-badge status-badge--{{ msg.status.toLowerCase() }}">
+              @switch (msg.status) {
+                @case ('Approved') { {{ AdminMessage.WALL_MESSAGES_STATUS_APPROVED | language }} }
+                @case ('Rejected') { {{ AdminMessage.WALL_MESSAGES_STATUS_REJECTED | language }} }
+                @default           { {{ AdminMessage.WALL_MESSAGES_STATUS_PENDING  | language }} }
+              }
+            </span>
+          </div>
+          <p class="msg-body">{{ msg.message }}</p>
+          @if (msg.source) {
+            <p class="msg-source">— {{ msg.source }}</p>
+          }
+          <div class="msg-actions">
+            @if (msg.status !== 'Approved') {
+              <button class="action-btn action-btn--approve" (click)="approve(msg.id)">
+                {{ AdminMessage.WALL_MESSAGES_APPROVE | language }}
+              </button>
+            }
+            @if (msg.status !== 'Rejected') {
+              <button class="action-btn action-btn--reject" (click)="reject(msg.id)">
+                {{ AdminMessage.WALL_MESSAGES_REJECT | language }}
+              </button>
+            }
+            <button class="action-btn action-btn--delete" (click)="delete(msg.id)">
+              {{ AdminMessage.TABLE_ACTION_DELETE | language }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

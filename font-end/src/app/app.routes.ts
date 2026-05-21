@@ -39,6 +39,7 @@ export const routes: Routes = [
       { path: 'page-views',   loadComponent: () => import('./admin/features/page-views/page-views.component').then(m => m.PageViewsAdminComponent) },
       { path: 'hero-slides',         loadComponent: () => import('./admin/features/hero-slides/hero-slides.component').then(m => m.HeroSlidesAdminComponent) },
       { path: 'content-translations', loadComponent: () => import('./admin/features/content-translations/content-translations.component').then(m => m.ContentTranslationsAdminComponent) },
+      { path: 'wall-messages', loadComponent: () => import('./admin/features/wall-messages/wall-messages.component').then(m => m.WallMessagesAdminComponent) },
       { path: 'content-translations/editor/:entityType/:entityId/:lang', loadComponent: () => import('./admin/features/content-translations/translation-editor-page/translation-editor-page.component').then(m => m.TranslationEditorPageComponent) },
     ]
   },
@@ -56,6 +57,7 @@ export const routes: Routes = [
       { path: 'about',       component: AboutComponent },
       { path: 'contact',     component: ContactComponent },
       { path: 'post/:prefix/:slug', component: PostDetailComponent },
+      { path: 'wall',    loadComponent: () => import('./features/wall/wall.component').then(m => m.WallComponent) },
       { path: 'sponsor', loadComponent: () => import('./features/sponsor/sponsor.component').then(m => m.SponsorComponent) },
     ]
   },

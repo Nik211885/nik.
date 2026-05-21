@@ -24,6 +24,7 @@ public static class AddServicesInternalExtensions
             services.AddScoped<HeroSlideServices>();
             services.AddScoped<ContentTranslationService>();
             services.AddScoped<AutoTranslateService>();
+            services.AddScoped<WallMessageServices>();
             return services;
         }
     }

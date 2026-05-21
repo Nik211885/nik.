@@ -1,0 +1,174 @@
+@import '../../shared/admin-page.css';
+
+/* ── Filter tabs ─────────────────────────────────────────────── */
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  position: relative;
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: #f86f2d;
+  border-color: #f86f2d;
+  color: #fff;
+}
+
+.badge-count {
+  background: #fff;
+  color: #f86f2d;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  line-height: 1.4;
+}
+
+.filter-btn.active .badge-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+/* ── Card grid ───────────────────────────────────────────────── */
+.msg-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.msg-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: box-shadow 0.15s;
+}
+
+.msg-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+}
+
+.msg-card--pending  { border-left: 4px solid #fbbf24; }
+.msg-card--approved { border-left: 4px solid #34d399; }
+.msg-card--rejected { border-left: 4px solid #f87171; }
+
+/* ── Card top row ────────────────────────────────────────────── */
+.msg-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.msg-card-author {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.msg-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.msg-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-date {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+/* ── Status badge ────────────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-badge--approved { background: #d1fae5; color: #065f46; }
+.status-badge--rejected { background: #fee2e2; color: #991b1b; }
+.status-badge--pending  { background: #fef3c7; color: #92400e; }
+
+/* ── Source citation ─────────────────────────────────────────── */
+.msg-source {
+  font-size: 0.8rem;
+  color: #7a6a58;
+  font-style: normal;
+  font-weight: 600;
+  margin: -0.25rem 0 0;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(0,0,0,0.1);
+}
+
+/* ── Message body ────────────────────────────────────────────── */
+.msg-body {
+  font-size: 0.88rem;
+  color: #444;
+  line-height: 1.55;
+  margin: 0;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* ── Action buttons ──────────────────────────────────────────── */
+.msg-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.action-btn:hover   { opacity: 0.85; }
+.action-btn:active  { transform: scale(0.97); }
+
+.action-btn--approve { background: #d1fae5; color: #065f46; }
+.action-btn--reject  { background: #fef3c7; color: #92400e; }
+.action-btn--delete  { background: #fee2e2; color: #991b1b; }

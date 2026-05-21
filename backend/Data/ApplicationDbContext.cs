@@ -67,6 +67,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Translated field values for all translatable content entities.</summary>
     public DbSet<ContentTranslation> ContentTranslations { get; set; }
 
+    /// <summary>Short visitor messages displayed on the public wall page.</summary>
+    public DbSet<WallMessage> WallMessages { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

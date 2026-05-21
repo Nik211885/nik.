@@ -1,0 +1,85 @@
+<div class="wall">
+
+  <div class="wall-header">
+    <h2>{{ ApplicationTitle.WALL_TITLE | language }}</h2>
+    <p>{{ ApplicationTitle.WALL_SUBTITLE | language }}</p>
+  </div>
+
+  <!-- Write a note form -->
+  <div class="form-wrap">
+    <form class="note-card note-card--form" (ngSubmit)="submit()">
+      <div class="tape tape--form" [style.--tape]="'#ccc'"></div>
+      <div class="quote-mark form-quote-mark">"</div>
+      <div class="form-fields">
+        <input
+          class="field field--name"
+          type="text"
+          [(ngModel)]="name"
+          name="name"
+          [placeholder]="ApplicationTitle.WALL_NAME | language"
+          maxlength="100"
+          autocomplete="off" />
+        <textarea
+          class="field field--text"
+          [(ngModel)]="text"
+          name="text"
+          rows="4"
+          [placeholder]="ApplicationTitle.WALL_MESSAGE | language"
+          [maxlength]="MAX_CHARS"></textarea>
+        <input
+          class="field field--source"
+          type="text"
+          [(ngModel)]="source"
+          name="source"
+          [placeholder]="ApplicationTitle.WALL_SOURCE | language"
+          maxlength="200"
+          autocomplete="off" />
+      </div>
+      <div class="form-footer">
+        <span class="char-counter" [class.char-warn]="charsLeft < 30">{{ charsLeft }}</span>
+        <button type="submit" class="post-btn" [disabled]="submitting">
+          @if (submitting) { {{ ApplicationTitle.WALL_SUBMITTING | language }} }
+          @else            { {{ ApplicationTitle.WALL_SUBMIT | language }} }
+        </button>
+      </div>
+      @if (submitResult === 'pending') {
+        <p class="submit-feedback pending">{{ ApplicationTitle.WALL_PENDING | language }}</p>
+      } @else if (submitResult === 'approved') {
+        <p class="submit-feedback ok">{{ ApplicationTitle.WALL_APPROVED | language }}</p>
+      }
+    </form>
+  </div>
+
+  <!-- Notes -->
+  @if (loading) {
+    <div class="wall-loading">
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+    </div>
+  } @else if (messages.length === 0) {
+    <p class="wall-empty">{{ ApplicationTitle.WALL_EMPTY | language }}</p>
+  } @else {
+    <div class="notes-grid">
+      @for (msg of messages; track msg.id) {
+        <div class="note-card"
+             [style.background-color]="paperColor(msg.id)"
+             [style.transform]="noteRotate(msg.id)"
+             [style.--tape]="tapeColor(msg.id)"
+             [style.--tape-t]="tapeAngle(msg.id)">
+          <div class="tape"></div>
+          <div class="quote-mark">"</div>
+          <p class="note-text">{{ msg.message }}</p>
+          @if (msg.source) {
+            <div class="note-source">— {{ msg.source }}</div>
+          }
+          <div class="note-meta">
+            <span class="note-author">{{ msg.name }}</span>
+            <span class="note-date">{{ msg.createdDate | appDate }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
