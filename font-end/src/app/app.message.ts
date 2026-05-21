@@ -311,6 +311,8 @@ export enum AdminMessage {
   WALL_MESSAGES_STATUS_PENDING    = 'admin.wall-messages.status.pending',
   WALL_MESSAGES_STATUS_APPROVED   = 'admin.wall-messages.status.approved',
   WALL_MESSAGES_STATUS_REJECTED   = 'admin.wall-messages.status.rejected',
+  WALL_MESSAGES_SELECTED          = 'admin.wall-messages.selected',
+  WALL_MESSAGES_SELECT_ALL        = 'admin.wall-messages.select-all',
   MESSAGE                         = 'message',
 
   // ─── Hero Slides ──────────────────────────────────────────────────────────

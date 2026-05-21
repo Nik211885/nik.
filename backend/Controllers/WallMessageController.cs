@@ -61,6 +61,16 @@ public class WallMessageController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Updates the moderation status of multiple wall messages in one operation.</summary>
+    [HttpPut("bulk-status")]
+    public async Task<IActionResult> BulkUpdateStatus(
+        [FromQuery] List<string> ids,
+        [FromQuery] WallMessageStatus status)
+    {
+        await _wallMessageServices.BulkUpdateStatusAsync(ids, status);
+        return NoContent();
+    }
+
     /// <summary>Deletes one or more wall messages by ID.</summary>
     [HttpDelete("delete")]
     public async Task<IActionResult> Delete([FromQuery] List<string> ids)

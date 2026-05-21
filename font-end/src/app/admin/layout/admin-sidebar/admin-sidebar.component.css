@@ -114,6 +114,23 @@
 .sidebar-link:hover  { color: #fff; background: rgba(255,255,255,.08); }
 .sidebar-link.active { color: #fff; background: linear-gradient(90deg, #e94560, #c2185b); font-weight: 600; }
 
+.nav-pending-badge {
+  margin-left: auto;
+  background: #f86f2d;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
 .sidebar-link .bi { font-size: 1rem; flex-shrink: 0; }
 
 .link-label {

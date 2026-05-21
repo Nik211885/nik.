@@ -15,6 +15,13 @@
              [title]="collapsed ? (item.label | language) : ''">
             <i class="bi {{ item.icon }}"></i>
             <span class="link-label">{{ item.label | language }}</span>
+            @if (item.route === '/admin/wall-messages') {
+              @if ((pendingCount$ | async) ?? 0; as count) {
+                @if (count > 0) {
+                  <span class="nav-pending-badge">{{ count }}</span>
+                }
+              }
+            }
           </a>
         }
       </div>

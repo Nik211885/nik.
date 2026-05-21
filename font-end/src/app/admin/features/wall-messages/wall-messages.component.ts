@@ -34,6 +34,15 @@ export class WallMessagesAdminComponent implements OnInit {
   loading = false;
   pendingCount = 0;
 
+  // ── Bulk selection ──────────────────────────────────────────────────────────
+  selected = new Set<string>();
+
+  get allSelected(): boolean {
+    return this.messages.length > 0 && this.messages.every(m => this.selected.has(m.id));
+  }
+
+  get someSelected(): boolean { return this.selected.size > 0; }
+
   constructor(private wallService: WallService) {}
 
   ngOnInit(): void {
@@ -43,6 +52,7 @@ export class WallMessagesAdminComponent implements OnInit {
 
   load(): void {
     this.loading = true;
+    this.selected.clear();
     this.wallService.getAll(this.page, this.pageSize, this.statusFilter || undefined).subscribe({
       next: (res) => {
         this.messages = res.data;
@@ -65,27 +75,59 @@ export class WallMessagesAdminComponent implements OnInit {
     this.load();
   }
 
+  // ── Single actions ──────────────────────────────────────────────────────────
   approve(id: string): void {
     this.wallService.updateStatus(id, 'Approved').subscribe(() => {
-      this.load();
-      this.loadPendingCount();
+      this.load(); this.loadPendingCount();
     });
   }
 
   reject(id: string): void {
     this.wallService.updateStatus(id, 'Rejected').subscribe(() => {
-      this.load();
-      this.loadPendingCount();
+      this.load(); this.loadPendingCount();
     });
   }
 
   delete(id: string): void {
     this.wallService.delete([id]).subscribe(() => {
-      this.load();
-      this.loadPendingCount();
+      this.load(); this.loadPendingCount();
     });
   }
 
+  // ── Selection ───────────────────────────────────────────────────────────────
+  toggleSelect(id: string): void {
+    if (this.selected.has(id)) this.selected.delete(id);
+    else this.selected.add(id);
+  }
+
+  toggleAll(): void {
+    if (this.allSelected) this.selected.clear();
+    else this.messages.forEach(m => this.selected.add(m.id));
+  }
+
+  // ── Bulk actions ────────────────────────────────────────────────────────────
+  bulkApprove(): void {
+    const ids = [...this.selected];
+    this.wallService.bulkUpdateStatus(ids, 'Approved').subscribe(() => {
+      this.load(); this.loadPendingCount();
+    });
+  }
+
+  bulkReject(): void {
+    const ids = [...this.selected];
+    this.wallService.bulkUpdateStatus(ids, 'Rejected').subscribe(() => {
+      this.load(); this.loadPendingCount();
+    });
+  }
+
+  bulkDelete(): void {
+    const ids = [...this.selected];
+    this.wallService.delete(ids).subscribe(() => {
+      this.load(); this.loadPendingCount();
+    });
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
   avatarColor(name: string): string {
     return AVATAR_COLORS[this.hash(name) % AVATAR_COLORS.length];
   }

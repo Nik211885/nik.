@@ -124,6 +124,16 @@ public class WallMessageServices
         };
     }
 
+    /// <summary>Updates the moderation status of multiple wall messages in one operation.</summary>
+    /// <param name="ids">IDs of messages to update.</param>
+    /// <param name="status">Status to apply to all selected messages.</param>
+    public async Task BulkUpdateStatusAsync(List<string> ids, WallMessageStatus status)
+    {
+        await _dbContext.WallMessages
+            .Where(x => ids.Contains(x.Id))
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, status));
+    }
+
     /// <summary>Deletes one or more wall messages by ID.</summary>
     /// <param name="ids">IDs of messages to delete.</param>
     public async Task DeleteAsync(List<string> ids)

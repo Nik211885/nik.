@@ -435,6 +435,8 @@ public static class LanguageSeeder
         ("admin.wall-messages.status.pending",    "Pending",                "Chờ duyệt"),
         ("admin.wall-messages.status.approved",   "Approved",               "Đã duyệt"),
         ("admin.wall-messages.status.rejected",   "Rejected",               "Từ chối"),
+        ("admin.wall-messages.selected",          "selected",               "đã chọn"),
+        ("admin.wall-messages.select-all",        "Select all",             "Chọn tất cả"),
         ("admin.sidebar.nav.wall-messages",       "Wall Messages",          "Tin nhắn tường"),
 
         ("sponsor.page-title",     "Buy me a coffee",                                                           "Mua cho tôi một ly cà phê"),

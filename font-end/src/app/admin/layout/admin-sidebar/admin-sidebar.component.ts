@@ -1,11 +1,12 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LanguageService, AvailableLanguage } from '../../../core/services/language.service';
 import { LanguagePipe } from '../../../shared/pipes/language.pipe';
 import { AdminMessage } from '../../../app.message';
+import { WallNotificationService } from '../../services/wall-notification.service';
 
 interface NavItem  { label: string; icon: string; route: string; }
 interface NavGroup { label: string; items: NavItem[]; }
@@ -13,7 +14,7 @@ interface NavGroup { label: string; items: NavItem[]; }
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LanguagePipe],
+  imports: [CommonModule, AsyncPipe, RouterLink, RouterLinkActive, LanguagePipe],
   templateUrl: './admin-sidebar.component.html',
   styleUrl: './admin-sidebar.component.css'
 })
@@ -70,6 +71,9 @@ export class AdminSidebarComponent implements OnInit, OnDestroy {
   langMenuOpen = false;
 
   private subs = new Subscription();
+
+  private readonly wallNotifService = inject(WallNotificationService);
+  readonly pendingCount$ = this.wallNotifService.pendingCount$;
 
   constructor(
     private authService: AuthService,

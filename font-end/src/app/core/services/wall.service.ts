@@ -33,6 +33,11 @@ export class WallService {
     return this.http.put<any>(`api/wall-messages/${id}/status?status=${status}`, {});
   }
 
+  bulkUpdateStatus(ids: string[], status: string): Observable<void> {
+    const params = ids.map(id => `ids=${id}`).join('&');
+    return this.http.put<void>(`api/wall-messages/bulk-status?${params}&status=${status}`, {});
+  }
+
   delete(ids: string[]): Observable<void> {
     const params = ids.map(id => `ids=${id}`).join('&');
     return this.http.delete<void>(`api/wall-messages/delete?${params}`);
