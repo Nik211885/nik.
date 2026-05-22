@@ -1,4 +1,4 @@
 export const environment = {
   baseApiUrl: '',
-  siteUrl: 'https://nikapp.dev',
+  siteUrl: 'https://nikstory.io.vn',
 };
