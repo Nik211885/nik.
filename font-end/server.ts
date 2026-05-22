@@ -63,7 +63,7 @@ app.use(
 );
 
 // Handle all other requests with Angular SSR
-app.use('/*path', (req, res, next) => {
+app.use((req, res, next) => {
   engine
     .handle(req)
     .then(response => {
