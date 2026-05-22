@@ -14,7 +14,7 @@ const backendUrl = (process.env['BACKEND_URL'] || 'http://localhost:5055').repla
 // Proxy API requests to the backend so relative URLs work from Angular SSR
 async function proxyToBackend(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const targetUrl = `${backendUrl}${req.url}`;
+    const targetUrl = `${backendUrl}${req.originalUrl}`;
     const headers: Record<string, string> = {};
     for (const [key, value] of Object.entries(req.headers)) {
       if (key.toLowerCase() !== 'host' && value) {
