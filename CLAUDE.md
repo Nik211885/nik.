@@ -65,6 +65,55 @@ docker compose up --build                     # Full stack (backend + frontend +
 docker compose -f docker-compose.prod.yml up  # Production compose
 ```
 
+### Build & push Docker images to Docker Hub
+
+**Cả 2 Dockerfile đều bỏ build stage** — build local trước, Docker chỉ copy output vào image. Lý do: `npm ci` và `dotnet restore` bên trong Docker liên tục timeout do mạng WSL2 không ổn định.
+
+```bash
+# 1. Build Angular (run from /font-end)
+npm run build -- --configuration production
+
+# 2. Publish backend (run from /backend)
+dotnet publish backend.csproj -c Release -o ./publish
+
+# 3. Build frontend image (run from repo root)
+docker build -t nik185/nik-frontend:latest ./font-end
+
+# 4. Build backend image (run from repo root)
+docker build -t nik185/nik-backend:latest ./backend
+
+# 5. Push both
+docker push nik185/nik-frontend:latest
+docker push nik185/nik-backend:latest
+```
+
+> - `font-end/Dockerfile` — chỉ copy `dist/font-end/browser` vào nginx (không chạy `npm ci`)
+> - `backend/Dockerfile` — chỉ copy thư mục `publish/` vào aspnet runtime (không chạy `dotnet restore`)
+
+### ⚠️ Trước khi build — kiểm tra ổ đĩa
+
+Docker Desktop lưu toàn bộ image/layer/build cache vào WSL2 virtual disk tại `C:\Users\ninhl\AppData\Local\Docker` — có thể lên tới **20GB+**. Nếu C: gần đầy, Docker daemon sẽ **crash giữa chừng khi build** mà không báo lỗi rõ ràng.
+
+**Kiểm tra dung lượng trống:**
+```powershell
+Get-PSDrive C | ForEach-Object { "Free: $([math]::Round($_.Free/1GB,1))GB" }
+```
+
+Cần ít nhất **3-4GB free** trước khi build. Nếu không đủ, xóa cache Docker trước:
+
+```bash
+# Xóa build cache + dangling images (nhẹ, ~2-5GB)
+docker system prune -f
+
+# Xóa toàn bộ images không dùng (mạnh hơn, ~10-15GB — images sẽ pull lại sau)
+docker system prune -a -f
+```
+
+Xóa thêm Temp nếu cần:
+```powershell
+Remove-Item -Recurse -Force $env:TEMP\* -ErrorAction SilentlyContinue
+```
+
 Copy `.env.example` to `.env` and fill in values before running Docker. Required variables:
 
 | Variable | Purpose |
