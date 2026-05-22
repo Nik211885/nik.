@@ -23,6 +23,8 @@ class App implements AfterViewInit, OnDestroy {
   private routerSub!: Subscription;
   private called = false;
   private burgerOpenTime = 0;
+  private mutationObserver?: MutationObserver;
+  private intersectionObserver?: IntersectionObserver;
 
   constructor(private router: Router) {
     this.router.events
@@ -58,6 +60,8 @@ class App implements AfterViewInit, OnDestroy {
     }
     this.scrollHandlers.forEach(h => window.removeEventListener('scroll', h));
     this.scrollHandlers = [];
+    this.mutationObserver?.disconnect();
+    this.intersectionObserver?.disconnect();
   }
 
   private runInit(): void {
@@ -113,10 +117,9 @@ class App implements AfterViewInit, OnDestroy {
   }
 
   private initScrollAnimate(): void {
-    const elements = document.querySelectorAll<HTMLElement>('.ftco-animate');
-    if (!elements.length) return;
+    this.intersectionObserver?.disconnect();
 
-    const observer = new IntersectionObserver(
+    this.intersectionObserver = new IntersectionObserver(
       entries => {
         let delay = 0;
         entries.forEach(entry => {
@@ -143,7 +146,26 @@ class App implements AfterViewInit, OnDestroy {
       { threshold: 0.05 }
     );
 
-    elements.forEach(el => observer.observe(el));
+    document.querySelectorAll<HTMLElement>('.ftco-animate').forEach(el =>
+      this.intersectionObserver!.observe(el)
+    );
+
+    this.mutationObserver?.disconnect();
+    this.mutationObserver = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (!(node instanceof Element)) return;
+          if (node.classList.contains('ftco-animate')) {
+            this.intersectionObserver!.observe(node as HTMLElement);
+          }
+          node.querySelectorAll<HTMLElement>('.ftco-animate').forEach(el =>
+            this.intersectionObserver!.observe(el)
+          );
+        });
+      });
+    });
+
+    this.mutationObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   private initBurgerMenu(): void {
