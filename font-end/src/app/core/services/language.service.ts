@@ -1,5 +1,6 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { IS_DISCOVERING_ROUTES } from '@angular/ssr';
 import { BehaviorSubject, Observable, catchError, of, tap, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -80,6 +81,9 @@ export class LanguageService {
   availableLanguages$ = this.availableLanguagesSubject.asObservable();
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  /** True only during ng build route extraction — skip HTTP to avoid build crash */
+  private readonly isDiscovering = inject(IS_DISCOVERING_ROUTES, { optional: true }) ?? false;
+  private readonly canFetch = this.isBrowser || !this.isDiscovering;
 
   constructor(private http: HttpClient) {}
 
@@ -95,9 +99,11 @@ export class LanguageService {
    * @returns Observable of translation dictionary
    */
   init(): Observable<Record<string, string>> {
-    if (!this.isBrowser) return of({});
+    if (!this.canFetch) return of({});
 
-    const savedLang = localStorage.getItem(this.STORAGE_KEY) ?? DEFAULT_LANG;
+    const savedLang = this.isBrowser
+      ? (localStorage.getItem(this.STORAGE_KEY) ?? DEFAULT_LANG)
+      : DEFAULT_LANG;
 
     this.currentLang = savedLang;
     this.currentLanguageSubject.next(savedLang);
@@ -189,7 +195,7 @@ export class LanguageService {
   }
 
   loadAvailableLanguages(): void {
-    if (!this.isBrowser) return;
+    if (!this.canFetch) return;
     this.http.get<AvailableLanguage[]>('api/languages').pipe(
       catchError(() => of([]))
     ).subscribe(langs => this.availableLanguagesSubject.next(langs));

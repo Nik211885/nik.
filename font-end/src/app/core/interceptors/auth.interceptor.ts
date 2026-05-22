@@ -14,7 +14,8 @@ import {
   take,
   throwError,
 } from 'rxjs';
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../environments/environment';
 import { TokenResponse } from '../auth/auth.model';
@@ -51,6 +52,7 @@ export const authInterceptor: HttpInterceptorFn = (
 ): Observable<any> => {
 
   const authService = inject(AuthService);
+  const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /**
    * Skip entire interceptor if flagged
@@ -62,7 +64,7 @@ export const authInterceptor: HttpInterceptorFn = (
   /**
    * Add base API URL if needed
    */
-  request = addBaseUrl(request);
+  request = addBaseUrl(request, isBrowser);
 
   /**
    * Skip attaching Bearer token if flagged
@@ -157,18 +159,27 @@ function handle401(
   );
 }
 
+// Node.js process — present in SSR Node context, absent in browser.
+declare const process: { env: Record<string, string | undefined> } | undefined;
+
 /**
- * Add base API URL to request if not absolute URL
+ * Add base API URL to request if not absolute URL.
  *
- * @param request - HTTP request
- * @returns Updated request
+ * Browser: uses environment.baseApiUrl (empty string in prod → relative URL resolved by browser).
+ * Server (SSR runtime): uses BACKEND_URL env var so Node.js fetch gets an absolute URL.
  */
-function addBaseUrl(request: HttpRequest<unknown>): HttpRequest<unknown> {
+function addBaseUrl(request: HttpRequest<unknown>, isBrowser: boolean): HttpRequest<unknown> {
   if (request.url.startsWith('http')) return request;
 
-  const baseUrl = environment.baseApiUrl.replace(/\/$/, '');
-  const path    = request.url.startsWith('/') ? request.url : `/${request.url}`;
+  let baseUrl: string;
+  if (isBrowser) {
+    baseUrl = environment.baseApiUrl.replace(/\/$/, '');
+  } else {
+    const envUrl = typeof process !== 'undefined' ? (process.env['BACKEND_URL'] ?? '') : '';
+    baseUrl = (envUrl || 'http://localhost:5055').replace(/\/$/, '');
+  }
 
+  const path = request.url.startsWith('/') ? request.url : `/${request.url}`;
   return request.clone({ url: `${baseUrl}${path}` });
 }
 

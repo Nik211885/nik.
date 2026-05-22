@@ -1,5 +1,6 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { IS_DISCOVERING_ROUTES } from '@angular/ssr';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, catchError, Observable, of, skip, switchMap, tap} from 'rxjs';
 import {AuthService} from '../auth/auth.service';
@@ -17,6 +18,9 @@ const ApiConfig = {
 
 export class ConfigService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  /** True only during ng build route extraction — skip HTTP to avoid build crash */
+  private readonly isDiscovering = inject(IS_DISCOVERING_ROUTES, { optional: true }) ?? false;
+  private readonly canFetch = this.isBrowser || !this.isDiscovering;
 
   private config$ = new BehaviorSubject<Config | null>(null);
   private configAuth$ = new BehaviorSubject<ConfigAuth | null>(null);
@@ -29,7 +33,7 @@ export class ConfigService {
     private readonly authService: AuthService,
     private readonly langService: LanguageService,
   ) {
-    if (this.isBrowser) {
+    if (this.canFetch) {
       langService.currentLanguage$.pipe(
         skip(1),
         switchMap(() => this.httpClient.get<Config>(ApiConfig.GET_CONFIG)),
@@ -39,7 +43,7 @@ export class ConfigService {
   }
 
   readConfig(): Observable<Config | null> {
-    if (!this.isBrowser) return of(null);
+    if (!this.canFetch) return of(null);
     return this.httpClient.get<Config>(ApiConfig.GET_CONFIG).pipe(
       tap(res => this.config$.next(res))
     );
