@@ -7,7 +7,10 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
-const engine = new AngularNodeAppEngine();
+const engine = new AngularNodeAppEngine({
+  allowedHosts: (process.env['NG_ALLOWED_HOSTS'] || '').split(',').filter(Boolean),
+  trustProxyHeaders: true,
+});
 
 const backendUrl = (process.env['BACKEND_URL'] || 'http://localhost:5055').replace(/\/$/, '');
 
