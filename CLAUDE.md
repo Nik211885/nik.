@@ -87,7 +87,7 @@ docker push nik185/nik-frontend:latest
 docker push nik185/nik-backend:latest
 ```
 
-> - `font-end/Dockerfile` — chỉ copy `dist/font-end/browser` vào nginx (không chạy `npm ci`)
+> - `font-end/Dockerfile` — chỉ copy `dist/font-end/browser/browser` vào nginx (không chạy `npm ci`). Angular 21 output nằm ở `browser/browser/` do prerender build stage tạo ra thư mục lồng nhau.
 > - `backend/Dockerfile` — chỉ copy thư mục `publish/` vào aspnet runtime (không chạy `dotnet restore`)
 
 ### ⚠️ Trước khi build — kiểm tra ổ đĩa
