@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, skip, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, of, skip, switchMap, tap} from 'rxjs';
 import {AuthService} from '../auth/auth.service';
 import {LanguageService} from './language.service';
 
@@ -15,6 +16,8 @@ const ApiConfig = {
 })
 
 export class ConfigService {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   private config$ = new BehaviorSubject<Config | null>(null);
   private configAuth$ = new BehaviorSubject<ConfigAuth | null>(null);
 
@@ -26,13 +29,17 @@ export class ConfigService {
     private readonly authService: AuthService,
     private readonly langService: LanguageService,
   ) {
-    langService.currentLanguage$.pipe(
-      skip(1),
-      switchMap(() => this.httpClient.get<Config>(ApiConfig.GET_CONFIG))
-    ).subscribe(res => this.config$.next(res));
+    if (this.isBrowser) {
+      langService.currentLanguage$.pipe(
+        skip(1),
+        switchMap(() => this.httpClient.get<Config>(ApiConfig.GET_CONFIG)),
+        catchError(() => of(null))
+      ).subscribe(res => this.config$.next(res));
+    }
   }
 
   readConfig(): Observable<Config | null> {
+    if (!this.isBrowser) return of(null);
     return this.httpClient.get<Config>(ApiConfig.GET_CONFIG).pipe(
       tap(res => this.config$.next(res))
     );

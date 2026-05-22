@@ -87,8 +87,9 @@ docker push nik185/nik-frontend:latest
 docker push nik185/nik-backend:latest
 ```
 
-> - `font-end/Dockerfile` — chỉ copy `dist/font-end/browser/browser` vào nginx (không chạy `npm ci`). Angular 21 output nằm ở `browser/browser/` do prerender build stage tạo ra thư mục lồng nhau.
+> - `font-end/Dockerfile` — SSR mode: dùng `node:22-alpine`, copy `dist/font-end/browser/` vào `/app/dist/`, chạy `node dist/server/server.mjs` trên PORT=4000. Angular 21 SSR output: client assets tại `browser/browser/`, server bundle tại `browser/server/server.mjs`.
 > - `backend/Dockerfile` — chỉ copy thư mục `publish/` vào aspnet runtime (không chạy `dotnet restore`)
+> - Frontend container PORT=4000, cần cập nhật docker-compose để map đúng port.
 
 ### ⚠️ Trước khi build — kiểm tra ổ đĩa
 

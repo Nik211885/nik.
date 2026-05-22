@@ -1,4 +1,5 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -6,6 +7,7 @@ import { filter } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class PageViewTrackerService implements OnDestroy {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private sub = new Subscription();
 
   constructor(private http: HttpClient, private router: Router) {
@@ -21,7 +23,8 @@ export class PageViewTrackerService implements OnDestroy {
     if (path.startsWith('/admin') || path.startsWith('/login')) return;
 
     const headers = new HttpHeaders({ 'X-Skip-Auth-Bear-Token': 'true' });
-    this.http.post('api/page-views', { path, referer: document.referrer || null }, { headers })
+    const referer = this.isBrowser ? (document.referrer || null) : null;
+    this.http.post('api/page-views', { path, referer }, { headers })
       .subscribe({ error: () => {} });
   }
 

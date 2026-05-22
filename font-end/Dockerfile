@@ -1,9 +1,15 @@
 # Pre-built locally with: npm run build -- --configuration production
-FROM nginx:1.27-alpine AS runtime
+# Output: dist/font-end/browser/ contains browser/ and server/ subdirectories
+FROM node:22-alpine AS runtime
 
-COPY dist/font-end/browser/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-EXPOSE 80
+# Copy server bundle and browser assets
+COPY dist/font-end/browser ./dist
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 4000
+
+ENV PORT=4000
+ENV NODE_ENV=production
+
+CMD ["node", "dist/server/server.mjs"]

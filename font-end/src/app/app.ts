@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -17,6 +18,7 @@ import 'aos/dist/aos.css';
   standalone: true
 })
 class App implements AfterViewInit, OnDestroy {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private resizeHandler!: () => void;
   private scrollHandlers: Array<() => void> = [];
   private clickHandler!: (e: MouseEvent) => void;
@@ -27,14 +29,17 @@ class App implements AfterViewInit, OnDestroy {
   private intersectionObserver?: IntersectionObserver;
 
   constructor(private router: Router) {
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+    if (this.isBrowser) {
+      this.router.events
+        .pipe(filter(e => e instanceof NavigationEnd))
+        .subscribe(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
   }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
     AOS.init({ duration: 800, easing: 'ease-in-out' });
     this.runInit();
     this.routerSub = this.router.events.pipe(

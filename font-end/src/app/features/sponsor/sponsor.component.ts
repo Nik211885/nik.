@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ApplicationTitle } from '../../app.message';
 import { LanguagePipe } from '../../shared/pipes/language.pipe';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
   selector: 'app-sponsor',
@@ -9,7 +11,9 @@ import { LanguagePipe } from '../../shared/pipes/language.pipe';
   templateUrl: './sponsor.component.html',
   styleUrl: './sponsor.component.css',
 })
-export class SponsorComponent {
+export class SponsorComponent implements OnInit {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly seoService = inject(SeoService);
   protected readonly ApplicationTitle = ApplicationTitle;
 
   readonly qrUrl =
@@ -24,10 +28,19 @@ export class SponsorComponent {
     { name: 'CAKE',    color: '#ff6b00', deepLink: 'cake://',                              web: 'https://cake.vn' },
   ];
 
-  isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+  isMobile = false;
   copied = false;
 
+  ngOnInit(): void {
+    this.seoService.set({ title: 'Support', description: 'Support Nik\'s work — buy a coffee or send a tip.', path: '/sponsor' });
+
+    if (this.isBrowser) {
+      this.isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    }
+  }
+
   copyAccount(): void {
+    if (!this.isBrowser) return;
     navigator.clipboard.writeText(this.accountNumber).then(() => {
       this.copied = true;
       setTimeout(() => (this.copied = false), 2000);
@@ -35,6 +48,7 @@ export class SponsorComponent {
   }
 
   openApp(deepLink: string, web: string): void {
+    if (!this.isBrowser) return;
     const start = Date.now();
     window.location.href = deepLink;
     setTimeout(() => {

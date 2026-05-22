@@ -10,6 +10,7 @@ import { HeroSlideService } from '../../core/services/hero-slide.service';
 import { LanguageService } from '../../core/services/language.service';
 import { HeroCarouselModel } from '../../shared/components/hero-carousel/hero-carousel.model';
 import { ArticleModel } from '../../shared/models/article.model';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
   selector: 'app-travel',
@@ -27,6 +28,8 @@ export class TravelComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
+  private seoService = inject(SeoService);
+
   constructor(
     private articleService: ArticleService,
     private heroSlideService: HeroSlideService,
@@ -34,6 +37,12 @@ export class TravelComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.seoService.set({
+      title: 'Travel',
+      description: 'Travel stories, destinations, and photography from around the world.',
+      path: '/travel',
+    });
+
     this.heroSlideService.getSlides().subscribe({ next: s => this.slides = s, error: () => {} });
     this.load(1);
 

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
@@ -42,6 +43,8 @@ const ApiAuth = {
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /**
    * LocalStorage keys for tokens
@@ -223,6 +226,7 @@ export class AuthService {
    * @returns TokenResponse or null
    */
   private loadToken(): TokenResponse | null {
+    if (!this.isBrowser) return null;
     const accessToken  = localStorage.getItem(this.TOKEN_KEY);
     const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
 
@@ -238,8 +242,10 @@ export class AuthService {
    * @param token - TokenResponse
    */
   private saveToken(token: TokenResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, token.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, token.refreshToken);
+    if (this.isBrowser) {
+      localStorage.setItem(this.TOKEN_KEY, token.accessToken);
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, token.refreshToken);
+    }
     this.token$.next(token);
   }
 
@@ -249,8 +255,10 @@ export class AuthService {
    * - Reset state
    */
   public clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    if (this.isBrowser) {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    }
     this.token$.next(null);
     this.currentUser$.next(null);
   }

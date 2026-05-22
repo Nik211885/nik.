@@ -1,4 +1,5 @@
 import { Component, DestroyRef, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { SeoService } from '../../core/services/seo.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlbumFileModel, AlbumModel } from '../../shared/models/album.model';
 import { AlbumService } from '../../core/services/album.service';
@@ -40,9 +41,23 @@ export class PhotographyComponent implements OnInit {
     return url.replace(/\.(mp4|webm|mov)(\?.*)?$/i, '.jpg');
   }
 
+  private seoService = inject(SeoService);
+
   constructor(private albumService: AlbumService, private langService: LanguageService) {}
 
   ngOnInit(): void {
+    this.seoService.set({
+      title: 'Photography',
+      description: 'Photography portfolio — travel, nature, portraits, and creative shots.',
+      path: '/photography',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'ImageGallery',
+        name: 'Photography Portfolio',
+        description: 'Photography portfolio — travel, nature, portraits, and creative shots.',
+      },
+    });
+
     this.langService.withLanguage(() => this.albumService.getParents())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

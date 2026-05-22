@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable, catchError, of, tap, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -78,6 +79,8 @@ export class LanguageService {
   private availableLanguagesSubject = new BehaviorSubject<AvailableLanguage[]>([]);
   availableLanguages$ = this.availableLanguagesSubject.asObservable();
 
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   constructor(private http: HttpClient) {}
 
   /**
@@ -92,9 +95,9 @@ export class LanguageService {
    * @returns Observable of translation dictionary
    */
   init(): Observable<Record<string, string>> {
+    if (!this.isBrowser) return of({});
 
-    const savedLang =
-      localStorage.getItem(this.STORAGE_KEY) ?? DEFAULT_LANG;
+    const savedLang = localStorage.getItem(this.STORAGE_KEY) ?? DEFAULT_LANG;
 
     this.currentLang = savedLang;
     this.currentLanguageSubject.next(savedLang);
@@ -126,7 +129,7 @@ export class LanguageService {
     /**
      * Persist selected language
      */
-    localStorage.setItem(this.STORAGE_KEY, lang);
+    if (this.isBrowser) localStorage.setItem(this.STORAGE_KEY, lang);
 
     /**
      * Notify subscribers (triggers reactive flows)
@@ -186,6 +189,7 @@ export class LanguageService {
   }
 
   loadAvailableLanguages(): void {
+    if (!this.isBrowser) return;
     this.http.get<AvailableLanguage[]>('api/languages').pipe(
       catchError(() => of([]))
     ).subscribe(langs => this.availableLanguagesSubject.next(langs));

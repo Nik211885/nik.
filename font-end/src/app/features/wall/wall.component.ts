@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApplicationTitle } from '../../app.message';
 import { LanguagePipe } from '../../shared/pipes/language.pipe';
 import { WallService, WallMessageModel } from '../../core/services/wall.service';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
+import { SeoService } from '../../core/services/seo.service';
 
 const DEVICE_ID_KEY = 'wall_device_id';
 const REACTED_IDS_KEY = 'wall_reacted_ids';
 
-function getOrCreateDeviceId(): string {
+function getOrCreateDeviceId(isBrowser: boolean): string {
+  if (!isBrowser) return '';
   let id = localStorage.getItem(DEVICE_ID_KEY);
   if (!id) {
     id = crypto.randomUUID();
@@ -38,6 +41,7 @@ const PAPER_TINTS = [
   styleUrl: './wall.component.css',
 })
 export class WallComponent implements OnInit {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   protected readonly ApplicationTitle = ApplicationTitle;
   readonly MAX_CHARS = 300;
 
@@ -49,14 +53,20 @@ export class WallComponent implements OnInit {
   submitting = false;
   submitResult: 'pending' | 'approved' | null = null;
 
-  private deviceId = getOrCreateDeviceId();
+  private deviceId = getOrCreateDeviceId(isPlatformBrowser(inject(PLATFORM_ID)));
   private reactedIds = new Set<string>(
-    JSON.parse(localStorage.getItem(REACTED_IDS_KEY) ?? '[]') as string[]
+    isPlatformBrowser(inject(PLATFORM_ID))
+      ? (JSON.parse(localStorage.getItem(REACTED_IDS_KEY) ?? '[]') as string[])
+      : []
   );
+
+  private seoService = inject(SeoService);
 
   constructor(private wallService: WallService) {}
 
   ngOnInit(): void {
+    this.seoService.set({ title: 'Wall', description: 'Leave a message on the wall — share your thoughts and greetings.', path: '/wall' });
+
     this.wallService.getApproved().subscribe({
       next: msgs => { this.messages = msgs; this.loading = false; },
       error: ()   => { this.loading = false; },

@@ -1,4 +1,5 @@
 import { Component, DestroyRef, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { SeoService } from '../../core/services/seo.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { skip } from 'rxjs';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
@@ -50,6 +51,8 @@ export class FashionComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
+  private seoService = inject(SeoService);
+
   constructor(
     protected readonly configService: ConfigService,
     private articleService: ArticleService,
@@ -58,6 +61,12 @@ export class FashionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.seoService.set({
+      title: 'Fashion',
+      description: 'Fashion, lifestyle, and style inspiration.',
+      path: '/fashion',
+    });
+
     this.articleService.getTopArticles().subscribe({ next: a => this.topArticles = a.slice(0, 3), error: () => {} });
     this.tagService.getTags().subscribe({ next: t => this.tags = t, error: () => {} });
     this.configService.config.subscribe(config => {

@@ -13,6 +13,8 @@ import { AutoTranslateService } from '../../core/services/auto-translate.service
 import { CONTENT_LANG, DEFAULT_LANG } from '../../core/services/language.service';
 import { ArticleModel } from '../../shared/models/article.model';
 import { PostCommentModel } from '../../shared/models/post-comment.model';
+import { SeoService } from '../../core/services/seo.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-post-detail',
@@ -28,6 +30,8 @@ export class PostDetailComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
   private currentLang = DEFAULT_LANG;
+
+  private seoService = inject(SeoService);
 
   constructor(
     private route: ActivatedRoute,
@@ -53,6 +57,29 @@ export class PostDetailComponent implements OnInit {
         this.article = res;
         this.translateBio(res.author.bio);
         if (firstLoad) { firstLoad = false; this.loadComments(); }
+        this.seoService.set({
+          title: res.title,
+          description: res.description || res.title,
+          image: res.image || undefined,
+          path: `/post/${res.slug}`,
+          type: 'article',
+          structuredData: {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: res.title,
+            description: res.description,
+            image: res.image,
+            datePublished: res.createdDate,
+            dateModified: res.updatedDate || res.createdDate,
+            url: `${environment.siteUrl}/post/${res.slug}`,
+            author: {
+              '@type': 'Person',
+              name: res.author.userName,
+              url: `${environment.siteUrl}`,
+            },
+            keywords: res.tags.map(t => t.name).join(', '),
+          },
+        });
       });
   }
 
