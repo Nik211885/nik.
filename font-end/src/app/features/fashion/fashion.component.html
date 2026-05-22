@@ -2,7 +2,7 @@
 <section class="ftco-section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-8">
+      <div class="col-lg-8 ftco-animate">
         <div class="row" #articleList>
           @for (article of articles; track article.id) {
             <div class="col-md-6">
@@ -12,7 +12,7 @@
         </div>
         <app-pagination [currentPage]="currentPage" [pageCount]="pageCount" (pageChange)="load($event)"></app-pagination>
       </div>
-      <div class="col-lg-4 sidebar">
+      <div class="col-lg-4 sidebar ftco-animate">
         <div class="sidebar-box">
           <app-search-input [searchDescription]="ApplicationTitle.DESCRIPTION_SEARCH_BOX"></app-search-input>
         </div>
