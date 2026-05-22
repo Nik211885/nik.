@@ -20,6 +20,9 @@ public class WallMessageResponse
 
     /// <summary>UTC timestamp of submission.</summary>
     public DateTimeOffset CreatedDate { get; set; }
+
+    /// <summary>Total number of reactions from unique devices.</summary>
+    public int ReactionCount { get; set; }
 }
 
 /// <summary>Admin-facing wall message response with moderation metadata.</summary>
@@ -45,4 +48,14 @@ public class AdminWallMessageResponse
 
     /// <summary>UTC timestamp of submission.</summary>
     public DateTimeOffset CreatedDate { get; set; }
+}
+
+/// <summary>Returned after toggling a reaction on a wall message.</summary>
+public class ReactWallMessageResponse
+{
+    /// <summary>Updated reaction count after the toggle.</summary>
+    public int ReactionCount { get; set; }
+
+    /// <summary><see langword="true"/> if the device just added a reaction; <see langword="false"/> if it was removed.</summary>
+    public bool Reacted { get; set; }
 }

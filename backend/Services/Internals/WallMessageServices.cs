@@ -56,23 +56,58 @@ public class WallMessageServices
         return ToResponse(entity);
     }
 
-    /// <summary>Returns all approved wall messages, newest first.</summary>
+    /// <summary>Returns all approved wall messages, sorted by most-reacted then newest.</summary>
     public async Task<List<WallMessageResponse>> GetApprovedAsync()
     {
         return await _dbContext.WallMessages
             .AsNoTracking()
             .Where(x => x.Status == WallMessageStatus.Approved)
-            .OrderByDescending(x => x.CreatedDate)
+            .OrderByDescending(x => x.ReactionCount)
+            .ThenByDescending(x => x.CreatedDate)
             .Select(x => new WallMessageResponse
             {
-                Id          = x.Id,
-                Name        = x.Name,
-                Message     = x.Message,
-                Source      = x.Source,
-                Status      = x.Status.ToString(),
-                CreatedDate = x.CreatedDate,
+                Id            = x.Id,
+                Name          = x.Name,
+                Message       = x.Message,
+                Source        = x.Source,
+                Status        = x.Status.ToString(),
+                CreatedDate   = x.CreatedDate,
+                ReactionCount = x.ReactionCount,
             })
             .ToListAsync();
+    }
+
+    /// <summary>Toggles a reaction from a device on a wall message.</summary>
+    /// <param name="id">Wall message ID.</param>
+    /// <param name="deviceId">Visitor device UUID from localStorage.</param>
+    /// <returns>Updated reaction count and whether the device is now reacted.</returns>
+    /// <exception cref="NotFoundException">Thrown when no approved message with the given ID exists.</exception>
+    public async Task<ReactWallMessageResponse> ReactAsync(string id, string deviceId)
+    {
+        var message = await _dbContext.WallMessages
+            .FirstOrDefaultAsync(x => x.Id == id && x.Status == WallMessageStatus.Approved)
+            ?? throw new NotFoundException();
+
+        var existing = await _dbContext.WallMessageReactions
+            .FirstOrDefaultAsync(x => x.WallMessageId == id && x.DeviceId == deviceId);
+
+        if (existing is not null)
+        {
+            _dbContext.WallMessageReactions.Remove(existing);
+            message.ReactionCount = Math.Max(0, message.ReactionCount - 1);
+            await _dbContext.SaveChangesAsync();
+            return new ReactWallMessageResponse { ReactionCount = message.ReactionCount, Reacted = false };
+        }
+
+        _dbContext.WallMessageReactions.Add(new WallMessageReaction
+        {
+            WallMessageId = id,
+            DeviceId      = deviceId,
+            CreatedDate   = DateTimeOffset.UtcNow,
+        });
+        message.ReactionCount++;
+        await _dbContext.SaveChangesAsync();
+        return new ReactWallMessageResponse { ReactionCount = message.ReactionCount, Reacted = true };
     }
 
     /// <summary>Returns a paginated list of messages for admin, optionally filtered by status.</summary>
@@ -145,11 +180,12 @@ public class WallMessageServices
 
     private static WallMessageResponse ToResponse(WallMessage x) => new()
     {
-        Id          = x.Id,
-        Name        = x.Name,
-        Message     = x.Message,
-        Source      = x.Source,
-        Status      = x.Status.ToString(),
-        CreatedDate = x.CreatedDate,
+        Id            = x.Id,
+        Name          = x.Name,
+        Message       = x.Message,
+        Source        = x.Source,
+        Status        = x.Status.ToString(),
+        CreatedDate   = x.CreatedDate,
+        ReactionCount = x.ReactionCount,
     };
 }

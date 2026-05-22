@@ -69,6 +69,7 @@ export enum ApplicationTitle {
   WALL_EMPTY            = "wall.empty",
   WALL_CHAR_LEFT        = "wall.char-left",
   WALL_SOURCE           = "wall.source",
+  WALL_REACT            = "wall.react",
 
   // ─── CV / Careers ─────────────────────────────────────────────────────────
   CV_EXPERIENCE         = 'about.cv.experience',

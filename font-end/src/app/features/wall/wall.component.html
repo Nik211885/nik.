@@ -75,7 +75,15 @@
           }
           <div class="note-meta">
             <span class="note-author">{{ msg.name }}</span>
-            <span class="note-date">{{ msg.createdDate | appDate }}</span>
+            <div class="note-meta-right">
+              <span class="note-date">{{ msg.createdDate | appDate }}</span>
+              <button class="note-react" [class.note-react--active]="hasReacted(msg.id)" (click)="react(msg.id)" type="button" [title]="ApplicationTitle.WALL_REACT | language">
+                <i class="bi" [class.bi-heart]="!hasReacted(msg.id)" [class.bi-heart-fill]="hasReacted(msg.id)"></i>
+                @if (msg.reactionCount > 0) {
+                  <span class="note-react-count">{{ msg.reactionCount }}</span>
+                }
+              </button>
+            </div>
           </div>
         </div>
       }

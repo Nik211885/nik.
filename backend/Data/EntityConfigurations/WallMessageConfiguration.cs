@@ -19,5 +19,6 @@ public class WallMessageConfiguration : IEntityTypeConfiguration<WallMessage>
         builder.Property(x => x.Source).HasMaxLength(200);
         builder.Property(x => x.IpAddress).HasMaxLength(45);
         builder.Property(x => x.CreatedDate).IsRequired();
+        builder.Property(x => x.ReactionCount).HasDefaultValue(0);
     }
 }

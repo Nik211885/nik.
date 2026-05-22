@@ -70,6 +70,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Short visitor messages displayed on the public wall page.</summary>
     public DbSet<WallMessage> WallMessages { get; set; }
 
+    /// <summary>Per-device reactions on wall messages.</summary>
+    public DbSet<WallMessageReaction> WallMessageReactions { get; set; }
+
     /// <summary>Work experience entries for the CV/Careers section.</summary>
     public DbSet<WorkExperience> WorkExperiences { get; set; }
 

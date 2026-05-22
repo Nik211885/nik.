@@ -9,6 +9,7 @@ export interface WallMessageModel {
   source?: string;
   status: string;
   createdDate: string;
+  reactionCount: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +22,13 @@ export class WallService {
 
   create(name: string, message: string, source?: string): Observable<WallMessageModel> {
     return this.http.post<WallMessageModel>('public-api/wall-messages', { name, message, source: source || null });
+  }
+
+  react(id: string, deviceId: string): Observable<{ reactionCount: number; reacted: boolean }> {
+    return this.http.post<{ reactionCount: number; reacted: boolean }>(
+      `public-api/wall-messages/${id}/react`,
+      { deviceId }
+    );
   }
 
   getAll(page = 1, pageSize = 20, status?: string): Observable<any> {

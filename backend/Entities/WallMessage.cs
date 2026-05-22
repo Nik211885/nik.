@@ -20,6 +20,9 @@ public class WallMessage : BaseEntity
 
     /// <summary>UTC timestamp when the message was submitted.</summary>
     public DateTimeOffset CreatedDate { get; set; }
+
+    /// <summary>Total number of reactions from unique devices.</summary>
+    public int ReactionCount { get; set; }
 }
 
 /// <summary>Moderation state of a wall message.</summary>

@@ -41,6 +41,17 @@ public class WallMessageController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Toggles a reaction from a device on an approved wall message.</summary>
+    /// <param name="id">ID of the wall message.</param>
+    /// <param name="request">Device identifier payload.</param>
+    [HttpPost("~/public-api/wall-messages/{id}/react")]
+    [ValidationFilter(typeof(ReactWallMessageRequest))]
+    public async Task<ActionResult<ReactWallMessageResponse>> React(string id, [FromBody] ReactWallMessageRequest request)
+    {
+        var result = await _wallMessageServices.ReactAsync(id, request.DeviceId);
+        return Ok(result);
+    }
+
     /// <summary>Returns a paginated list of all wall messages for the admin panel.</summary>
     [HttpGet]
     public async Task<ActionResult<PaginationItem<AdminWallMessageResponse>>> GetAll(

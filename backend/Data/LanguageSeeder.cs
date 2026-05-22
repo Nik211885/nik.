@@ -425,6 +425,7 @@ public static class LanguageSeeder
         ("wall.empty",     "Be the first to leave a message!",        "Hãy là người đầu tiên để lại tin nhắn!"),
         ("wall.char-left", "characters left",                         "ký tự còn lại"),
         ("wall.source",    "Source / Author (optional)",              "Nguồn / Tác giả (không bắt buộc)"),
+        ("wall.react",     "Like",                                    "Thích"),
 
         // ─── Admin wall messages ──────────────────────────────────────────────
         ("admin.wall-messages.title",             "Wall Messages",          "Tin nhắn tường"),
