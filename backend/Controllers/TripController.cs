@@ -69,7 +69,7 @@ public class TripController : ControllerBase
     /// <param name="ids">The trip identifier(s) to delete.</param>
     /// <returns>No content on success.</returns>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteTrip([AsParameters] List<string> ids)
+    public async Task<ActionResult> DeleteTrip([FromQuery] List<string> ids)
     {
         foreach (var id in ids)
             await _tripServices.DeleteTripAsync(id);

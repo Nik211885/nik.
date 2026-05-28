@@ -50,7 +50,7 @@ public class TripPhotoController : ControllerBase
     /// <param name="ids">List of photo IDs to delete.</param>
     /// <returns>204 No Content.</returns>
     [HttpDelete("delete")]
-    public async Task<ActionResult> Delete([AsParameters] List<string> ids)
+    public async Task<ActionResult> Delete([FromQuery] List<string> ids)
     {
         await _tripPhotoServices.DeletePhotosAsync(ids);
         return NoContent();

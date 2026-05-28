@@ -40,7 +40,7 @@ public class AlbumController : ControllerBase
 
     /// <summary>Deletes one or more albums by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteAlbum([AsParameters] List<string> ids)
+    public async Task<ActionResult> DeleteAlbum([FromQuery] List<string> ids)
     {
         await _albumServices.DeleteAlbumAsync(ids);
         return NoContent();

@@ -42,7 +42,7 @@ public class TagController : ControllerBase
 
     /// <summary>Deletes one or more tags by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteAsync([AsParameters] List<string> ids)
+    public async Task<ActionResult> DeleteAsync([FromQuery] List<string> ids)
     {
         await _tagServices.DeleteTagAsync(ids);
         return NoContent();

@@ -46,7 +46,7 @@ public class SysConfigController : ControllerBase
 
     /// <summary>Deletes one or more configuration entries by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteConfig([AsParameters] string[] ids)
+    public async Task<IActionResult> DeleteConfig([FromQuery] string[] ids)
     {
         await _configServices.DeleteConfigByIdsAsync(ids.ToList());
         return NoContent();

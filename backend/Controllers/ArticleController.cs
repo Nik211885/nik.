@@ -40,7 +40,7 @@ public class ArticleController : ControllerBase
 
     /// <summary>Deletes one or more articles by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteArticle([AsParameters] List<string> ids)
+    public async Task<ActionResult> DeleteArticle([FromQuery] List<string> ids)
     {
         await _articleServices.DeleteArticleAsync(ids);
         return NoContent();

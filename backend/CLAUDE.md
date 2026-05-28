@@ -193,12 +193,11 @@ public class AlbumController : ControllerBase
 | POST / PUT body | `[FromBody]` | `[FromBody] CreateAlbumRequest request` |
 | GET — primitive | `[FromQuery]` | `[FromQuery] bool tree = false` |
 | GET — object (DTO with multiple query params) | `[FromQuery]` | `[FromQuery] PaginationRequest request` |
-| DELETE — collection of IDs | `[AsParameters]` | `[AsParameters] List<string> ids` |
+| DELETE — collection of IDs | `[FromQuery]` | `[FromQuery] List<string> ids` |
 | Path segment | _(none needed)_ | `string id` in route `{id}` |
 
-**Rule:** `[FromQuery]` is used for both primitives and objects on `[HttpGet]` endpoints.
-`[AsParameters]` is only used for `[HttpDelete]` when binding a flat collection of IDs from the query string.
-Do **not** mix `[AsParameters]` with `[HttpGet]`.
+**Rule:** `[FromQuery]` is used for all query-string bindings including DELETE ID lists.
+Do **not** use `[AsParameters]` in controller actions — it causes 415 errors on DELETE because ASP.NET Core tries to read a body instead of query params.
 
 ## Service Pattern
 

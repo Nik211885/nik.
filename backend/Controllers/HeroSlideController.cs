@@ -57,7 +57,7 @@ public class HeroSlideController : ControllerBase
 
     /// <summary>Deletes one or more slides by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<IActionResult> Delete([AsParameters] string[] ids)
+    public async Task<IActionResult> Delete([FromQuery] string[] ids)
     {
         await _heroSlideServices.DeleteAsync(ids.ToList());
         return NoContent();

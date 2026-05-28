@@ -59,7 +59,7 @@ public class LanguagesController : ControllerBase
 
     /// <summary>Deletes one or more languages by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<IActionResult> Delete([AsParameters] List<string> ids)
+    public async Task<IActionResult> Delete([FromQuery] List<string> ids)
     {
         await _languageServices.DeleteLanguagesAsync(ids);
         return NoContent();

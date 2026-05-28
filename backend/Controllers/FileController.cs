@@ -41,7 +41,7 @@ public class FileController : ControllerBase
 
     /// <summary>Deletes one or more file records by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteFile([AsParameters] List<string> ids)
+    public async Task<ActionResult> DeleteFile([FromQuery] List<string> ids)
     {
         await _fileServices.DeleteFileAsync(ids);
         return NoContent();
