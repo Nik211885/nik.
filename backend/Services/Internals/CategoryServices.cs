@@ -145,6 +145,7 @@ public class CategoryServices
 
     private static void ApplyTranslations(CategoryResponse r, Dictionary<string, string> t)
     {
-        if (t.TryGetValue("title", out var v)) r.Title = v;
+        if (t.TryGetValue("name",  out var v)) r.Name  = v;
+        if (t.TryGetValue("title", out     v)) r.Title = v;
     }
 }

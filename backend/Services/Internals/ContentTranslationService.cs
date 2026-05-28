@@ -49,9 +49,13 @@ public class ContentTranslationService
             {
                 var row = await _context.Categories
                     .Where(c => c.Id == entityId)
-                    .Select(c => new { c.Title })
+                    .Select(c => new { c.Name, c.Title })
                     .FirstOrDefaultAsync();
-                return row is null ? [] : new Dictionary<string, string> { ["title"] = row.Title };
+                return row is null ? [] : new Dictionary<string, string>
+                {
+                    ["name"]  = row.Name,
+                    ["title"] = row.Title,
+                };
             }
             case EntityType.Tag:
             {

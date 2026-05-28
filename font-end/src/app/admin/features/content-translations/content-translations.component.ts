@@ -19,7 +19,10 @@ export const ENTITY_FIELDS: Record<string, FieldDef[]> = {
     { key: 'description', label: 'Description', multiline: true  },
     { key: 'content',     label: 'Content',     multiline: true,  rich: true },
   ],
-  category:  [{ key: 'title', label: 'Title', multiline: false }],
+  category:  [
+    { key: 'name',  label: 'Name',  multiline: false },
+    { key: 'title', label: 'Title', multiline: false },
+  ],
   tag:       [
     { key: 'title',       label: 'Title',       multiline: false },
     { key: 'description', label: 'Description', multiline: true  },
