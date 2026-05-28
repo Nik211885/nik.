@@ -133,19 +133,33 @@ public class AlbumServices
     }
 
     /// <summary>
-    /// Deletes one or more albums by ID and removes their translations.
-    /// Detaches child albums (sets their parent to null) and removes album-file records before deleting.
+    /// Deletes one or more albums by ID, including all descendant albums and their files recursively.
     /// </summary>
     /// <param name="ids">IDs of albums to delete.</param>
     public async Task DeleteAlbumAsync(List<string> ids)
     {
-        await _dbContext.Albums
-            .Where(a => a.AlbumId != null && ids.Contains(a.AlbumId))
-            .ExecuteUpdateAsync(s => s.SetProperty(a => a.AlbumId, (string?)null));
+        var allAlbums = await _dbContext.Albums
+            .AsNoTracking()
+            .Select(a => new { a.Id, a.AlbumId })
+            .ToListAsync();
 
-        await _dbContext.AlbumFiles.Where(af => ids.Contains(af.AlbumId)).ExecuteDeleteAsync();
-        await _dbContext.Albums.Where(a => ids.Contains(a.Id)).ExecuteDeleteAsync();
-        await _translationService.DeleteByEntityAsync(EntityType.Album, ids);
+        var childrenLookup = allAlbums.ToLookup(a => a.AlbumId);
+
+        var toDelete = new List<string>(ids);
+        var queue = new Queue<string>(ids);
+        while (queue.Count > 0)
+        {
+            var parentId = queue.Dequeue();
+            foreach (var child in childrenLookup[parentId])
+            {
+                toDelete.Add(child.Id);
+                queue.Enqueue(child.Id);
+            }
+        }
+
+        await _dbContext.AlbumFiles.Where(af => toDelete.Contains(af.AlbumId)).ExecuteDeleteAsync();
+        await _dbContext.Albums.Where(a => toDelete.Contains(a.Id)).ExecuteDeleteAsync();
+        await _translationService.DeleteByEntityAsync(EntityType.Album, toDelete);
     }
 
     /// <summary>

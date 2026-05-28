@@ -40,7 +40,7 @@ public class CategoryController : ControllerBase
 
     /// <summary>Deletes one or more categories by ID.</summary>
     [HttpDelete("delete")]
-    public async Task<ActionResult> DeleteCategory([FromBody] List<string> ids)
+    public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
     {
         await _articleServices.DeleteCategoryAsync(ids);
         return NoContent();

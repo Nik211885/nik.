@@ -53,7 +53,7 @@ public class LanguageController : ControllerBase
 
     /// <summary>Deletes one or more translation code keys by ID.</summary>
     [HttpDelete("delete-code-lanuages")]
-    public async Task<IActionResult> DeleteCodeLanguages([FromBody] string[] ids)
+    public async Task<IActionResult> DeleteCodeLanguages([FromQuery] string[] ids)
     {
         await _languageServices.DeleteCodeLanguageAsync(ids.ToList());
         return NoContent();

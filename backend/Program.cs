@@ -99,14 +99,7 @@ using (var scope = app.Services.CreateScope())
     ArgumentNullException.ThrowIfNull(dbContext);
     await dbContext.Database.MigrateAsync();
     await LanguageSeeder.SeedAsync(dbContext);
-    await ArticleSeeder.SeedAsync(dbContext);
-    await AlbumSeeder.SeedAsync(dbContext);
-    await HeroSlideSeeder.SeedAsync(dbContext);
     await SysConfigSeeder.SeedAsync(dbContext);
-    await ContentTranslationSeeder.SeedAsync(dbContext);
-    await CareerSeeder.SeedAsync(dbContext);
-    await ProvinceSeeder.SeedAsync(dbContext);
-    await TripSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())
