@@ -203,3 +203,42 @@ export interface UpsertTranslationRequest {
   langCode: string;
   fields: Record<string, string>;
 }
+
+export interface ProvinceModel {
+  id: string;
+  name: string;
+  code: string;
+  tripCount: number;
+}
+
+export interface TripPhotoModel {
+  id: string;
+  tripId: string;
+  url: string;
+  caption: string | null;
+  order: number;
+}
+
+export interface TripModel {
+  id: string;
+  provinceId: string;
+  title: string;
+  date: string;
+  story: string | null;
+  createdDate: string;
+  photos: TripPhotoModel[];
+}
+
+export interface CreateTripPayload {
+  provinceId: string;
+  title: string;
+  date: string;
+  story?: string | null;
+}
+
+export interface UpdateTripPayload {
+  id: string;
+  title: string;
+  date: string;
+  story?: string | null;
+}

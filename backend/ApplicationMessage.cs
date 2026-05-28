@@ -55,6 +55,12 @@ public static class ApplicationMessage
 
     /// <summary>Key for 401 Unauthorized responses (token present but invalid/expired).</summary>
     public static readonly string Unauthorized = "exception.unauthorized";
+
+    /// <summary>Key returned when a requested trip does not exist.</summary>
+    public static readonly string TripNotFound = "exception.trip_not_found";
+
+    /// <summary>Key for "Province is required" validation failures on trip creation.</summary>
+    public static readonly string TripProvinceRequired = "exception.trip_province_required";
 }
 
 /// <summary>String constants identifying translatable entity types in <c>ContentTranslations</c>.</summary>

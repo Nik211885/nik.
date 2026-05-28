@@ -50,6 +50,17 @@ export class HomeComponent implements OnInit {
     this.configService.config.pipe(take(1)).subscribe(config => {
       if (!config?.info) return;
       const info = config.info;
+
+      const personSchema: Record<string, unknown> = {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: info.name,
+        url: environment.siteUrl,
+      };
+      if (info.email) personSchema['email'] = info.email;
+      if (info.avatar) personSchema['image'] = info.avatar;
+      if (info.bio) personSchema['description'] = info.bio;
+
       this.seoService.set({
         description: info.introduction || info.bio || 'Personal blog and portfolio.',
         image: info.avatar || undefined,
@@ -62,19 +73,14 @@ export class HomeComponent implements OnInit {
             url: environment.siteUrl,
             potentialAction: {
               '@type': 'SearchAction',
-              target: `${environment.siteUrl}/travel?q={search_term_string}`,
+              target: {
+                '@type': 'EntryPoint',
+                urlTemplate: `${environment.siteUrl}/travel?q={search_term_string}`,
+              },
               'query-input': 'required name=search_term_string',
             },
           },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Person',
-            name: info.name,
-            url: environment.siteUrl,
-            email: info.email,
-            image: info.avatar,
-            description: info.bio,
-          },
+          personSchema,
         ],
       });
     });

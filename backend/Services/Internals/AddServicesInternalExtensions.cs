@@ -26,6 +26,8 @@ public static class AddServicesInternalExtensions
             services.AddScoped<AutoTranslateService>();
             services.AddScoped<WallMessageServices>();
             services.AddScoped<CareerServices>();
+            services.AddScoped<TripServices>();
+            services.AddScoped<TripPhotoServices>();
             return services;
         }
     }

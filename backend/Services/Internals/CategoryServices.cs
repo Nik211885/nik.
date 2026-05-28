@@ -101,7 +101,8 @@ public class CategoryServices
     /// <param name="ids">IDs of categories to delete.</param>
     public async Task DeleteCategoryAsync(List<string> ids)
     {
-        _ = await _dbContext.Categories.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
+        await _dbContext.ArticleCategories.Where(ac => ids.Contains(ac.CategoryId)).ExecuteDeleteAsync();
+        await _dbContext.Categories.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
         await _translationService.DeleteByEntityAsync(EntityType.Category, ids);
     }
 

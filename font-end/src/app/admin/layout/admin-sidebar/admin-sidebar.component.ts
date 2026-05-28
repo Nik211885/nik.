@@ -35,7 +35,8 @@ export class AdminSidebarComponent implements OnInit, OnDestroy {
         { label: AdminMessage.SIDEBAR_NAV_ALBUMS,     icon: 'bi-images',            route: '/admin/albums' },
         { label: AdminMessage.SIDEBAR_NAV_CATEGORIES, icon: 'bi-folder2',           route: '/admin/categories' },
         { label: AdminMessage.SIDEBAR_NAV_TAGS,       icon: 'bi-tags',              route: '/admin/tags' },
-        { label: AdminMessage.SIDEBAR_NAV_HERO_SLIDES,icon: 'bi-collection-play',   route: '/admin/hero-slides' },
+        { label: AdminMessage.SIDEBAR_NAV_HERO_SLIDES,   icon: 'bi-collection-play',   route: '/admin/hero-slides' },
+        { label: AdminMessage.SIDEBAR_NAV_VIETNAM_MAP,   icon: 'bi-map',               route: '/admin/vietnam-map' },
       ],
     },
     {

@@ -1,0 +1,228 @@
+<div class="admin-page-container">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="fw-bold mb-0">{{ AdminMessage.VIETNAM_MAP_TITLE | language }}</h2>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Province list (left panel) -->
+    <div class="col-12 col-md-4">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">
+          {{ AdminMessage.VIETNAM_MAP_PROVINCE_LIST | language }}
+        </div>
+        <div class="card-body p-0" style="max-height:75vh;overflow-y:auto">
+          <ul class="list-group list-group-flush">
+            @for (province of provinces; track province.id) {
+              <li
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                [class.active]="selectedProvince?.id === province.id"
+                (click)="selectProvince(province)"
+                style="cursor:pointer">
+                <span>{{ province.name }}</span>
+                <span class="badge bg-secondary rounded-pill">{{ province.tripCount }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trip list + form (right panel) -->
+    <div class="col-12 col-md-8">
+      @if (!selectedProvince) {
+        <div class="card">
+          <div class="card-body text-center text-muted py-5">
+            {{ AdminMessage.VIETNAM_MAP_SELECT_PROVINCE | language }}
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">{{ selectedProvince.name }}</span>
+            @if (!formOpen) {
+              <button class="btn btn-sm btn-primary" (click)="openCreate()">
+                <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.VIETNAM_MAP_ADD_TRIP | language }}
+              </button>
+            }
+          </div>
+
+          <div class="card-body">
+
+            <!-- Create / Edit form -->
+            @if (formOpen) {
+              <div class="border rounded p-3 mb-4 bg-light">
+                <h6 class="fw-semibold mb-3">
+                  {{ editing ? (AdminMessage.VIETNAM_MAP_EDIT_TRIP | language) : (AdminMessage.VIETNAM_MAP_ADD_TRIP | language) }}
+                </h6>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">
+                    {{ AdminMessage.VIETNAM_MAP_TRIP_TITLE | language }} <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="form.title"
+                    name="title"
+                    [placeholder]="AdminMessage.VIETNAM_MAP_TRIP_TITLE | language" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">
+                    {{ AdminMessage.VIETNAM_MAP_TRIP_DATE | language }} <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="form.date"
+                    name="date" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">{{ AdminMessage.VIETNAM_MAP_TRIP_STORY | language }}</label>
+                  <quill-editor
+                    [(ngModel)]="form.story"
+                    name="story"
+                    [modules]="editorModules"
+                    [styles]="{'min-height': '220px'}"
+                    class="w-100">
+                  </quill-editor>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                  <button
+                    class="btn btn-primary"
+                    (click)="save()"
+                    [disabled]="saving || !form.title || !form.date">
+                    @if (saving) {
+                      {{ AdminMessage.SAVING | language }}
+                    } @else {
+                      {{ AdminMessage.SAVE | language }}
+                    }
+                  </button>
+                  <button class="btn btn-outline-secondary" (click)="closeForm()">
+                    {{ AdminMessage.CANCEL | language }}
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Trip list -->
+            @if (tripsLoading) {
+              <div class="text-center text-muted py-4">{{ AdminMessage.LOADING | language }}</div>
+            } @else if (trips.length === 0) {
+              <div class="text-center text-muted py-4">{{ AdminMessage.VIETNAM_MAP_NO_TRIPS | language }}</div>
+            } @else {
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>{{ AdminMessage.VIETNAM_MAP_TRIP_TITLE | language }}</th>
+                    <th>{{ AdminMessage.VIETNAM_MAP_TRIP_DATE | language }}</th>
+                    <th class="text-end">{{ AdminMessage.TABLE_ACTION | language }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (trip of trips; track trip.id) {
+                    <tr [class.table-info]="photoTripId === trip.id">
+                      <td>{{ trip.title }}</td>
+                      <td>{{ trip.date }}</td>
+                      <td class="text-end">
+                        <button
+                          class="btn btn-sm me-1"
+                          [class.btn-info]="photoTripId === trip.id"
+                          [class.btn-outline-info]="photoTripId !== trip.id"
+                          [title]="AdminMessage.VIETNAM_MAP_MANAGE_PHOTOS | language"
+                          (click)="openPhotoPanel(trip)">
+                          <i class="bi bi-images"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary me-1" (click)="openEdit(trip)">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(trip.id)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        </div>
+
+        <!-- Photo management panel -->
+        @if (photoTripId) {
+          <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">
+                <i class="bi bi-images me-1"></i>
+                {{ AdminMessage.VIETNAM_MAP_PHOTOS_TITLE | language }}
+                <small class="text-muted ms-2 fw-normal">{{ photoTrip?.title }}</small>
+              </span>
+              <button class="btn btn-sm btn-outline-secondary" (click)="closePhotoPanel()">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <div class="card-body">
+
+              <!-- Upload -->
+              <app-cloudinary-upload [(value)]="newPhotoUrl" [showManualInput]="false"></app-cloudinary-upload>
+
+              <div class="input-group input-group-sm mt-2 mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="newPhotoCaption"
+                  name="photoCaption"
+                  [placeholder]="AdminMessage.VIETNAM_MAP_PHOTO_CAPTION | language" />
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!newPhotoUrl || photoUploading"
+                  (click)="addPhoto()">
+                  <i class="bi bi-plus-lg me-1"></i>{{ AdminMessage.VIETNAM_MAP_ADD_PHOTO | language }}
+                </button>
+              </div>
+
+              <!-- Photos grid -->
+              @if (photosLoading) {
+                <div class="text-center text-muted py-3">{{ AdminMessage.LOADING | language }}</div>
+              } @else if (photos.length === 0) {
+                <div class="text-center text-muted py-4">
+                  <i class="bi bi-images d-block mb-2" style="font-size:1.5rem"></i>
+                  {{ AdminMessage.VIETNAM_MAP_NO_PHOTOS | language }}
+                </div>
+              } @else {
+                <div class="photo-admin-grid">
+                  @for (photo of photos; track photo.id) {
+                    <div class="photo-admin-item">
+                      <img [src]="photo.url" [alt]="photo.caption || ''" class="photo-admin-thumb" />
+                      @if (photo.caption) {
+                        <p class="photo-admin-caption">{{ photo.caption }}</p>
+                      }
+                      <button class="photo-admin-delete" (click)="confirmDeletePhoto(photo.id)">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          </div>
+        }
+
+      }
+    </div>
+  </div>
+
+</div>
+
+<app-admin-confirm-modal
+  [show]="confirmOpen"
+  (confirmed)="doDelete()"
+  (cancelled)="cancelDelete()">
+</app-admin-confirm-modal>

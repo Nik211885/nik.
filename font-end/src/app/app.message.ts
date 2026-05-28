@@ -71,6 +71,16 @@ export enum ApplicationTitle {
   WALL_SOURCE           = "wall.source",
   WALL_REACT            = "wall.react",
 
+  // ─── Vietnam Map (public) ─────────────────────────────────────────────────
+  VIETNAM_MAP_TITLE     = 'vietnam-map.title',
+  VIETNAM_MAP_SUBTITLE  = 'vietnam-map.subtitle',
+  VIETNAM_MAP_VISITED   = 'vietnam-map.visited',
+  VIETNAM_MAP_TRIPS     = 'vietnam-map.trips',
+  VIETNAM_MAP_LOADING   = 'vietnam-map.loading',
+  VIETNAM_MAP_NO_TRIPS  = 'vietnam-map.no-trips',
+  VIETNAM_MAP_CLOSE     = 'vietnam-map.close',
+  VIETNAM_MAP_PHOTOS    = 'vietnam-map.photos',
+
   // ─── CV / Careers ─────────────────────────────────────────────────────────
   CV_EXPERIENCE         = 'about.cv.experience',
   CV_SKILLS             = 'about.cv.skills',
@@ -445,4 +455,26 @@ export enum AdminMessage {
   DIAGLOG_CONFIRM_DELETE_ACTION_DELETE = "admin.diaglog.delete.action.delete",
   DIAGLOG_CONFIRM_DELETE_ACTION_CANCEL = "admin.diaglog.delete.action.cancel",
   DIAGLOG_CONFIRM_DELETE_MESSAGE = "admin.diaglog.delete.message",
+
+  // ─── Vietnam Map ──────────────────────────────────────────────────────────
+  VIETNAM_MAP_PHOTOS_TITLE     = 'admin.vietnam-map.photos-title',
+  VIETNAM_MAP_ADD_PHOTO        = 'admin.vietnam-map.add-photo',
+  VIETNAM_MAP_PHOTO_CAPTION    = 'admin.vietnam-map.photo-caption',
+  VIETNAM_MAP_NO_PHOTOS        = 'admin.vietnam-map.no-photos',
+  VIETNAM_MAP_MANAGE_PHOTOS    = 'admin.vietnam-map.manage-photos',
+  VIETNAM_MAP_PHOTO_DELETED    = 'admin.vietnam-map.photo-deleted',
+  VIETNAM_MAP_TITLE            = 'admin.vietnam-map.title',
+  VIETNAM_MAP_PROVINCE_LIST    = 'admin.vietnam-map.province-list',
+  VIETNAM_MAP_TRIP_COUNT       = 'admin.vietnam-map.trip-count',
+  VIETNAM_MAP_ADD_TRIP         = 'admin.vietnam-map.add-trip',
+  VIETNAM_MAP_EDIT_TRIP        = 'admin.vietnam-map.edit-trip',
+  VIETNAM_MAP_TRIP_TITLE       = 'admin.vietnam-map.trip-title',
+  VIETNAM_MAP_TRIP_DATE        = 'admin.vietnam-map.trip-date',
+  VIETNAM_MAP_TRIP_STORY       = 'admin.vietnam-map.trip-story',
+  VIETNAM_MAP_SELECT_PROVINCE  = 'admin.vietnam-map.select-province',
+  VIETNAM_MAP_NO_TRIPS         = 'admin.vietnam-map.no-trips',
+  VIETNAM_MAP_DELETE_CONFIRM   = 'admin.vietnam-map.delete-confirm',
+  VIETNAM_MAP_TRIP_SAVED       = 'admin.vietnam-map.trip-saved',
+  VIETNAM_MAP_TRIP_DELETED     = 'admin.vietnam-map.trip-deleted',
+  SIDEBAR_NAV_VIETNAM_MAP      = 'admin.sidebar.nav.vietnam-map',
 }

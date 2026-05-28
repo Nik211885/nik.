@@ -47,7 +47,8 @@
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-            ]
+            ],
+            "allowedCommonJsDependencies": ["leaflet", "aos", "quill-delta"]
           },
           "configurations": {
             "production": {

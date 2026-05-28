@@ -105,6 +105,8 @@ using (var scope = app.Services.CreateScope())
     await SysConfigSeeder.SeedAsync(dbContext);
     await ContentTranslationSeeder.SeedAsync(dbContext);
     await CareerSeeder.SeedAsync(dbContext);
+    await ProvinceSeeder.SeedAsync(dbContext);
+    await TripSeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())

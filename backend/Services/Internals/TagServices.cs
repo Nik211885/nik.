@@ -80,7 +80,8 @@ public class TagServices
     /// <param name="ids">IDs of tags to delete.</param>
     public async Task DeleteTagAsync(List<string> ids)
     {
-        _ = await _dbContext.Tags.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
+        await _dbContext.ArticleTags.Where(at => ids.Contains(at.TagId)).ExecuteDeleteAsync();
+        await _dbContext.Tags.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();
         await _translationService.DeleteByEntityAsync(EntityType.Tag, ids);
     }
 

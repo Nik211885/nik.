@@ -134,11 +134,16 @@ public class AlbumServices
 
     /// <summary>
     /// Deletes one or more albums by ID and removes their translations.
-    /// Cascades to child albums and album-file records as configured in the database.
+    /// Detaches child albums (sets their parent to null) and removes album-file records before deleting.
     /// </summary>
     /// <param name="ids">IDs of albums to delete.</param>
     public async Task DeleteAlbumAsync(List<string> ids)
     {
+        await _dbContext.Albums
+            .Where(a => a.AlbumId != null && ids.Contains(a.AlbumId))
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.AlbumId, (string?)null));
+
+        await _dbContext.AlbumFiles.Where(af => ids.Contains(af.AlbumId)).ExecuteDeleteAsync();
         await _dbContext.Albums.Where(a => ids.Contains(a.Id)).ExecuteDeleteAsync();
         await _translationService.DeleteByEntityAsync(EntityType.Album, ids);
     }

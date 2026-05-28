@@ -531,5 +531,42 @@ public static class LanguageSeeder
         ("contact.send-success",     "Your message has been sent successfully. We will get back to you soon!", "Tin nhắn của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm!"),
         ("contact.send-error",       "Failed to send message. Please try again.", "Gửi tin nhắn thất bại. Vui lòng thử lại."),
         ("auto.translated",          "Translated",                                "Đã dịch"),
+
+        // ─── Vietnam Map public ───────────────────────────────────────────────
+        ("nav.vietnam-map",           "Vietnam Map",                                              "Bản đồ Việt Nam"),
+        ("vietnam-map.title",         "My Vietnam Journey",                                       "Hành trình Việt Nam"),
+        ("vietnam-map.subtitle",      "Click on a province to see my travel stories",             "Nhấp vào một tỉnh để xem câu chuyện du lịch"),
+        ("vietnam-map.visited",       "provinces visited",                                        "tỉnh đã đến"),
+        ("vietnam-map.trips",         "trips",                                                    "chuyến đi"),
+        ("vietnam-map.loading",       "Loading trips...",                                         "Đang tải chuyến đi..."),
+        ("vietnam-map.no-trips",      "No trips recorded yet",                                    "Chưa có chuyến đi nào"),
+        ("vietnam-map.close",         "Close",                                                    "Đóng"),
+
+        // ─── Vietnam Map admin ────────────────────────────────────────────────
+        ("admin.vietnam-map.photos-title",      "Photos",              "Ảnh"),
+        ("admin.vietnam-map.add-photo",         "Add Photo",           "Thêm ảnh"),
+        ("admin.vietnam-map.photo-caption",     "Caption (optional)",  "Chú thích (tùy chọn)"),
+        ("admin.vietnam-map.no-photos",         "No photos yet",       "Chưa có ảnh"),
+        ("admin.vietnam-map.manage-photos",     "Manage Photos",       "Quản lý ảnh"),
+        ("admin.vietnam-map.photo-deleted",     "Photo deleted",       "Đã xóa ảnh"),
+        ("vietnam-map.photos",                  "Photos",              "Ảnh"),
+        ("admin.vietnam-map.title",             "Vietnam Map",                       "Bản đồ Việt Nam"),
+        ("admin.vietnam-map.province-list",     "Provinces",                         "Danh sách tỉnh"),
+        ("admin.vietnam-map.trip-count",        "Trips",                             "Chuyến đi"),
+        ("admin.vietnam-map.add-trip",          "Add trip",                          "Thêm chuyến đi"),
+        ("admin.vietnam-map.edit-trip",         "Edit trip",                         "Sửa chuyến đi"),
+        ("admin.vietnam-map.trip-title",        "Title",                             "Tiêu đề"),
+        ("admin.vietnam-map.trip-date",         "Date",                              "Ngày đi"),
+        ("admin.vietnam-map.trip-story",        "Story",                             "Câu chuyện"),
+        ("admin.vietnam-map.select-province",   "Select a province to manage trips", "Chọn tỉnh để quản lý chuyến đi"),
+        ("admin.vietnam-map.no-trips",          "No trips yet",                      "Chưa có chuyến đi"),
+        ("admin.vietnam-map.delete-confirm",    "Delete this trip?",                 "Xóa chuyến đi này?"),
+        ("admin.vietnam-map.trip-saved",        "Trip saved",                        "Đã lưu chuyến đi"),
+        ("admin.vietnam-map.trip-deleted",      "Trip deleted",                      "Đã xóa chuyến đi"),
+        ("admin.sidebar.nav.vietnam-map",       "Vietnam Map",                       "Bản đồ Việt Nam"),
+
+        // ─── Vietnam Map exception keys ───────────────────────────────────────
+        ("exception.trip_not_found",        "Trip not found",        "Không tìm thấy chuyến đi"),
+        ("exception.trip_province_required","Province is required",  "Tỉnh là bắt buộc"),
     ];
 }

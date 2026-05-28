@@ -67,17 +67,17 @@ export class PostDetailComponent implements OnInit {
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: res.title,
-            description: res.description,
-            image: res.image,
+            ...(res.description ? { description: res.description } : {}),
+            ...(res.image ? { image: res.image } : {}),
             datePublished: res.createdDate,
             dateModified: res.updatedDate || res.createdDate,
             url: `${environment.siteUrl}/post/${res.slug}`,
             author: {
               '@type': 'Person',
               name: res.author.userName,
-              url: `${environment.siteUrl}`,
+              url: environment.siteUrl,
             },
-            keywords: res.tags.map(t => t.name).join(', '),
+            ...(res.tags?.length ? { keywords: res.tags.map(t => t.name).join(', ') } : {}),
           },
         });
       });

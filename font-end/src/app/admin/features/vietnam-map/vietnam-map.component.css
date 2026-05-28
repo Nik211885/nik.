@@ -1,0 +1,66 @@
+.list-group-item.active {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
+}
+
+.list-group-item.active .badge {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─── Photo grid ────────────────────────────────────────────────────────── */
+.photo-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.6rem;
+}
+
+.photo-admin-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.photo-admin-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-admin-caption {
+  font-size: 0.72rem;
+  color: #64748b;
+  padding: 0.25rem 0.4rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #f8fafc;
+}
+
+.photo-admin-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(220, 38, 38, 0.88);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  padding: 0;
+}
+
+.photo-admin-item:hover .photo-admin-delete {
+  opacity: 1;
+}

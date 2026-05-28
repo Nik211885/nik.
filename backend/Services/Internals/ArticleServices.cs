@@ -129,6 +129,11 @@ public class ArticleServices
             .Select(ac => ac.CategoryId)
             .ToListAsync();
 
+        await _dbContext.Reactions.Where(r => ids.Contains(r.ArticleId)).ExecuteDeleteAsync();
+        await _dbContext.Comments.Where(c => ids.Contains(c.ArticleId)).ExecuteDeleteAsync();
+        await _dbContext.ArticleTags.Where(at => ids.Contains(at.ArticleId)).ExecuteDeleteAsync();
+        await _dbContext.ArticleCategories.Where(ac => ids.Contains(ac.ArticleId)).ExecuteDeleteAsync();
+
         await _dbContext.Articles
             .Where(a => ids.Contains(a.Id))
             .ExecuteDeleteAsync();

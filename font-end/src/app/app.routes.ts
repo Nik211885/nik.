@@ -41,6 +41,7 @@ export const routes: Routes = [
       { path: 'content-translations', loadComponent: () => import('./admin/features/content-translations/content-translations.component').then(m => m.ContentTranslationsAdminComponent) },
       { path: 'wall-messages', loadComponent: () => import('./admin/features/wall-messages/wall-messages.component').then(m => m.WallMessagesAdminComponent) },
       { path: 'careers', loadComponent: () => import('./admin/features/careers/careers.component').then(m => m.CareersAdminComponent) },
+      { path: 'vietnam-map', loadComponent: () => import('./admin/features/vietnam-map/vietnam-map.component').then(m => m.VietnamMapAdminComponent) },
       { path: 'content-translations/editor/:entityType/:entityId/:lang', loadComponent: () => import('./admin/features/content-translations/translation-editor-page/translation-editor-page.component').then(m => m.TranslationEditorPageComponent) },
     ]
   },
@@ -58,8 +59,9 @@ export const routes: Routes = [
       { path: 'about',       component: AboutComponent },
       { path: 'contact',     component: ContactComponent },
       { path: 'post/:prefix/:slug', component: PostDetailComponent },
-      { path: 'wall',    loadComponent: () => import('./features/wall/wall.component').then(m => m.WallComponent) },
-      { path: 'sponsor', loadComponent: () => import('./features/sponsor/sponsor.component').then(m => m.SponsorComponent) },
+      { path: 'wall',         loadComponent: () => import('./features/wall/wall.component').then(m => m.WallComponent) },
+      { path: 'sponsor',      loadComponent: () => import('./features/sponsor/sponsor.component').then(m => m.SponsorComponent) },
+      { path: 'vietnam-map',  loadComponent: () => import('./features/vietnam-map/vietnam-map.component').then(m => m.VietnamMapComponent) },
     ]
   },
 

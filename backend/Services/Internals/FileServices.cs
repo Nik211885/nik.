@@ -75,6 +75,10 @@ public class FileServices
     /// <param name="ids">IDs of files to delete.</param>
     public async Task DeleteFileAsync(List<string> ids)
     {
+        await _dbContext.Albums
+            .Where(a => a.FileDescriptionId != null && ids.Contains(a.FileDescriptionId))
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.FileDescriptionId, (string?)null));
+
         await _dbContext.files
             .Where(f => ids.Contains(f.Id))
             .ExecuteDeleteAsync();

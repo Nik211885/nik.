@@ -1,0 +1,93 @@
+<section class="vietnam-map-page">
+
+  <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
+  <div class="map-hero">
+    <h1>{{ ApplicationTitle.VIETNAM_MAP_TITLE | language }}</h1>
+    <p>{{ ApplicationTitle.VIETNAM_MAP_SUBTITLE | language }}</p>
+    @if (provinces.length > 0) {
+      <span class="visited-badge">
+        <i class="bi bi-geo-alt-fill"></i>
+        {{ visitedCount }} / 63 {{ ApplicationTitle.VIETNAM_MAP_VISITED | language }}
+      </span>
+    }
+  </div>
+
+  <!-- ─── Map + Drawer ─────────────────────────────────────────────────── -->
+  <div class="map-wrapper">
+
+    <!-- Leaflet map -->
+    <div #mapEl class="leaflet-map"></div>
+
+    <!-- Province drawer / mobile bottom sheet -->
+    <div class="province-drawer" [class.open]="drawerOpen">
+      @if (selectedProvince) {
+
+        <div class="drawer-header">
+          <div>
+            <h3>{{ selectedProvince.name }}</h3>
+            <span class="trip-count-badge">
+              {{ selectedProvince.tripCount }} {{ ApplicationTitle.VIETNAM_MAP_TRIPS | language }}
+            </span>
+          </div>
+          <button class="close-btn" (click)="closeDrawer()" [title]="ApplicationTitle.VIETNAM_MAP_CLOSE | language">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="drawer-body">
+          @if (tripsLoading) {
+            <div class="loading-text">{{ ApplicationTitle.VIETNAM_MAP_LOADING | language }}</div>
+          } @else if (trips.length === 0) {
+            <div class="empty-text">
+              <i class="bi bi-map d-block mb-2" style="font-size:1.5rem"></i>
+              {{ ApplicationTitle.VIETNAM_MAP_NO_TRIPS | language }}
+            </div>
+          } @else {
+            @for (trip of trips; track trip.id) {
+              <div class="trip-card" (click)="toggleTrip(trip.id)">
+                <div class="trip-card-header">
+                  <div class="trip-info">
+                    <span class="trip-title">{{ trip.title }}</span>
+                    <span class="trip-date">{{ trip.date }}</span>
+                  </div>
+                  <div class="trip-card-meta">
+                    @if (trip.photos && trip.photos.length > 0) {
+                      <span class="photo-count-badge">
+                        <i class="bi bi-images"></i> {{ trip.photos.length }}
+                      </span>
+                    }
+                    <i class="bi" [class.bi-chevron-down]="expandedTripId !== trip.id"
+                                  [class.bi-chevron-up]="expandedTripId === trip.id"></i>
+                  </div>
+                </div>
+                @if (expandedTripId === trip.id) {
+                  @if (trip.story) {
+                    <div class="trip-story ql-editor" [innerHTML]="trip.story"></div>
+                  }
+                  @if (trip.photos && trip.photos.length > 0) {
+                    <div class="trip-gallery">
+                      <p class="gallery-label">{{ ApplicationTitle.VIETNAM_MAP_PHOTOS | language }}</p>
+                      <div class="gallery-grid">
+                        @for (photo of trip.photos; track photo.id) {
+                          <a [href]="photo.url" target="_blank" rel="noopener noreferrer" class="gallery-item">
+                            <img [src]="photo.url" [alt]="photo.caption || ''" loading="lazy" />
+                            @if (photo.caption) {
+                              <span class="gallery-caption">{{ photo.caption }}</span>
+                            }
+                          </a>
+                        }
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            }
+          }
+        </div>
+
+      }
+    </div>
+
+  </div>
+
+</section>

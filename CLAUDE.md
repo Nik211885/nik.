@@ -160,6 +160,7 @@ The frontend has a full admin panel at `/admin` (lazy-loaded, separate from the 
 /admin/languages
 /admin/translations
 /admin/sys-config
+/admin/vietnam-map
 ```
 
 Admin code lives in `font-end/src/app/admin/` with its own layout, feature components, services, and shared components (`admin-table`, `admin-confirm-modal`, `cloudinary-upload`). The `authGuard` on the admin route is currently **commented out** — `/admin` is unprotected in the current codebase.
@@ -182,7 +183,8 @@ On startup the frontend runs two `provideAppInitializer` calls (in `app.config.t
 
 Every `dotnet run` runs idempotent seeders after migrations:
 - `LanguageSeeder` — seeds translation keys and their EN/VI values
-- `AlbumSeeder`, `ArticleSeeder`, `HeroSlideSeeder`, `SysConfigSeeder`, `ContentTranslationSeeder` — seed default content
+- `ProvinceSeeder` — seeds all 63 Vietnamese provinces (idempotent, skips if any row exists). Provinces are **never created via API**.
+- `AlbumSeeder`, `ArticleSeeder`, `HeroSlideSeeder`, `SysConfigSeeder`, `ContentTranslationSeeder`, `TripSeeder` — seed default content
 
 When adding new translation keys, add them to `LanguageSeeder.GetEntries()` so they are present on the next startup.
 
@@ -214,6 +216,31 @@ Video uploads use resource type `video` — the URL path contains `/video/upload
 ### Config-driven Social Links
 
 Social media links in the sidebar come from `ConfigService` (`config.social[].ref`). These are **external URLs** (e.g. `https://facebook.com`). Use `[href]="item.ref"` with `target="_blank" rel="noopener noreferrer"` — never `[routerLink]`, which treats external URLs as relative paths and prepends the app origin.
+
+### Vietnam Map Feature
+
+Public route `/vietnam-map` shows an interactive Leaflet choropleth of all 63 Vietnamese provinces. Admin route `/admin/vietnam-map` manages trips and photos.
+
+**Data model:** `Province` → `Trip` → `TripPhoto` (one-to-many chain). Provinces are seeded, never created via API. Trips and TripPhotos are managed via the admin panel.
+
+**API endpoints:**
+- `GET api/provinces` — all provinces with `tripCount`
+- `GET api/trips?provinceId={id}` — trips for a province (includes nested `photos`)
+- Trips and photos have their own `/create`, `/update`, `/delete` endpoints
+
+**GeoJSON integration:** `font-end/src/assets/vietnam-provinces.geojson` is fetched at runtime via `HttpClient` (use `X-Skip-Auth-Request` header). The GeoJSON `NAME_1` property does not always match `Province.Name` in the database — three discrepancies are resolved by the `GEOJSON_NAME_MAP` constant at the top of `vietnam-map.component.ts`:
+```
+'Hồ Chí Minh city' → 'Thành phố Hồ Chí Minh'
+'Thừa Thiên - Huế' → 'Thừa Thiên Huế'
+'Đăk Nông'         → 'Đắk Nông'
+```
+
+**SSR / Leaflet:** Leaflet is browser-only. Always guard with `isPlatformBrowser(platformId)` and use dynamic import inside `ngAfterViewInit`:
+```typescript
+if (!this.isBrowser) return;
+const L = await import('leaflet');
+```
+This is the required pattern for any browser-only library (canvas, WebGL, etc.) in this SSR app.
 
 ### Angular 21 Zoneless Change Detection
 

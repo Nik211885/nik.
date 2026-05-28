@@ -82,6 +82,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <summary>Project entries for the CV/Careers section.</summary>
     public DbSet<Project> Projects { get; set; }
 
+    /// <summary>Vietnam map provinces (63 provinces, seeded on startup).</summary>
+    public DbSet<Province> Provinces { get; set; }
+
+    /// <summary>Travel trips associated with a province.</summary>
+    public DbSet<Trip> Trips { get; set; }
+
+    /// <summary>Photos attached to individual trips.</summary>
+    public DbSet<TripPhoto> TripPhotos { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

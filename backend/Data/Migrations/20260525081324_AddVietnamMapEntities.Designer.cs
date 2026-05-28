@@ -3,6 +3,7 @@ using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Data;
@@ -12,9 +13,11 @@ using backend.Data;
 namespace backend.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525081324_AddVietnamMapEntities")]
+    partial class AddVietnamMapEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -776,41 +779,6 @@ namespace backend.Data.Migrations
                     b.ToTable("Trips", (string)null);
                 });
 
-            modelBuilder.Entity("backend.Entities.TripPhoto", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<string>("Caption")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Order")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("TripId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TripId");
-
-                    b.ToTable("TripPhotos", (string)null);
-                });
-
             modelBuilder.Entity("backend.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -1136,17 +1104,6 @@ namespace backend.Data.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("backend.Entities.TripPhoto", b =>
-                {
-                    b.HasOne("backend.Entities.Trip", "Trip")
-                        .WithMany("TripPhotos")
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Trip");
-                });
-
             modelBuilder.Entity("backend.Entities.WallMessageReaction", b =>
                 {
                     b.HasOne("backend.Entities.WallMessage", "WallMessage")
@@ -1207,11 +1164,6 @@ namespace backend.Data.Migrations
             modelBuilder.Entity("backend.Entities.Tag", b =>
                 {
                     b.Navigation("ArticleTags");
-                });
-
-            modelBuilder.Entity("backend.Entities.Trip", b =>
-                {
-                    b.Navigation("TripPhotos");
                 });
 #pragma warning restore 612, 618
         }

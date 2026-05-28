@@ -1,0 +1,315 @@
+.vietnam-map-page {
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* ─── Hero header ─────────────────────────────────────────────────────── */
+.map-hero {
+  padding: 3rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.map-hero h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.map-hero p {
+  color: #64748b;
+  font-size: 1.05rem;
+  margin-bottom: 1.25rem;
+}
+
+.visited-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #3b82f6;
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ─── Map + Drawer wrapper ─────────────────────────────────────────────── */
+.map-wrapper {
+  display: flex;
+  height: 70vh;
+  min-height: 520px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* ─── Leaflet map ──────────────────────────────────────────────────────── */
+.leaflet-map {
+  flex: 1;
+  background: #e0ecf7;
+  transition: flex 0.3s ease;
+}
+
+/* ─── Province tooltip ─────────────────────────────────────────────────── */
+:host ::ng-deep .province-tooltip {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+:host ::ng-deep .province-tooltip::before {
+  display: none;
+}
+
+/* ─── Province drawer ──────────────────────────────────────────────────── */
+.province-drawer {
+  width: 0;
+  min-width: 0;
+  background: #fff;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+.province-drawer.open {
+  width: 380px;
+  min-width: 380px;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0.875rem;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.drawer-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+}
+
+.trip-count-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 0.25rem;
+  border-radius: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.close-btn:hover {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+}
+
+.loading-text,
+.empty-text {
+  color: #94a3b8;
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ─── Trip cards ───────────────────────────────────────────────────────── */
+.trip-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.trip-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+}
+
+.trip-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+}
+
+.trip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.trip-title {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.trip-date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.trip-card-meta .bi-chevron-down,
+.trip-card-meta .bi-chevron-up {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* ─── Trip story ───────────────────────────────────────────────────────── */
+.trip-story {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #374151;
+  background: #fafafa;
+}
+
+/* Make Quill ql-editor resets not apply since story is inside a card */
+.trip-story :host ::ng-deep p { margin-bottom: 0.5rem; }
+.trip-story :host ::ng-deep ul,
+.trip-story :host ::ng-deep ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
+
+/* ─── Trip card header meta ────────────────────────────────────────────── */
+.trip-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.photo-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-radius: 9999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ─── Trip photo gallery ────────────────────────────────────────────────── */
+.trip-gallery {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+.gallery-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.gallery-item {
+  display: block;
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.52));
+  color: #fff;
+  font-size: 0.68rem;
+  padding: 0.5rem 0.35rem 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Mobile: bottom sheet ─────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .map-wrapper {
+    flex-direction: column;
+    height: 55vh;
+    min-height: 350px;
+  }
+
+  .leaflet-map {
+    height: 100%;
+  }
+
+  .province-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 0;
+    border-left: none;
+    border-top: 2px solid #e2e8f0;
+    border-radius: 16px 16px 0 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    transition: height 0.3s ease;
+  }
+
+  .province-drawer.open {
+    height: 60vh;
+  }
+}
