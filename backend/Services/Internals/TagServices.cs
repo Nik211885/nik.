@@ -36,9 +36,9 @@ public class TagServices
     /// <exception cref="BadRequestException">Thrown when a tag with the same name already exists.</exception>
     public async Task<TagResponse> CreateTagAsync(CreateTagRequest model)
     {
-        var tagExitsName = await _dbContext.Tags.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
-            ?? throw new BadRequestException();
+        var exists = await _dbContext.Tags.AsNoTracking()
+            .AnyAsync(x => x.Name.ToLower() == model.Name.ToLower());
+        if (exists) throw new BadRequestException(ApplicationMessage.ExitsCode);
         var tag = model.ToTag();
         tag.Slug = tag.Name.ToSlug();
         tag.CreatedDate = DateTimeOffset.UtcNow;
@@ -56,11 +56,9 @@ public class TagServices
     /// <exception cref="BadRequestException">Thrown when another tag uses the same name, or the tag ID does not exist.</exception>
     public async Task<TagResponse> UpdateTagAsync(UpdateTagRequest model)
     {
-        var tagExitsName = await _dbContext.Tags.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase));
-        if (tagExitsName?.Id != model.Id)
-        {
-            throw new BadRequestException();
-        }
+        var exists = await _dbContext.Tags.AsNoTracking()
+            .AnyAsync(x => x.Name.ToLower() == model.Name.ToLower() && x.Id != model.Id);
+        if (exists) throw new BadRequestException(ApplicationMessage.ExitsCode);
         var tagByUpdate = await _dbContext.Tags.FirstOrDefaultAsync(x => x.Id == model.Id)
             ?? throw new BadRequestException();
         if(tagByUpdate.Name != model.Name)

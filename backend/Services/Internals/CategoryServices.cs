@@ -36,9 +36,9 @@ public class CategoryServices
     /// <exception cref="BadRequestException">Thrown when a category with the same name already exists.</exception>
     public async Task<CategoryResponse> CreateCategoryAsync(CreateCategoryRequest model)
     {
-        var categoryExitsName = await _dbContext.Categories.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
-            ?? throw new BadRequestException();
+        var exists = await _dbContext.Categories.AsNoTracking()
+            .AnyAsync(x => x.Name.ToLower() == model.Name.ToLower());
+        if (exists) throw new BadRequestException(ApplicationMessage.ExitsCode);
         var category = model.ToCategoryEntity();
         category.Slug = category.Name.ToSlug();
         category.CreatedDate = DateTimeOffset.UtcNow;
@@ -56,11 +56,9 @@ public class CategoryServices
     /// <exception cref="BadRequestException">Thrown when another category uses the same name, or the category ID does not exist.</exception>
     public async Task<CategoryResponse> UpdateCategoryAsync(UpdateCategoryRequest model)
     {
-        var tagExitsName = await _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase));
-        if (tagExitsName?.Id != model.Id)
-        {
-            throw new BadRequestException();
-        }
+        var exists = await _dbContext.Categories.AsNoTracking()
+            .AnyAsync(x => x.Name.ToLower() == model.Name.ToLower() && x.Id != model.Id);
+        if (exists) throw new BadRequestException(ApplicationMessage.ExitsCode);
         var tagByUpdate = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == model.Id)
             ?? throw new BadRequestException();
         if (tagByUpdate.Name != model.Name)
