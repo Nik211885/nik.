@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Data;
 
 /// <summary>
-/// Seeds system configuration entries using UPSERT logic.
+/// Seeds system configuration entries on startup.
+/// Existing keys are never overwritten — only missing keys are inserted.
 /// Text fields that differ by language use <c>{"vi":"...","en":"..."}</c> JSON — the backend
 /// automatically extracts the value matching the request language at read time.
 /// </summary>
@@ -13,16 +14,14 @@ public static class SysConfigSeeder
 {
     private static readonly JsonSerializerOptions _opts = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    /// <summary>Seeds config entries. Inserts missing keys; updates value of existing keys.</summary>
+    /// <summary>Seeds config entries. Inserts missing keys; skips keys that already exist.</summary>
     public static async Task SeedAsync(ApplicationDbContext db)
     {
         var existing = await db.SysConfigs.ToDictionaryAsync(x => x.Key);
 
         foreach (var (key, value) in BuildEntries())
         {
-            if (existing.TryGetValue(key, out var row))
-                row.Value = value;
-            else
+            if (!existing.ContainsKey(key))
                 db.SysConfigs.Add(new SysConfig { Key = key, Value = value });
         }
 

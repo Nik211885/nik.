@@ -5,7 +5,7 @@ namespace backend.Data;
 
 /// <summary>
 /// Seeds default languages, translation keys, and UI translations on startup.
-/// Existing translation values are updated to match the seeder — it is the source of truth.
+/// Existing entries are never overwritten — only missing keys and translations are inserted.
 /// </summary>
 public static class LanguageSeeder
 {
@@ -49,16 +49,10 @@ public static class LanguageSeeder
         string codeId, string langId, string value)
     {
         var k = $"{codeId}:{langId}";
-        if (cache.TryGetValue(k, out var existing))
-        {
-            existing.Value = value;
-        }
-        else
-        {
-            var t = new Translate { CodeId = codeId, LanguageId = langId, Value = value };
-            db.Translates.Add(t);
-            cache[k] = t;
-        }
+        if (cache.ContainsKey(k)) return;
+        var t = new Translate { CodeId = codeId, LanguageId = langId, Value = value };
+        db.Translates.Add(t);
+        cache[k] = t;
     }
 
     private static async Task<Language> EnsureLanguageAsync(ApplicationDbContext db, string code, string name)
