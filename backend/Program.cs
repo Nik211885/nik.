@@ -116,6 +116,7 @@ if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true")
     app.UseHttpsRedirection();
 
 app.UseHttpMetrics();
+app.UseSerilogRequestLogging();
 app.UseCors();
 app.UseMiddleware<ExeceptionHandlingMiddleware>();
 app.UseAuthentication();
