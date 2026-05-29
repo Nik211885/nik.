@@ -144,7 +144,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{container=\"nik_backend\"} | json level=\"@l\", message=\"@m\", source=\"SourceContext\" | line_format \"[{{.level}}] {{.source}} - {{.message}}\"",
+          "expr": "{container=\"nik_backend\"} | regexp `\"@l\":\"(?P<level>[^\"]*)\"` | regexp `\"@m\":\"(?P<message>[^\"]+)\"` | regexp `\"SourceContext\":\"(?P<source>[^\"]+)\"` | line_format \"[{{.level}}] {{.source}} - {{.message}}\"",
           "legendFormat": ""
         }
       ],
@@ -167,7 +167,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{container=\"nik_backend\"} | json level=\"@l\", message=\"@m\" | level =~ \"Error|Fatal\" | line_format \"[{{.level}}] {{.message}}\"",
+          "expr": "{container=\"nik_backend\"} | regexp `\"@l\":\"(?P<level>Error|Fatal)\"` | regexp `\"@m\":\"(?P<message>[^\"]+)\"` | line_format \"[{{.level}}] {{.message}}\"",
           "legendFormat": ""
         }
       ],
