@@ -144,7 +144,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{container=\"nik_backend\"} | regexp `\"@m\":\"(?P<message>[^\"]+)\"` | line_format \"{{.message}}\"",
+          "expr": "{container=\"nik_backend\"} | regexp `\"@m\":\"(?P<message>(?:[^\"\\\\]|\\\\.)*)\"` | line_format \"{{.message}}\"",
           "legendFormat": ""
         }
       ],
