@@ -311,6 +311,28 @@ export const authGuard: CanActivateFn = (route, state) => {
 };
 ```
 
+## Admin Table Component
+
+`app-admin-table` is the generic data table used across every admin feature. Key inputs/outputs:
+
+```typescript
+@Input() columns: TableColumn[]   // column definitions (header, field, sortable, etc.)
+@Input() data: any[]              // rows to display
+@Input() loading = false          // show spinner overlay
+@Input() showActions = true       // show edit / delete action buttons
+@Input() hideDelete = false       // hide delete button only
+@Input() rowKey = 'id'            // field used as row identity for selection
+
+@Output() editClick = new EventEmitter<any>()     // emits the selected row
+@Output() deleteClick = new EventEmitter<any[]>() // emits array of selected rows
+```
+
+The component provides built-in column filtering, header-click sorting, pagination, and multi-select with a bulk-action bar. Admin feature components wire it up and handle the emitted events themselves.
+
+## Angular Signals
+
+Only `LoadingService` uses Angular signals (`signal<boolean>`, `signal<string>`) with `.asReadonly()` for the public surface. All other services use RxJS `BehaviorSubject`/`Observable`. There is no use of `computed()` or `effect()` in this codebase.
+
 ## Shared Components Inventory
 
 | Component              | Description                          |

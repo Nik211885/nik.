@@ -319,6 +319,17 @@ bool exists = await _dbContext.Albums.AnyAsync(x => x.Name == name);
 | Get by ID   | GET         | `/api/{resource}/{id}`  |
 | Get by slug | GET         | `/api/{resource}/slug/{slug}` |
 
+### Public (Unauthenticated) Endpoints
+
+Use `~/public-api/{resource}` route prefix for endpoints that must be accessible without authentication:
+
+```csharp
+[HttpGet("~/public-api/config")]
+public async Task<ActionResult> GetPublicConfig() { ... }
+```
+
+The `~/` prefix overrides the controller-level `[Route("api/...")]`. The frontend's `authInterceptor` detects `public-api` in the URL and skips Bearer token attachment automatically. Use this for anything consumed on the public site (config, articles, albums, etc.).
+
 ## User Identity
 
 Extract current user ID from JWT claims via the `HttpContext` extension:
@@ -375,6 +386,49 @@ Use the following tags consistently:
 /// <exception cref="BadRequestException">Thrown when an album with the same name already exists.</exception>
 public async Task<AlbumResponse> CreateAlbumAsync(CreateAlbumRequest request) { ... }
 ```
+
+## Content Translation System
+
+`ContentTranslation` stores per-field, per-language overrides for any entity:
+
+```csharp
+// Entity fields
+string EntityType   // e.g. "Article", "Category" — constants in ApplicationMessage.cs
+string EntityId     // UUIDv7 of the owning entity
+string Field        // e.g. "title", "description"
+string LangCode     // BCP-47 code ("en", "vi")
+string Value        // translated text
+```
+
+EntityType constants live in `ApplicationMessage.cs` (not in the entity file):
+```csharp
+public static readonly string Article = "Article";
+public static readonly string Category = "Category";
+// Tag, Album, HeroSlide, WorkExperience, Project
+```
+
+**Batch loading pattern** — always use `GetBatchAsync()` on list endpoints to avoid N+1 queries. It returns `Dictionary<entityId, Dictionary<field, value>>`:
+
+```csharp
+var translations = await _contentTranslationService
+    .GetBatchAsync(ApplicationMessage.Article, ids, langCode);
+// then per item: translations.TryGetValue(item.Id, out var t)
+```
+
+Use `UpsertAsync()` on create/update (not insert then update). Use `DeleteByEntityAsync()` on hard delete to clean up orphaned translations.
+
+## SysConfig
+
+`SysConfig` stores arbitrary JSON keyed by a lowercase string key (e.g. `config.sidebar`, `config.social`):
+
+```csharp
+string Key        // unique, lowercase, dot-separated
+JsonDocument Value  // arbitrary JSON payload
+```
+
+`GetPublicConfigAsync()` strips the `config.` prefix from keys before returning. Multilingual values stored as `{ "vi": "...", "en": "..." }` are unwrapped to a single string for the request language (`vi` is the fallback). Two computed fields are injected at request time:
+- `archivesCountAtTime` — article counts grouped by month/year
+- `categoryCountArchives` — category article counts with translated names
 
 ## Adding a New Feature — Checklist
 

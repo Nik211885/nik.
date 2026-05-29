@@ -175,9 +175,10 @@ The `acceptLanguageInterceptor` (frontend) adds an `Accept-Language` header to e
 
 ### App Initialization
 
-On startup the frontend runs two `provideAppInitializer` calls (in `app.config.ts`):
-1. `ConfigService.readConfig()` — loads runtime config
+On startup the frontend runs `provideAppInitializer` calls (in `app.config.ts`) in sequence, each wrapped in `catchError(() => of(null))` so a failure doesn't block bootstrap:
+1. `ConfigService.readConfig()` — loads runtime config from `public-api/config`
 2. `LanguageService.init()` — loads translations and restores saved language
+3. `AuthService.initSession()` — restores JWT tokens from localStorage; `PageViewTrackerService` is instantiated (starts tracking on construction)
 
 ### Startup Seeders
 
