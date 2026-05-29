@@ -23,15 +23,5 @@ scrape_configs:
       - source_labels: ['__meta_docker_container_log_stream']
         target_label: stream
     pipeline_stages:
-      # Parse Serilog CLEF JSON written to stdout
-      - json:
-          expressions:
-            log_level: '@l'
-            message:   '@m'
-            source:    SourceContext
-      - labels:
-          log_level:
-          source:
-      # Drop noisy health-check and metrics poll lines
       - drop:
           expression: '.*(GET /health|GET /metrics).*'
