@@ -144,7 +144,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{container=\"nik_backend\"} | json | line_format \"[{{.log_level}}] {{.source}} {{.message}}\"",
+          "expr": "{container=\"nik_backend\"} | json level=\"@l\", message=\"@m\", source=\"SourceContext\" | line_format \"[{{.level}}] {{.source}} - {{.message}}\"",
           "legendFormat": ""
         }
       ],
@@ -167,7 +167,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{container=\"nik_backend\", log_level=~\"Error|Fatal\"}",
+          "expr": "{container=\"nik_backend\"} | json level=\"@l\", message=\"@m\" | level =~ \"Error|Fatal\" | line_format \"[{{.level}}] {{.message}}\"",
           "legendFormat": ""
         }
       ],
